@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name="expenses")
 @Data //Lombok: Set getters and setters
-
 public class Expense {
 
     @Id //Set this field as PK
