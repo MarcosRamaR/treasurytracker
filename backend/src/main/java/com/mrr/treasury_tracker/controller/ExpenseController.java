@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -72,4 +73,67 @@ public class ExpenseController {
         }
     }
 
+    @GetMapping("/category/{category}")
+    public List<Expense> getExpensesByCategory(@PathVariable String category){
+        return expenseRepository.findByCategoryOrderByDateDesc(category);
+    }
+
+    @GetMapping("/between-date")
+    public List<Expense> getExpensesByDateRange(@RequestParam LocalDate startDate, @RequestParam LocalDate endDate){
+        return expenseRepository.findByDateBetweenOrderByDateDesc(startDate,endDate);
+    }
+
+    @GetMapping("/amount-greater-than/{amount}")
+    public List<Expense> getExpensesGreaterThan(@PathVariable BigDecimal amount){
+        return expenseRepository.findByAmountGreaterThanOrderByDateDesc(amount);
+    }
+
+    @GetMapping("category/{category}/date-range")
+    public List<Expense> getExpensesByCategoryAndDateRange(
+            @PathVariable String category, @RequestParam LocalDate startDate, @RequestParam LocalDate endDate){
+        return expenseRepository.findByCategoryAndDateBetween(category,startDate,endDate);
+    }
+
+    @GetMapping("/total")
+    public double getTotalExpenses(){
+        List<Expense> expenses = expenseRepository.findAll();
+        double total = 0;
+        for (Expense expense: expenses){
+            total += expense.getAmount().doubleValue();
+        }
+        return total;
+    }
+
+    @GetMapping("/total/category/{category}")
+    public double getTotalByCategory(@PathVariable String category){
+        List<Expense> expenses = expenseRepository.findByCategoryOrderByDateDesc(category);
+        double total = 0;
+        for (Expense expense: expenses){
+            total += expense.getAmount().doubleValue();
+        }
+        return total;
+    }
+
+    @GetMapping("total/date-range")
+    public double getTotalByDateRange(@RequestParam LocalDate startDate, @RequestParam LocalDate endDate){
+        List<Expense> expenses = expenseRepository.findByDateBetweenOrderByDateDesc(startDate,endDate);
+        double total = 0;
+        for (Expense expense: expenses){
+            total += expense.getAmount().doubleValue();
+        }
+        return total;
+    }
+    @GetMapping("/total/current-month")
+    public double getCurrentMonthTotal() {
+        List<Expense> expenses = expenseRepository.findCurrentMonthExpenses();
+        double total = 0.0;
+
+        for (Expense expense : expenses) {
+            total += expense.getAmount().doubleValue();
+        }
+
+        return total;
+    }
+
+    
 }

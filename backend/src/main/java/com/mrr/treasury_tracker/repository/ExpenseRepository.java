@@ -18,10 +18,10 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     List<Expense> findByCategoryOrderByDateDesc (String category);
     List<Expense> findByDateBetweenOrderByDateDesc (LocalDate startDate, LocalDate endDate);
     List<Expense> findByAmountGreaterThanOrderByDateDesc(BigDecimal amount);
-    List<Expense> findByCategoryAndBetweenDateDesc(String category,LocalDate startDate, LocalDate endDate);
+    List<Expense> findByCategoryAndDateBetween(String category,LocalDate startDate, LocalDate endDate);
 
     @Query("SELECT e.category, SUM(e.amount) FROM Expense e GROUP BY e.category ORDER BY SUM(e.amount) DESC")
-    List<Object[]> getCategoryTotal(); //With object this array can contain any type, each object have category + total
+    List<Object[]> getCategoryTotals(); //With object this array can contain any type, each object have category + total
 
     @Query("SELECT SUM(e.amount) FROM Expense e WHERE e.date BETWEEN :startDate AND :endDate")
     //Optional to not return null if not expense on that range
