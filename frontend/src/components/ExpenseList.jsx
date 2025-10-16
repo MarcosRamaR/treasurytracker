@@ -1,4 +1,4 @@
-export function ExpenseList({expenses}) {
+export function ExpenseList({expenses, onDelete}) {
 
 
   return (
@@ -11,7 +11,10 @@ export function ExpenseList({expenses}) {
             <div>
                 {expenses.map(expense => (
                     <div key={expense.id}>
-                        <p>{expense.description} - ${expense.amount} on {expense.date} [{expense.category}]</p>
+                        <p>
+                            {expense.description} - ${expense.amount} on {expense.date} [{expense.category}]
+                            <button onClick={() => onDelete(expense.id)}>Delete</button>
+                        </p>
                     </div>
                 ))}
             </div>    
