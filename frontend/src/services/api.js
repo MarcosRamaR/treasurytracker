@@ -1,4 +1,4 @@
-const API_BASE = 'http://localhost:8080/api/expenses'
+const API_BASE = '/api/expenses'
 
 export const expenseService = {
     getAll: async () => {
