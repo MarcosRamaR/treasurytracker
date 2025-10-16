@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { ExpenseForm } from "./components/ExpenseForm.jsx"
 import { ExpenseList } from "./components/ExpenseList.jsx"
+import { ExpenseSummary } from "./components/ExpenseSummary.jsx"
 
 export const TreasuryApp = () => {
   const [expenses, setExpenses] = useState([])
@@ -46,6 +47,7 @@ const handleUpdateExpense = (expense) => {
     <>
       <div>
           <h1>Treasury Tracker</h1>
+          <ExpenseSummary expenses={expenses}/>
           <ExpenseForm onSubmit={editExpense ? handleUpdateExpense : handleAddExpense} editExpense={editExpense}/>
           <ExpenseList expenses={expenses} onDelete={handleDeleteExpense} onEdit={handleEditExpense}/> 
       </div>
