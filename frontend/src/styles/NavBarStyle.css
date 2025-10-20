@@ -1,0 +1,38 @@
+.navbar {
+  background: linear-gradient(90deg, #1565c0, #42a5f5);
+  padding: 10px 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  border-radius: 0 0 12px 12px;
+}
+
+.navbar-brand {
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.5rem;
+  transition: all 0.2s;
+}
+
+.navbar-brand:hover {
+  color: #ffeb3b;
+  transform: scale(1.05);
+}
+
+.nav-link {
+  color: #e0f2ff;
+  font-weight: 500;
+  margin-right: 15px;
+  transition: color 0.2s;
+}
+
+.nav-link:hover {
+  color: #ffeb3b;
+  transform: scale(1.05);
+}
+
+.nav-link.active {
+  color: #ffeb3b;
+  font-weight: 700;
+}

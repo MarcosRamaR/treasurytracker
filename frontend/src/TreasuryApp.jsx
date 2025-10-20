@@ -2,17 +2,20 @@ import { Routes, Route } from "react-router-dom"
 import { NavBar } from "./components/NavBar.jsx"
 import { SummaryPage } from './pages/SummaryPage'
 import { ExpensesPage } from './pages/ExpensesPage'
-
+import './styles/TreasuryAppStyle.css';
+import './styles/NavBarStyle.css';
 
 export const TreasuryApp = () => {
   return (
-      <div className="container">
+      <div className="fixed-top">
         <NavBar/>
-        <Routes>
-          <Route path="/" element={<SummaryPage/>}/>
-          <Route path="/summary" element={<SummaryPage/>}/>
-          <Route path="/expenses" element={<ExpensesPage/>}/>
-        </Routes>
+        <div className="container mt-2">
+          <Routes>
+            <Route path="/" element={<SummaryPage/>}/>
+            <Route path="/summary" element={<SummaryPage/>}/>
+            <Route path="/expenses" element={<ExpensesPage/>}/>
+          </Routes>
+        </div>
       </div>
   )
 }
