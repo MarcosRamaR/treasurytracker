@@ -59,11 +59,8 @@ export const useExpenses = () => {
     }
 
     const filterExpensesByDateRange = async (startDate, endDate) => {
-        if (!startDate){
-            startDate = new Date().toISOString().split('T')[0];
-        }
-        if (!endDate){
-            endDate = new Date().toISOString().split('T')[0];
+        if (!startDate || !endDate) {
+          throw new Error('Both dates are required')
         }
         try{
             setLoading(true)
