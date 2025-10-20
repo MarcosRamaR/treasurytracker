@@ -5,7 +5,6 @@ export function ExpenseSummary({expenses}){
 
     return(
         <>
-            <h3>Expenses Summary</h3>
             <div>
                 <p>Total Expenses: ${total.toFixed(2)}</p>
                 <p>Average Expense: ${avg.toFixed(2)}</p>

@@ -7,9 +7,9 @@ export function SummaryPage () {
     if (loading) return <div>Loading summary...</div>
     if (error) return <div>Error: {error}</div>
   return (
-    <>
-        <h2>Summary Page</h2>
+    <div>
+        <h2>Expenses Summary</h2>
         <ExpenseSummary expenses={expenses}/>
-    </>
+    </div>
   )
 }
