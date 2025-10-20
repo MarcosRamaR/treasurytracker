@@ -9,7 +9,6 @@
 
 .filter-section {
     margin: 20px 0;
-    border-radius: 8px;
 }
 
 .filter-section h3 {
@@ -69,4 +68,26 @@
 .form-input:focus {
     border-color: #b88d00;
     outline: none;
+}
+.expense-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.expense-table th {   
+    font-weight: bold;              
+    color: #b88d00;                 
+}
+.expense-table tbody tr:hover {
+    background: linear-gradient(90deg, #1a1a2e, #16213e); 
+    cursor: default;
+}
+
+.expense-table button {
+    padding: 6px 12px;              
+    margin-right: 5px;              
+    border: none;                   
+    border-radius: 3px;             
+    cursor: pointer;                
 }

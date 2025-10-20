@@ -9,17 +9,31 @@ export function ExpenseList({expenses, onDelete, onEdit}) {
             {expenses.length === 0 ? (
                 <p>No expenses recorded.</p>
             ) : (
-            <div>
-                {expenses.map(expense => (
-                    <div key={expense.id}>
-                        <p>
-                            {expense.description} - ${expense.amount} on {expense.date} [{expense.category}]
-                            <button onClick={() => onDelete(expense.id)}>Delete</button>
-                            <button onClick={() => onEdit(expense)}>Edit</button>
-                        </p>
-                    </div>
-                ))}
-            </div>    
+            <table className="expense-table">
+                <thead>
+                    <tr>
+                        <th>Description</th>
+                        <th>Amount</th>
+                        <th>Date</th>
+                        <th>Category</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {expenses.map(expense => (
+                        <tr key={expense.id}>
+                            <td>{expense.description}</td>
+                            <td>{expense.amount}</td>
+                            <td>{expense.date}</td>
+                            <td>{expense.category}</td>
+                            <td>
+                                <button onClick={() => onEdit(expense)}>Edit</button>
+                                <button onClick={() => onDelete(expense.id)}>Delete</button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>     
             )}
         </div>
     </>
