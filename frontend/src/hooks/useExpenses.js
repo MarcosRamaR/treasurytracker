@@ -8,6 +8,8 @@ export const useExpenses = () => {
     const [expenses, setExpenses] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState('')
+    const [filteredExpenses, setFilteredExpenses] = useState([])
+    const [isFiltered, setIsFiltered] = useState(false)
 
     useEffect(() =>{
         loadExpenses()
@@ -56,13 +58,36 @@ export const useExpenses = () => {
         }
     }
 
+    const filterExpensesByDateRange = async (startDate, endDate) => {
+        if (!startDate){
+            startDate = new Date().toISOString().split('T')[0];
+        }
+        if (!endDate){
+            endDate = new Date().toISOString().split('T')[0];
+        }
+        try{
+            setLoading(true)
+            const data = await expenseService.getExpensesByDateRange(startDate, endDate)
+            setFilteredExpenses(data)
+            setIsFiltered(true)
+            setError('')
+        }catch(err){
+            setError('Error filtering expenses: ' + err.message)
+            throw err
+        }finally{
+            setLoading(false)
+        }
+    }
+
   return {
-    expenses,
+    expenses: isFiltered ? filteredExpenses : expenses,
     loading,
     error,
+    isFiltered,
     loadExpenses,
     createExpense,
     updateExpense,
-    deleteExpense
+    deleteExpense,
+    filterExpensesByDateRange
   }
 }
