@@ -11,15 +11,16 @@ export const NavBar = () => {
             <div className="collapse navbar-collapse" id="navbarNav">
                 <ul className="navbar-nav">
                     <li className="nav-item">
-                    <NavLink to='/summary' className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Summary</NavLink>
+                        <NavLink to='/summary' className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
+                        Summary</NavLink>
                     </li>
                     <li className="nav-item">
-                    <NavLink to='/expenses' className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Expenses</NavLink>
+                        <NavLink to='/expenses' className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
+                        Expenses</NavLink>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
-
   )
 }
