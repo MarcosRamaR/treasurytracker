@@ -1,16 +1,81 @@
-# React + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Index
 
-Currently, two official plugins are available:
+* [Description](#description)
+* [Funcionalities](#functionalities)
+* [Acceso al proyecto](#access-to-the-project)
+* [Used Technologies](#used-technologies)
+* [API Endpoints](#api-endpoints)
+* [Developers](#developers)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-## React Compiler
+## Description
+A web application for personal finance management and cash flow tracking. Developed with a React frontend and a Spring Boot backend, it allows users to monitor expenses, filter transactions, and gain insights into their finances.
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+## Functionalities
+- `Expense Management`: Add, edit, and delete expenses with detailed information
+- `Expenses Categorization`: Organize expenses into categories (Food, Transport, Entertainment, Others)
+- `Date Filtering`: Filter expenses by custom date ranges
+- `Real-time Summary`: View total and average expenses in the summary section
 
-## Expanding the ESLint configuration
+## Access to the project
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+
+## Used Technologies
+  * Java</br>
+  * Spring Boot</br>
+  * Spring Data JPA</br>
+  * JavaScript</br>
+  * React</br>
+  * Vite</br>
+  * HTML</br>
+  * CSS</br>
+
+## React and Vite
+This application uses **React** together with **Vite** for bundling and Hot Module Replacement (HMR).
+
+## API Endpoints
+
+### Base URL: `http://localhost:8080/api/expenses`
+
+### Recipe Operations
+
+| Method | Endpoint              | Description                          | Example Request Body |
+|--------|-----------------------|--------------------------------------|----------------------|
+| `GET`  | ``            | Get all expenses                      | -                    |
+| `GET`  | `/{id}`       | Get expense by ID                     | -                    |
+| `GET`  | `/category/{category}`       | Get expenses from one category                     | -                    |
+| `GET`  | `/between-date`       | Get expenses by a date range                   | -                    |
+| `GET`  | `/total`       | Get the sum of all expenses                   | -                    |
+| `POST` | ``            | Create new expense                    |  [See below](#-sample-requests)   |
+| `PUT`  | `/{id}`       | Update the expense of this id              |-                    |
+| `DELETE` | `/{id}`     | Delete expense by id                       | -                    |
+
+###  Sample Requests
+
+**Create expense** (`POST`)
+```json:
+{
+  "description": "Groceries",
+  "amount": 45.50,
+  "category": "Food",
+  "date": "2024-01-15"
+}
+```
+
+## Developers
+
+<div align= "center">Marcos Rama </div>
+<div align= "center">Email: marcos.rama.1994@gmail.com</div>
+
+## License
+
+<div align="left">
+  
+**Current Status:** Open Source - Free to use, modify and distribute
+
+**Future Considerations:** Licensing terms may evolve as the project matures. 
+Users are advised to check this section periodically for updates.
+
+For commercial use inquiries, please contact the developer.
+</div>
