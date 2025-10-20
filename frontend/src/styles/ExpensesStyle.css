@@ -1,0 +1,72 @@
+.expenses-container {
+    padding: 20px;
+}
+
+.expense-title{
+    color: #b88d00; 
+    margin-bottom: 20px;
+}
+
+.filter-section {
+    margin: 20px 0;
+    border-radius: 8px;
+}
+
+.filter-section h3 {
+    color: #b88d00;
+}
+
+.filter-controls {
+    display: flex;
+    gap: 20px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.filter-controls label {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-weight: 500;
+    color: #b88d00;
+}
+
+.filter-controls input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.filter-button {
+    padding: 8px 16px;
+    background-color: #b88d00;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    
+}
+
+.filter-button:hover {
+    background-color: #0056b3;
+}
+
+.filter-info {
+    margin: 10px 0;
+    padding: 10px;
+}
+
+.form-input {
+    height: 40px; 
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box; 
+}
+.form-input:focus {
+    border-color: #b88d00;
+    outline: none;
+}

@@ -1,10 +1,11 @@
-export function ExpenseList({expenses, onDelete, onEdit}) {
+import '../styles/ExpensesStyle.css';
 
+export function ExpenseList({expenses, onDelete, onEdit}) {
 
   return (
     <>
         <div>
-            <h3>Expense List</h3>
+            <h3 className='expense-title'>Expense List</h3>
             {expenses.length === 0 ? (
                 <p>No expenses recorded.</p>
             ) : (
