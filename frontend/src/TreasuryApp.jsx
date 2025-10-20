@@ -45,7 +45,6 @@ if (error) return <div>Error: {error}</div>
     <>
       <div>
           <h1>Treasury Tracker</h1>
-          <ExpenseSummary expenses={expenses}/>
           <ExpenseForm onSubmit={editExpense ? handleUpdateExpense : handleAddExpense} editExpense={editExpense}/>
           <ExpenseList expenses={expenses} onDelete={handleDeleteExpense} onEdit={handleEditExpense}/> 
       </div>
