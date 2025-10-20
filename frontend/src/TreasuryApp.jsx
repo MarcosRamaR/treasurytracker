@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom"
 import { NavBar } from "./components/NavBar.jsx"
 import { SummaryPage } from './pages/SummaryPage'
 import { ExpensesPage } from './pages/ExpensesPage'
+import { HomePage } from './pages/HomePage'
 import './styles/TreasuryAppStyle.css';
 import './styles/NavBarStyle.css';
 
@@ -11,7 +12,7 @@ export const TreasuryApp = () => {
         <NavBar/>
         <div className="container mt-2">
           <Routes>
-            <Route path="/" element={<SummaryPage/>}/>
+            <Route path="/" element={<HomePage/>}/>
             <Route path="/summary" element={<SummaryPage/>}/>
             <Route path="/expenses" element={<ExpensesPage/>}/>
           </Routes>
