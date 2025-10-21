@@ -35,4 +35,19 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
             "MONTH(e.date) = MONTH(CURRENT_DATE) ORDER BY e.date DESC")
     List<Expense> findCurrentMonthExpenses(); //Find all expenses of actual month
 
+    @Query(value = "SELECT * FROM expenses e WHERE " +
+            "(CAST(:category AS TEXT) IS NULL OR e.category = :category) AND " +
+            "(CAST(:startDate AS DATE) IS NULL OR e.date >= :startDate) AND " +
+            "(CAST(:endDate AS DATE) IS NULL OR e.date <= :endDate) AND " +
+            "(CAST(:minAmount AS DECIMAL) IS NULL OR e.amount >= :minAmount) AND " +
+            "(CAST(:maxAmount AS DECIMAL) IS NULL OR e.amount <= :maxAmount) " +
+            "ORDER BY e.date DESC",
+            nativeQuery = true)
+    List<Expense> findByFilters(
+            @Param("category") String category,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            @Param("minAmount") BigDecimal minAmount,
+            @Param("maxAmount") BigDecimal maxAmount);
+
 }

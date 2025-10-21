@@ -41,6 +41,16 @@ export const expenseService = {
         if(!response.ok) throw new Error('Error fetching expenses greater than amount')
         return response.json()
     },
+    getExpensesLessThan: async (amount) => {
+        const response = await fetch(`${API_BASE}/amount-less-than/${amount}`)
+        if(!response.ok) throw new Error('Error fetching expenses less than amount')
+        return response.json()
+    },
+    getExpensesBetweenAmounts: async (minAmount, maxAmount) => {
+        const response = await fetch(`${API_BASE}/amount-between?minAmount=${minAmount}&maxAmount=${maxAmount}`)
+        if(!response.ok) throw new Error('Error fetching expenses between amounts')
+        return response.json()
+    },
     getExpensesByCategoryAndDateRange: async (category, startDate, endDate) => {
         const response = await fetch(`${API_BASE}/category/${category}/date-range?startDate=${startDate}&endDate=${endDate}`)
         if(!response.ok) throw new Error('Error fetching expenses by category and date range')

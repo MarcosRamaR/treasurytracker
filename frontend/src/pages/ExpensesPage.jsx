@@ -6,12 +6,14 @@ import '../styles/ExpensesStyle.css';
 
 export function ExpensesPage() {
     const {expenses, loading, error,isFiltered, 
-        createExpense, updateExpense, deleteExpense,filterExpensesByCategoryAndDate,clearFilters
+        createExpense, updateExpense, deleteExpense,filterExpenses,clearFilters
     } = useExpenses()
     const [editExpense, setEditExpense] = useState(null)
     const [startDate, setStartDate] = useState('')
     const [endDate, setEndDate] = useState('')
     const [categorySelect, setCategorySelect] = useState('')
+    const [minAmount, setMinAmount] = useState(0)
+    const [maxAmount, setMaxAmount] = useState(0)
     const categories = ['Food', 'Transport', 'Entertainment ', 'Others']
 
     const handleAddExpense = async (expense) => {
@@ -33,8 +35,8 @@ export function ExpensesPage() {
         await updateExpense(editExpense.id, expense)
         setEditExpense(null)
     }
-    const handleFilterByCategoryAndDate = async () => {
-        await filterExpensesByCategoryAndDate(categorySelect,startDate, endDate)
+    const handleFilters = async () => {
+        await filterExpenses(categorySelect,startDate, endDate, minAmount, maxAmount)
     }
     const handleClearFilters = () => {
         clearFilters()
@@ -71,6 +73,22 @@ export function ExpensesPage() {
                         onChange={(e) => setEndDate(e.target.value)}
                     />
                 </label>
+                                <label>
+                    Lower Amount:
+                    <input 
+                        type="number" 
+                        value={minAmount}
+                        onChange={(e) => setMinAmount(e.target.value)}
+                    />
+                </label>
+                <label>
+                    Hight Amount:
+                    <input 
+                        type="number" 
+                        value={maxAmount}
+                        onChange={(e) => setMaxAmount(e.target.value)}
+                    />
+                </label>
                 <label>
                     Category:
                 <select
@@ -83,7 +101,7 @@ export function ExpensesPage() {
                 </select>
                 </label>
 
-                <button className="filter-button" onClick={handleFilterByCategoryAndDate}>
+                <button className="filter-button" onClick={handleFilters}>
                     Filter
                 </button>
                 <button className="filter-button" onClick={handleClearFilters}>

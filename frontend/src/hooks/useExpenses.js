@@ -59,7 +59,7 @@ export const useExpenses = () => {
     }
 
 
-    const filterExpensesByCategoryAndDate = async (category, startDate, endDate) => {
+    const filterExpenses = async (category, startDate, endDate, minAmount, maxAmount) => {
         try{
             setLoading(true)
             let filtered;
@@ -69,6 +69,12 @@ export const useExpenses = () => {
                 filtered = await expenseService.getExpensesByCategory(category)
             }else if(startDate && endDate){
                 filtered = await expenseService.getExpensesByDateRange(startDate, endDate)
+            }else if(minAmount && maxAmount){
+                filtered = await expenseService.getExpensesBetweenAmounts(minAmount, maxAmount)
+            }else if(minAmount){
+                filtered = await expenseService.getExpensesGreatherThan(minAmount)
+            }else if(maxAmount){
+                filtered = await expenseService.getExpensesLessThan(maxAmount)
             }
             setFilteredExpenses(filtered)
             setIsFiltered(true)
@@ -96,7 +102,7 @@ export const useExpenses = () => {
     createExpense,
     updateExpense,
     deleteExpense,
-    filterExpensesByCategoryAndDate,
+    filterExpenses,
     clearFilters
   }
 }

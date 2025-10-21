@@ -100,6 +100,15 @@ public class ExpenseController {
             @RequestParam BigDecimal maxAmount){
         return expenseRepository.findByAmountBetweenOrderByDateDesc(minAmount, maxAmount);
     }
+    @GetMapping("/filters")
+    public List<Expense> filterExpenses(
+        @RequestParam(required = false) String category,
+        @RequestParam(required = false) LocalDate startDate,
+        @RequestParam(required = false) LocalDate endDate,
+        @RequestParam(required = false) BigDecimal minAmount,
+        @RequestParam(required = false) BigDecimal maxAmount){
+        return expenseRepository.findByFilters(category, startDate, endDate, minAmount, maxAmount);
+    }
 
     @GetMapping("category/{category}/date-range")
     public List<Expense> getExpensesByCategoryAndDateRange(
