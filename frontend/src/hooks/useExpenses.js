@@ -58,14 +58,19 @@ export const useExpenses = () => {
         }
     }
 
-    const filterExpensesByDateRange = async (startDate, endDate) => {
-        if (!startDate || !endDate) {
-          throw new Error('Both dates are required')
-        }
+
+    const filterExpensesByCategoryAndDate = async (category, startDate, endDate) => {
         try{
             setLoading(true)
-            const data = await expenseService.getExpensesByDateRange(startDate, endDate)
-            setFilteredExpenses(data)
+            let filtered;
+            if(category && startDate && endDate){
+                filtered = await expenseService.getExpensesByCategoryAndDateRange(category, startDate, endDate)
+            }else if(category){
+                filtered = await expenseService.getExpensesByCategory(category)
+            }else if(startDate && endDate){
+                filtered = await expenseService.getExpensesByDateRange(startDate, endDate)
+            }
+            setFilteredExpenses(filtered)
             setIsFiltered(true)
             setError('')
         }catch(err){
@@ -74,6 +79,7 @@ export const useExpenses = () => {
         }finally{
             setLoading(false)
         }
+
     }
 
   return {
@@ -85,6 +91,6 @@ export const useExpenses = () => {
     createExpense,
     updateExpense,
     deleteExpense,
-    filterExpensesByDateRange
+    filterExpensesByCategoryAndDate
   }
 }

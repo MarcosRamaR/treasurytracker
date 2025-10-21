@@ -5,10 +5,12 @@ import { useState } from "react";
 import '../styles/ExpensesStyle.css';
 
 export function ExpensesPage() {
-    const {expenses, loading, error,isFiltered, createExpense, updateExpense, deleteExpense, filterExpensesByDateRange} = useExpenses()
+    const {expenses, loading, error,isFiltered, createExpense, updateExpense, deleteExpense,filterExpensesByCategoryAndDate } = useExpenses()
     const [editExpense, setEditExpense] = useState(null)
     const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0])
     const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0])
+    const [categorySelect, setCategorySelect] = useState('')
+    const categories = ['Food', 'Transport', 'Entertainment ', 'Others']
 
     const handleAddExpense = async (expense) => {
     await createExpense(expense)
@@ -29,8 +31,8 @@ export function ExpensesPage() {
         await updateExpense(editExpense.id, expense)
         setEditExpense(null)
     }
-    const handleFilterByDateRange = async () => {
-        await filterExpensesByDateRange(startDate, endDate)
+    const handleFilterByCategoryAndDate = async () => {
+        await filterExpensesByCategoryAndDate(categorySelect,startDate, endDate)
     }
 
 
@@ -61,14 +63,28 @@ export function ExpensesPage() {
                         onChange={(e) => setEndDate(e.target.value)}
                     />
                 </label>
-                <button className="filter-button" onClick={handleFilterByDateRange}>
+                <label>
+                    Category:
+                <select
+                    className="form-input"
+                    value={categorySelect} onChange={(e) => setCategorySelect(e.target.value)} >
+                    <option value="">Select Category</option>
+                    {categories.map(cat => (
+                        <option key={cat} value={cat}>{cat}</option>
+                    ))}
+                </select>
+                </label>
+
+                <button className="filter-button" onClick={handleFilterByCategoryAndDate}>
                     Filter
                 </button>
             </div>
         </div>
         {isFiltered && (
             <div className="filter-info">
-                Showing expenses from {startDate} to {endDate} 
+                 {categorySelect && `Category: ${categorySelect}`}
+                {categorySelect && (startDate || endDate) && ' | '}
+                {startDate && endDate && `Date range: ${startDate} to ${endDate}`}
             </div>
         )}
         <ExpenseList expenses={expenses} onDelete={handleDeleteExpense} onEdit={handleEditExpense}/> 

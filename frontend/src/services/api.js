@@ -42,7 +42,7 @@ export const expenseService = {
         return response.json()
     },
     getExpensesByCategoryAndDateRange: async (category, startDate, endDate) => {
-        const response = await fetch(`${API_BASE}/category/${category}/date-range?start=${startDate}&end=${endDate}`)
+        const response = await fetch(`${API_BASE}/category/${category}/date-range?startDate=${startDate}&endDate=${endDate}`)
         if(!response.ok) throw new Error('Error fetching expenses by category and date range')
         return response.json()
     },
