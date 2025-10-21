@@ -15,14 +15,14 @@ A web application for personal finance management and cash flow tracking. Develo
 ## Functionalities
 - `Expense Management`: Add, edit, and delete expenses with detailed information
 - `Expenses Categorization`: Organize expenses into categories (Food, Transport, Entertainment, Others)
-- `Date Filtering`: Filter expenses by custom date ranges
+- `Advanced Filtering`: Multi-criteria filtering (Dates, Category and imports)
 - `Real-time Summary`: View total and average expenses in the summary section
 
 ### Planned Features
 - `Income Management`: Similar functionality for tracking income sources
 - `Advanced Analytics`: Interactive charts and graphs for financial insights
 - `Future Projections`: Forecast upcoming expenses and income
-- `Advanced Filtering`: Multi-criteria filtering
+
 
 ## Access to the project
 
