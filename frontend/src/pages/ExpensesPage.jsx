@@ -45,7 +45,7 @@ export function ExpensesPage() {
         <h2>Expenses Page</h2>
         <ExpenseForm onSubmit={editExpense ? handleUpdateExpense : handleAddExpense} editExpense={editExpense}/>
         <div className="filter-section">
-            <h3>Filter by Date Range</h3>
+            <h3>Filters</h3>
             <div className="filter-controls">
                 <label>
                     Start Date:

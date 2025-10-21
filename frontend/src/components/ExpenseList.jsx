@@ -23,7 +23,7 @@ export function ExpenseList({expenses, onDelete, onEdit}) {
                     {expenses.map(expense => (
                         <tr key={expense.id}>
                             <td>{expense.description}</td>
-                            <td>{expense.amount}</td>
+                            <td>{expense.amount} €</td>
                             <td>{expense.date}</td>
                             <td>{expense.category}</td>
                             <td>
