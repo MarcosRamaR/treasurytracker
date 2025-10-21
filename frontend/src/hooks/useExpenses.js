@@ -58,7 +58,6 @@ export const useExpenses = () => {
         }
     }
 
-
     const filterExpenses = async (filters) => {
         try{
             setLoading(true)
