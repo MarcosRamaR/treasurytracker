@@ -16,44 +16,14 @@ export const expenseService = {
         if(!response.ok) throw new Error('Error fetching total expenses')
         return response.json()
     },
-    getExpensesByCategory: async (category) => {
-        const response = await fetch(`${API_BASE}/category/${category}`)
-        if(!response.ok) throw new Error('Error fetching expenses by category')
-        return response.json()
-    },
     getCurrentMonthExpenses: async () => {
         const response = await fetch(`${API_BASE}/total/current-month`)
         if(!response.ok) throw new Error('Error fetching current month expenses')
         return response.json()
     },
-    getExpensesByDateRange: async (startDate, endDate) => {
-        const response = await fetch(`${API_BASE}/between-date?startDate=${startDate}&endDate=${endDate}`)
-        if(!response.ok) throw new Error('Error fetching expenses by date range')
-        return response.json()
-    },
     getTotalExpensesByDateRange: async (startDate, endDate) => {
         const response = await fetch(`${API_BASE}/total/date-range?startDate=${startDate}&endDate=${endDate}`)
         if(!response.ok) throw new Error('Error fetching total expenses by date range')
-        return response.json()
-    },
-    getExpensesGraterThan: async (amount) => {
-        const response = await fetch(`${API_BASE}/amount-greater-than/${amount}`)
-        if(!response.ok) throw new Error('Error fetching expenses greater than amount')
-        return response.json()
-    },
-    getExpensesLessThan: async (amount) => {
-        const response = await fetch(`${API_BASE}/amount-less-than/${amount}`)
-        if(!response.ok) throw new Error('Error fetching expenses less than amount')
-        return response.json()
-    },
-    getExpensesBetweenAmounts: async (minAmount, maxAmount) => {
-        const response = await fetch(`${API_BASE}/amount-between?minAmount=${minAmount}&maxAmount=${maxAmount}`)
-        if(!response.ok) throw new Error('Error fetching expenses between amounts')
-        return response.json()
-    },
-    getExpensesByCategoryAndDateRange: async (category, startDate, endDate) => {
-        const response = await fetch(`${API_BASE}/category/${category}/date-range?startDate=${startDate}&endDate=${endDate}`)
-        if(!response.ok) throw new Error('Error fetching expenses by category and date range')
         return response.json()
     },
     create: async (expense) => {
@@ -84,6 +54,23 @@ export const expenseService = {
     })
         if(!response.ok) throw new Error('Error deleting expense')
         return true
+    },
+    filterExpenses: async (filters) => {
+        const {category, startDate, endDate, minAmount, maxAmount} = filters
+        const queryParams = [
+            category ? `category=${category}` : '',
+            startDate ? `startDate=${startDate}` : '',
+            endDate ? `endDate=${endDate}` : '',
+            minAmount ? `minAmount=${minAmount}` : '',
+            maxAmount ? `maxAmount=${maxAmount}` : '',
+        ] //Each filter is optional and assigned only if exists
+        const noNullParams = queryParams.filter(param => param !== '') //remove empty params
+        const queryStringParams = noNullParams.join('&') //join with &
+
+        const urlFiltered = queryStringParams ? `${API_BASE}/filters?${queryStringParams}` : `${API_BASE}/filters`
+        const response = await fetch(urlFiltered)
+        if(!response.ok) throw new Error('Error filtering expenses')
+        return response.json()
     }
 
 }
