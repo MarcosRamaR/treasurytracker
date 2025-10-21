@@ -90,6 +90,16 @@ public class ExpenseController {
     public List<Expense> getExpensesGreaterThan(@PathVariable BigDecimal amount){
         return expenseRepository.findByAmountGreaterThanOrderByDateDesc(amount);
     }
+    @GetMapping("/amount-less-than/{amount}")
+    public List<Expense> getExpensesLessThan(@PathVariable BigDecimal amount){
+        return expenseRepository.findByAmountLessThanOrderByDateDesc(amount);
+    }
+    @GetMapping("/amount-between")
+    public List<Expense> getExpensesBetweenAmounts(
+            @RequestParam BigDecimal minAmount,
+            @RequestParam BigDecimal maxAmount){
+        return expenseRepository.findByAmountBetweenOrderByDateDesc(minAmount, maxAmount);
+    }
 
     @GetMapping("category/{category}/date-range")
     public List<Expense> getExpensesByCategoryAndDateRange(

@@ -79,7 +79,12 @@ export const useExpenses = () => {
         }finally{
             setLoading(false)
         }
+    }
 
+    const clearFilters = () => {
+        setIsFiltered(false)
+        setFilteredExpenses([])
+        setError('')
     }
 
   return {
@@ -91,6 +96,7 @@ export const useExpenses = () => {
     createExpense,
     updateExpense,
     deleteExpense,
-    filterExpensesByCategoryAndDate
+    filterExpensesByCategoryAndDate,
+    clearFilters
   }
 }

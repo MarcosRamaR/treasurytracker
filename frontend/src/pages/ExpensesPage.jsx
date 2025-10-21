@@ -5,7 +5,9 @@ import { useState } from "react";
 import '../styles/ExpensesStyle.css';
 
 export function ExpensesPage() {
-    const {expenses, loading, error,isFiltered, createExpense, updateExpense, deleteExpense,filterExpensesByCategoryAndDate } = useExpenses()
+    const {expenses, loading, error,isFiltered, 
+        createExpense, updateExpense, deleteExpense,filterExpensesByCategoryAndDate,clearFilters
+    } = useExpenses()
     const [editExpense, setEditExpense] = useState(null)
     const [startDate, setStartDate] = useState('')
     const [endDate, setEndDate] = useState('')
@@ -33,6 +35,12 @@ export function ExpensesPage() {
     }
     const handleFilterByCategoryAndDate = async () => {
         await filterExpensesByCategoryAndDate(categorySelect,startDate, endDate)
+    }
+    const handleClearFilters = () => {
+        clearFilters()
+        setCategorySelect('')
+        setStartDate('')
+        setEndDate('')
     }
 
 
@@ -78,11 +86,14 @@ export function ExpensesPage() {
                 <button className="filter-button" onClick={handleFilterByCategoryAndDate}>
                     Filter
                 </button>
+                <button className="filter-button" onClick={handleClearFilters}>
+                    Reset Filters
+                </button>
             </div>
         </div>
         {isFiltered && (
             <div className="filter-info">
-                 {categorySelect && `Category: ${categorySelect}`}
+                {categorySelect && `Category: ${categorySelect}`}
                 {categorySelect && (startDate || endDate) && ' | '}
                 {startDate && endDate && `Date range: ${startDate} to ${endDate}`}
             </div>
