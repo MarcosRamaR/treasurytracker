@@ -6,7 +6,9 @@ export function ExpenseList({expenses, onDelete, onEdit}) {
     <>
         <div>
             <h3 className='expense-title'>Expense List</h3>
-            {expenses.length === 0 ? (
+            {!expenses ? (
+                <p>No filter applied.</p>
+            ):expenses.length === 0 ? (
                 <p>No expenses recorded.</p>
             ) : (
             <table className="expense-table">

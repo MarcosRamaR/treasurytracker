@@ -103,3 +103,14 @@
 .expense-table button:hover {
     border: 2px solid #b88d00;
 }
+.expense-table th:last-child{
+    width: 150px;
+    min-width: 120px;
+    text-align: center; 
+}
+
+.expense-table td:last-child {
+    width: 150px;
+    min-width: 120px;
+    text-align: right; 
+}

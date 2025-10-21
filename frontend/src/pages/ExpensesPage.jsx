@@ -7,8 +7,8 @@ import '../styles/ExpensesStyle.css';
 export function ExpensesPage() {
     const {expenses, loading, error,isFiltered, createExpense, updateExpense, deleteExpense,filterExpensesByCategoryAndDate } = useExpenses()
     const [editExpense, setEditExpense] = useState(null)
-    const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0])
-    const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0])
+    const [startDate, setStartDate] = useState('')
+    const [endDate, setEndDate] = useState('')
     const [categorySelect, setCategorySelect] = useState('')
     const categories = ['Food', 'Transport', 'Entertainment ', 'Others']
 
