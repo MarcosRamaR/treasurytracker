@@ -1,33 +1,34 @@
-const API_BASE = '/api/expenses'
+const API_EXPENSE_BASE = '/api/expenses'
+const API_INCOMES_BASE = '/api/incomes'
 
 export const expenseService = {
     getAll: async () => {
-        const response = await fetch(API_BASE)
+        const response = await fetch(API_EXPENSE_BASE)
         if(!response.ok) throw new Error('Error fetching expenses')
         return response.json()
     },
     getExpenseById: async (id) => {
-        const response = await fetch(`${API_BASE}/${id}`)
+        const response = await fetch(`${API_EXPENSE_BASE}/${id}`)
         if(!response.ok) throw new Error('Error fetching expense')
         return response.json()
     },
     getTotalExpenses: async () => {
-        const response = await fetch(`${API_BASE}/total`)
+        const response = await fetch(`${API_EXPENSE_BASE}/total`)
         if(!response.ok) throw new Error('Error fetching total expenses')
         return response.json()
     },
     getCurrentMonthExpenses: async () => {
-        const response = await fetch(`${API_BASE}/total/current-month`)
+        const response = await fetch(`${API_EXPENSE_BASE}/total/current-month`)
         if(!response.ok) throw new Error('Error fetching current month expenses')
         return response.json()
     },
     getTotalExpensesByDateRange: async (startDate, endDate) => {
-        const response = await fetch(`${API_BASE}/total/date-range?startDate=${startDate}&endDate=${endDate}`)
+        const response = await fetch(`${API_EXPENSE_BASE}/total/date-range?startDate=${startDate}&endDate=${endDate}`)
         if(!response.ok) throw new Error('Error fetching total expenses by date range')
         return response.json()
     },
     create: async (expense) => {
-        const response = await fetch(API_BASE, {
+        const response = await fetch(API_EXPENSE_BASE, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -38,7 +39,7 @@ export const expenseService = {
         return response.json()
     },
     update: async (id, expense) => {
-        const response = await fetch(`${API_BASE}/${id}`, {
+        const response = await fetch(`${API_EXPENSE_BASE}/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
@@ -49,13 +50,13 @@ export const expenseService = {
         return response.json()
     },
     delete: async (id) => {
-        const response = await fetch(`${API_BASE}/${id}`, {
+        const response = await fetch(`${API_EXPENSE_BASE}/${id}`, {
             method: 'DELETE',
     })
         if(!response.ok) throw new Error('Error deleting expense')
         return true
     },
-    filterExpenses: async (filters) => {
+    filterExpenses: async (filters,type) => {
         const {category, startDate, endDate, minAmount, maxAmount} = filters
         const queryParams = [
             category ? `category=${category}` : '',
@@ -67,7 +68,15 @@ export const expenseService = {
         const noNullParams = queryParams.filter(param => param !== '') //remove empty params
         const queryStringParams = noNullParams.join('&') //join with &
 
-        const urlFiltered = queryStringParams ? `${API_BASE}/filters?${queryStringParams}` : `${API_BASE}/filters`
+        let newUrl = ''
+        if(type === 'expense'){
+            newUrl = API_EXPENSE_BASE
+        }else if(type === ' income'){
+            newUrl
+        }else{
+            throw new Error('Invalid type for filtering expenses')
+        }
+        const urlFiltered = queryStringParams ? `${newUrl}/filters?${queryStringParams}` : `${newUrl}/filters`
         const response = await fetch(urlFiltered)
         if(!response.ok) throw new Error('Error filtering expenses')
         return response.json()

@@ -14,7 +14,7 @@ export function ExpensesPage() {
     const [categorySelect, setCategorySelect] = useState('')
     const [minAmount, setMinAmount] = useState('')
     const [maxAmount, setMaxAmount] = useState('')
-    const categories = ['Food', 'Transport', 'Entertainment ', 'Others']
+    const categories = ['Food', 'Transport', 'Entertainment', 'Others']
 
     const handleAddExpense = async (expense) => {
     await createExpense(expense)

@@ -61,7 +61,7 @@ export const useExpenses = () => {
     const filterExpenses = async (filters) => {
         try{
             setLoading(true)
-            const filtered = await expenseService.filterExpenses(filters)
+            const filtered = await expenseService.filterExpenses(filters,'expense')
             setFilteredExpenses(filtered)
             setIsFiltered(true)
             setError('')
