@@ -36,7 +36,7 @@ public class IncomeController {
         return incomeRepository.save(newIncome);
     }
 
-    @PutMapping("/{id")
+    @PutMapping("/{id}")
     public ResponseEntity<Income> updateIncome(@PathVariable Long id, @RequestBody IncomeDTO requestIncome){
         Optional<Income> income = incomeRepository.findById(id);
         if(income.isPresent()){
