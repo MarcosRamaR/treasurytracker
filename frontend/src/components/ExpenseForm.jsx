@@ -23,25 +23,25 @@ export function ExpenseForm({onSubmit,editExpense}) {
         }
     }, [editExpense])
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    if (!formData.description.trim() || !formData.amount || !formData.category) return
-    // Call the onSubmit prop with the form data
-    onSubmit({
-        description: formData.description,
-        amount: parseFloat(formData.amount),
-        category: formData.category,
-        date: formData.date
-    })
-    // Clear form only if not editing
-    if (!editExpense) {
-        setFormData({
-            description: '',
-            amount: '',
-            date: new Date().toISOString().split('T')[0],
-            category: 'Others'
+    const handleSubmit = (e) => {
+        e.preventDefault()
+        if (!formData.description.trim() || !formData.amount || !formData.category) return
+        // Call the onSubmit prop with the form data
+        onSubmit({
+            description: formData.description,
+            amount: parseFloat(formData.amount),
+            category: formData.category,
+            date: formData.date
         })
-    }
+        // Clear form only if not editing
+        if (!editExpense) {
+            setFormData({
+                description: '',
+                amount: '',
+                date: new Date().toISOString().split('T')[0],
+                category: 'Others'
+            })
+        }
 }
     const categories = ['Food', 'Transport', 'Entertainment ', 'Others']
 

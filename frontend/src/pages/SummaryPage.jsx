@@ -1,15 +1,18 @@
 import { ExpenseSummary } from "../components/ExpenseSummary"
+import { IncomeSummary } from "../components/IncomeSummary"
 import { useExpenses } from "../hooks/useExpenses"
+import { useIncomes } from "../hooks/useIncomes"
 
 export function SummaryPage () {
-    const {expenses, loading, error} = useExpenses()
+    const {expenses} = useExpenses()
+    const {incomes} = useIncomes()
 
-    if (loading) return <div>Loading summary...</div>
-    if (error) return <div>Error: {error}</div>
   return (
     <div>
         <h2>Expenses Summary</h2>
         <ExpenseSummary expenses={expenses}/>
+        <h2>Incomes Summary</h2>
+        <IncomeSummary incomes={incomes}/>
     </div>
   )
 }

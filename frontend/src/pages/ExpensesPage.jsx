@@ -62,7 +62,7 @@ export function ExpensesPage() {
     <>
     <h2>Expenses Page</h2>
     <ExpenseForm onSubmit={editExpense ? handleUpdateExpense : handleAddExpense} editExpense={editExpense}/>
-      <FilterSection
+    <FilterSection
         startDate={startDate}
         setStartDate={setStartDate}
         endDate={endDate}

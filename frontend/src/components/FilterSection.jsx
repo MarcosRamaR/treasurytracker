@@ -1,4 +1,3 @@
-// components/FilterSection.jsx
 import '../styles/ExpensesStyle.css';
 
 export function FilterSection({
