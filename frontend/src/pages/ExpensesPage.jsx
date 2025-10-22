@@ -1,5 +1,6 @@
 import { ExpenseForm } from "../components/ExpenseForm";
 import { ExpenseList } from "../components/ExpenseList";
+import { FilterSection } from "../components/FilterSection";
 import { useExpenses } from "../hooks/useExpenses";
 import { useState } from "react";
 import '../styles/ExpensesStyle.css';
@@ -59,71 +60,25 @@ export function ExpensesPage() {
     // after that pass it to ExpenseForm as prop (editingExpense) and handleUpdateExpense as onSubmit 
     return (
     <>
-        <h2>Expenses Page</h2>
-        <ExpenseForm onSubmit={editExpense ? handleUpdateExpense : handleAddExpense} editExpense={editExpense}/>
-        <div className="filter-section">
-            <h3>Filters</h3>
-            <div className="filter-controls">
-                <label>
-                    Start Date:
-                    <input 
-                        type="date" 
-                        value={startDate}
-                        onChange={(e) => setStartDate(e.target.value)}
-                    />
-                </label>
-                <label>
-                    End Date:
-                    <input 
-                        type="date" 
-                        value={endDate}
-                        onChange={(e) => setEndDate(e.target.value)}
-                    />
-                </label>
-                                <label>
-                    Lower Amount:
-                    <input 
-                        type="number" 
-                        value={minAmount}
-                        onChange={(e) => setMinAmount(e.target.value)}
-                    />
-                </label>
-                <label>
-                    Hight Amount:
-                    <input 
-                        type="number" 
-                        value={maxAmount}
-                        onChange={(e) => setMaxAmount(e.target.value)}
-                    />
-                </label>
-                <label>
-                    Category:
-                <select
-                    className="form-input"
-                    value={categorySelect} onChange={(e) => setCategorySelect(e.target.value)} >
-                    <option value="">Select Category</option>
-                    {categories.map(cat => (
-                        <option key={cat} value={cat}>{cat}</option>
-                    ))}
-                </select>
-                </label>
-
-                <button className="filter-button" onClick={handleFilters}>
-                    Filter
-                </button>
-                <button className="filter-button" onClick={handleClearFilters}>
-                    Reset Filters
-                </button>
-            </div>
-        </div>
-        {isFiltered && (
-            <div className="filter-info">
-                {categorySelect && `Category: ${categorySelect}`}
-                {categorySelect && (startDate || endDate) && ' | '}
-                {startDate && endDate && `Date range: ${startDate} to ${endDate}`}
-            </div>
-        )}
-        <ExpenseList expenses={expenses} onDelete={handleDeleteExpense} onEdit={handleEditExpense}/> 
+    <h2>Expenses Page</h2>
+    <ExpenseForm onSubmit={editExpense ? handleUpdateExpense : handleAddExpense} editExpense={editExpense}/>
+      <FilterSection
+        startDate={startDate}
+        setStartDate={setStartDate}
+        endDate={endDate}
+        setEndDate={setEndDate}
+        categorySelect={categorySelect}
+        setCategorySelect={setCategorySelect}
+        minAmount={minAmount}
+        setMinAmount={setMinAmount}
+        maxAmount={maxAmount}
+        setMaxAmount={setMaxAmount}
+        categories={categories}
+        onFilter={handleFilters}
+        onClearFilters={handleClearFilters}
+        isFiltered={isFiltered}
+        />
+    <ExpenseList expenses={expenses} onDelete={handleDeleteExpense} onEdit={handleEditExpense}/> 
     </>
     
   )

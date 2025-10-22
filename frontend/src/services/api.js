@@ -6,7 +6,7 @@ export const apiService = {
         let newUrl= ''
         if(type === 'expense'){
             newUrl = API_EXPENSE_BASE
-        }else if(type === ' income'){
+        }else if(type === 'income'){
             newUrl = API_INCOMES_BASE
         }else{
             throw new Error('Invalid type for getting all')
@@ -40,7 +40,7 @@ export const apiService = {
         let newUrl= ''
         if(type === 'expense'){
             newUrl = API_EXPENSE_BASE
-        }else if(type === ' income'){
+        }else if(type === 'income'){
             newUrl = API_INCOMES_BASE
         }else{
             throw new Error('Invalid type for getting all')
@@ -59,7 +59,7 @@ export const apiService = {
         let newUrl= ''
         if(type === 'expense'){
             newUrl = API_EXPENSE_BASE
-        }else if(type === ' income'){
+        }else if(type === 'income'){
             newUrl = API_INCOMES_BASE
         }else{
             throw new Error('Invalid type for getting all')
@@ -78,7 +78,7 @@ export const apiService = {
         let newUrl= ''
         if(type === 'expense'){
             newUrl = API_EXPENSE_BASE
-        }else if(type === ' income'){
+        }else if(type === 'income'){
             newUrl = API_INCOMES_BASE
         }else{
             throw new Error('Invalid type for getting all')
@@ -104,7 +104,7 @@ export const apiService = {
         let newUrl = ''
         if(type === 'expense'){
             newUrl = API_EXPENSE_BASE
-        }else if(type === ' income'){
+        }else if(type === 'income'){
             newUrl = API_INCOMES_BASE
         }else{
             throw new Error('Invalid type for filtering expenses')

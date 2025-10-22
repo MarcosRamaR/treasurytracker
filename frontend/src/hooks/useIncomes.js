@@ -8,7 +8,7 @@ export const useIncomes = () => {
     const [loading, setLoading] = useState([])
     const [error, setError] = useState([])
     const [filteredIncomes, setFilteredIncomes] = useState([])
-    const [isfiltered, setIsFiltered] = useState([])
+    const [isfiltered, setIsFiltered] = useState(false)
 
     useEffect(() =>{
         loadIncomes()
