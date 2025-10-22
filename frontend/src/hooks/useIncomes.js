@@ -8,7 +8,7 @@ export const useIncomes = () => {
     const [loading, setLoading] = useState([])
     const [error, setError] = useState([])
     const [filteredIncomes, setFilteredIncomes] = useState([])
-    const [isfiltered, setisFiltered] = useState([])
+    const [isfiltered, setIsFiltered] = useState([])
 
     useEffect(() =>{
         loadIncomes()
@@ -49,7 +49,7 @@ export const useIncomes = () => {
 
     const deleteIncome = async (id) => {
         try{
-            await apiService.delete(id)
+            await apiService.delete(id,type)
             setincomes(incomes.filter(item => item.id !== id))
             setError('')
         }catch(err){
@@ -57,14 +57,36 @@ export const useIncomes = () => {
         }
     }
 
+    const filterIncomes = async (filters) => {
+        try{
+            setLoading(true)
+            const filtered = await apiService.filterExpenses(filters,type)
+            setFilteredIncomes(filtered)
+            setIsFiltered(true)
+            setError('')
+        }catch(err){
+            setError('Error filtering incomes: ' + err.message)
+            throw err
+        }finally{
+            setLoading(false)
+        }
+    }
+    const clearFilters = () => {
+        setIsFiltered(false)
+        setFilteredIncomes([])
+        setError('')
+    }
+
 
   return {
-    incomes,
+    incomes: isfiltered ? filteredIncomes : incomes,
     loading,
     error,
     isfiltered,
     createIncome,
     updateIncome,
-    deleteIncome
+    deleteIncome,
+    filterIncomes,
+    clearFilters
   }
 }
