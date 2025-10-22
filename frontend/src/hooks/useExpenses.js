@@ -1,10 +1,10 @@
 //Hook for expenses logic
 
 import { useEffect, useState } from "react"
-import { expenseService } from "../services/api.js"
+import { apiService } from "../services/api.js"
 
 export const useExpenses = () => {
-
+    const type = 'expense'
     const [expenses, setExpenses] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState('')
@@ -18,7 +18,7 @@ export const useExpenses = () => {
     const loadExpenses = async () => {
         try{
             setLoading(true)
-            const data = await expenseService.getAll()
+            const data = await apiService.getAll(type)
             setExpenses(data)
             setError('')
         }catch(err){
@@ -30,7 +30,7 @@ export const useExpenses = () => {
 
     const createExpense = async (expense) => {
         try{
-            const  newExpense = await expenseService.create(expense)
+            const  newExpense = await apiService.create(expense,type)
             setExpenses([...expenses, newExpense])
             setError('')
         }catch(err){
@@ -40,7 +40,7 @@ export const useExpenses = () => {
 
     const updateExpense = async (id, expense) => {
         try{
-            const updatedExpense = await expenseService.update(id, expense)
+            const updatedExpense = await apiService.update(id, expense)
             setExpenses(expenses.map(exp => exp.id === id ? updatedExpense : exp))
             setError('')
         }catch(err){
@@ -50,7 +50,7 @@ export const useExpenses = () => {
 
     const deleteExpense = async (id) => {
         try{
-            await expenseService.delete(id)
+            await apiService.delete(id)
             setExpenses(expenses.filter(item => item.id !== id))
             setError('')
         }catch(err){
@@ -61,7 +61,7 @@ export const useExpenses = () => {
     const filterExpenses = async (filters) => {
         try{
             setLoading(true)
-            const filtered = await expenseService.filterExpenses(filters,'expense')
+            const filtered = await apiService.filterExpenses(filters,type)
             setFilteredExpenses(filtered)
             setIsFiltered(true)
             setError('')

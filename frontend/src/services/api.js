@@ -1,9 +1,17 @@
 const API_EXPENSE_BASE = '/api/expenses'
 const API_INCOMES_BASE = '/api/incomes'
 
-export const expenseService = {
-    getAll: async () => {
-        const response = await fetch(API_EXPENSE_BASE)
+export const apiService = {
+    getAll: async (type) => {
+        let newUrl= ''
+        if(type === 'expense'){
+            newUrl = API_EXPENSE_BASE
+        }else if(type === ' income'){
+            newUrl = API_INCOMES_BASE
+        }else{
+            throw new Error('Invalid type for getting all')
+        }
+        const response = await fetch(newUrl)
         if(!response.ok) throw new Error('Error fetching expenses')
         return response.json()
     },
@@ -27,13 +35,22 @@ export const expenseService = {
         if(!response.ok) throw new Error('Error fetching total expenses by date range')
         return response.json()
     },
-    create: async (expense) => {
-        const response = await fetch(API_EXPENSE_BASE, {
+    create: async (data,type) => {
+
+        let newUrl= ''
+        if(type === 'expense'){
+            newUrl = API_EXPENSE_BASE
+        }else if(type === ' income'){
+            newUrl = API_INCOMES_BASE
+        }else{
+            throw new Error('Invalid type for getting all')
+        }
+        const response = await fetch(newUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(expense),
+            body: JSON.stringify(data),
             })
         if(!response.ok) throw new Error('Error posting expense')
         return response.json()
@@ -72,7 +89,7 @@ export const expenseService = {
         if(type === 'expense'){
             newUrl = API_EXPENSE_BASE
         }else if(type === ' income'){
-            newUrl
+            newUrl = API_INCOMES_BASE
         }else{
             throw new Error('Invalid type for filtering expenses')
         }
