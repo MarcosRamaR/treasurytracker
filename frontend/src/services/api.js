@@ -56,7 +56,7 @@ export const apiService = {
         return response.json()
     },
     update: async (id, expense,type) => {
-                let newUrl= ''
+        let newUrl= ''
         if(type === 'expense'){
             newUrl = API_EXPENSE_BASE
         }else if(type === ' income'){
@@ -74,8 +74,16 @@ export const apiService = {
         if(!response.ok) throw new Error('Error updating expense')
         return response.json()
     },
-    delete: async (id) => {
-        const response = await fetch(`${API_EXPENSE_BASE}/${id}`, {
+    delete: async (id,type) => {
+        let newUrl= ''
+        if(type === 'expense'){
+            newUrl = API_EXPENSE_BASE
+        }else if(type === ' income'){
+            newUrl = API_INCOMES_BASE
+        }else{
+            throw new Error('Invalid type for getting all')
+        }
+        const response = await fetch(`${newUrl}/${id}`, {
             method: 'DELETE',
     })
         if(!response.ok) throw new Error('Error deleting expense')

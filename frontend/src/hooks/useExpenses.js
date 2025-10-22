@@ -50,7 +50,7 @@ export const useExpenses = () => {
 
     const deleteExpense = async (id) => {
         try{
-            await apiService.delete(id)
+            await apiService.delete(id,type)
             setExpenses(expenses.filter(item => item.id !== id))
             setError('')
         }catch(err){

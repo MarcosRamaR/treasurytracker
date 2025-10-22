@@ -47,6 +47,16 @@ export const useIncomes = () => {
         }
     }
 
+    const deleteIncome = async (id) => {
+        try{
+            await apiService.delete(id)
+            setincomes(incomes.filter(item => item.id !== id))
+            setError('')
+        }catch(err){
+            setError('Error deleting income: ' + err.message)
+        }
+    }
+
 
   return {
     incomes,
@@ -54,6 +64,7 @@ export const useIncomes = () => {
     error,
     isfiltered,
     createIncome,
-    updateIncome
+    updateIncome,
+    deleteIncome
   }
 }
