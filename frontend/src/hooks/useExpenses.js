@@ -40,7 +40,7 @@ export const useExpenses = () => {
 
     const updateExpense = async (id, expense) => {
         try{
-            const updatedExpense = await apiService.update(id, expense)
+            const updatedExpense = await apiService.update(id, expense,type)
             setExpenses(expenses.map(exp => exp.id === id ? updatedExpense : exp))
             setError('')
         }catch(err){

@@ -55,8 +55,16 @@ export const apiService = {
         if(!response.ok) throw new Error('Error posting expense')
         return response.json()
     },
-    update: async (id, expense) => {
-        const response = await fetch(`${API_EXPENSE_BASE}/${id}`, {
+    update: async (id, expense,type) => {
+                let newUrl= ''
+        if(type === 'expense'){
+            newUrl = API_EXPENSE_BASE
+        }else if(type === ' income'){
+            newUrl = API_INCOMES_BASE
+        }else{
+            throw new Error('Invalid type for getting all')
+        }
+        const response = await fetch(`${newUrl}/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'

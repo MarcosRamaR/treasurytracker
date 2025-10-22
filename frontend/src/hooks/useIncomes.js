@@ -29,7 +29,7 @@ export const useIncomes = () => {
 
     const createIncome = async (income) => {
         try{
-            const  newIncome = await apiService.create(income)
+            const  newIncome = await apiService.create(income,type)
             setincomes([...incomes, newIncome])
             setError('')
         }catch(err){
@@ -37,11 +37,23 @@ export const useIncomes = () => {
         }
     }
 
+    const updateIncome = async (id, income) => {
+        try{
+            const updatedIncome = await apiService.update(id, income,type)
+            setincomes(incomes.map(inc => inc.id === id ? updatedIncome : inc))
+            setError('')
+        }catch(err){
+            setError('Error updating income: ' + err.message)
+        }
+    }
+
+
   return {
     incomes,
     loading,
     error,
     isfiltered,
-    createIncome
+    createIncome,
+    updateIncome
   }
 }
