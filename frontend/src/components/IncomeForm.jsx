@@ -41,7 +41,7 @@ export function IncomeForm({onSubmit,editIncome}) {
 }
     const categories = ['Salary', 'Investiments', 'Others']
 
-  return (
+    return (
     <div>
         <h3 className="expense-title">{editIncome ? 'Edit Income' : 'Add Income'}</h3>
         <form onSubmit={handleSubmit} className="filter-controls">

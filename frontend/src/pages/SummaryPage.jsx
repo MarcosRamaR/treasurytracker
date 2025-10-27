@@ -11,7 +11,7 @@ export function SummaryPage () {
   return (
     <div>
         <h2>Monthly Graph</h2>
-        <MonthlyChart expenses={expenses} incomes={incomes} />
+        <MonthlyChart expenses={expenses} incomes={incomes} size="large" />
         <h2>Expenses Summary</h2>
         <ExpenseSummary expenses={expenses}/>
         <h2>Incomes Summary</h2>
