@@ -18,9 +18,9 @@ A web application for personal finance management and cash flow tracking. Develo
 - `Expenses Categorization`: Organize expenses into categories (Food, Transport, Entertainment, Others)
 - `Advanced Filtering`: Multi-criteria filtering (Dates, Category and imports)
 - `Real-time Summary`: View total and average expenses in the summary section
+- `Advanced Analytics`: Charts and graphs for financial insights
 
 ### Planned Features
-- `Advanced Analytics`: Interactive charts and graphs for financial insights
 - `Future Projections`: Forecast upcoming expenses and income
 
 
