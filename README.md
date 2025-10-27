@@ -36,6 +36,9 @@ A web application for personal finance management and cash flow tracking. Develo
   * Vite</br>
   * HTML</br>
   * CSS</br>
+  * Postman</br>
+  * DBeaver</br>
+  * Docker Desktop</br>
 
 ## React and Vite
 This application uses **React** together with **Vite** for bundling and Hot Module Replacement (HMR).
