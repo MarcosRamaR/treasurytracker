@@ -1,9 +1,10 @@
 import {Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend} from 'chart.js';
 import { Bar } from 'react-chartjs-2';
+import '../styles/GraphsStyle.css'
 
 ChartJS.register( CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-export function MonthlyExpenses({ expenses,size = 'small'  }) {
+export function MonthlyExpenses({ expenses }) {
     const getCurrentMonthData = () => {
         const currentDate = new Date();
         const currentMonth = currentDate.getMonth();
@@ -53,7 +54,7 @@ export function MonthlyExpenses({ expenses,size = 'small'  }) {
         data: sortedAmounts,
         backgroundColor: backgroundColors,
         borderColor: borderColors,
-        borderWidth: size === 'small' ? 1 : 2,
+        borderWidth:  1 ,
         borderRadius: 4,
         hoverBackgroundColor: 'rgba(229, 115, 115, 0.9)',
         },
@@ -63,25 +64,9 @@ export function MonthlyExpenses({ expenses,size = 'small'  }) {
     const options = {
     responsive: true,
     maintainAspectRatio: false,
-    layout:{
-        padding: {
-            top: 10,    
-            bottom: 15,  
-            left: 10,
-            right: 10
-        }
-    },
     plugins: {
         legend: {
         display: false, 
-        },
-        title: {
-        display: size !== 'small',
-        text: `Expenses actual month - Total: €${monthData.totalAmount.toFixed(2)}`,
-        color: 'white',
-        font: {
-            size: size === 'small' ? 12 : 14,
-        }
         },
         tooltip: {
         callbacks: {
@@ -92,9 +77,6 @@ export function MonthlyExpenses({ expenses,size = 'small'  }) {
             return `€${value.toFixed(2)} (${percentage}% of total)`;
             }
         },
-        bodyFont: {
-            size: size === 'small' ? 11 : 12,
-        },
         },
     },
     scales: {
@@ -103,30 +85,29 @@ export function MonthlyExpenses({ expenses,size = 'small'  }) {
         ticks: {
             color: '#e0e0e0',
             font: {
-            size: size === 'small' ? 10 : 12,
+            size:11 ,
             },
             callback: function(value) {
             return '€' + value;
             }
         },
         title: {
-            display: size !== 'small',
             text: 'Amount (€)',
             color: 'white',
         },
         grid: {
-            color: size === 'small' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.2)',
+            color: 'rgba(255,255,255,0.1)' ,
         }
         },
         x: {
         ticks: {
             color: '#e0e0e0',
             font: {
-            size: size === 'small' ? 10 : 12,
+            size: 12 ,
             },
         },
         title: {
-            display: size !== 'small',
+
             text: 'Categorías',
             color: 'white',
         },
@@ -136,17 +117,8 @@ export function MonthlyExpenses({ expenses,size = 'small'  }) {
         }
     },
     animation: {
-        duration: size === 'small' ? 500 : 1000,
+        duration:  500 ,
     }
-    };
-
-    const containerStyle = {
-    margin: size === 'small' ? '10px 0' : '20px 0',
-    padding: size === 'small' ? '12px' : '20px',
-    backgroundColor: '#16213e',
-    borderRadius: '8px',
-    height: size === 'small' ? '250px' : '400px',
-    minHeight: size === 'small' ? '250px' : '400px',
     };
 
     const currentDate = new Date();
@@ -156,38 +128,23 @@ export function MonthlyExpenses({ expenses,size = 'small'  }) {
     const currentYear = currentDate.getFullYear();
 
     return (
-    <div style={containerStyle}>
-        <h4 style={{ 
-        color: 'white', 
-        textAlign: 'center', 
-        margin: '0 0 15px 0', 
-        fontSize: size === 'small' ? '0.9rem' : '1.1rem' 
-        }}>
+    <div className="chart-card bar-chart-container">
+        <h4 className="chart-title">
         Expenses for {currentMonthName} {currentYear}
-        {size === 'small' && (
-            <div style={{ fontSize: '0.8rem', opacity: 0.8, marginTop: '5px' }}>
+            <div className='chart-subtitle'>
             Total: €{monthData.totalAmount.toFixed(2)}
             </div>
-        )}
         </h4>
-
-        {categories.length > 0 ? (
-        <Bar data={chartData} options={options} />
-        ) : (
-        <div style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center', 
-            height: '100%',
-            color: 'white',
-            textAlign: 'center'
-        }}>
-            <div>
-            <p>No expenese to show</p>
-            <p style={{ fontSize: '0.8rem', opacity: 0.7 }}>to {currentMonthName} {currentYear}</p>
-            </div>
+        <div className='chart-content'>
+            {categories.length > 0 ? (
+            <Bar data={chartData} options={options} />
+            ) : (
+                <div className='chart-no-data'>
+                <p>No expenese to show</p>
+                <p >to {currentMonthName} {currentYear}</p>
+                </div>
+            )}
         </div>
-        )}
     </div>
     );
 

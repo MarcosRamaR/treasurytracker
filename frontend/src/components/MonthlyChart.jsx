@@ -4,7 +4,7 @@ import { Bar } from 'react-chartjs-2';
 
 ChartJS.register( CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-export function MonthlyChart({ expenses, incomes,size = 'small'  }) {
+export function MonthlyChart({ expenses, incomes}) {
 
     const getMonthlyData = () => {
     const monthlyData = {};
@@ -12,9 +12,7 @@ export function MonthlyChart({ expenses, incomes,size = 'small'  }) {
     expenses.forEach(expense => {
         const date = new Date(expense.date);
         const monthYear = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
-        const monthName = size === 'small' 
-            ? date.toLocaleString('default', { month: 'short', year: 'numeric' })
-            : date.toLocaleString('default', { month: 'long', year: 'numeric' }); //LocaleString for month name
+        const monthName = date.toLocaleString('default', { month: 'short', year: 'numeric' }); //LocaleString for month name
 
         if (!monthlyData[monthYear]) {
         monthlyData[monthYear] = {
@@ -30,9 +28,7 @@ export function MonthlyChart({ expenses, incomes,size = 'small'  }) {
     incomes.forEach(income => {
         const date = new Date(income.date);
         const monthYear = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
-        const monthName = size === 'small' 
-            ? date.toLocaleString('default', { month: 'short', year: 'numeric' }) 
-            : date.toLocaleString('default', { month: 'long', year: 'numeric' });
+        const monthName = date.toLocaleString('default', { month: 'short', year: 'numeric' });
 
         if (!monthlyData[monthYear]) {
         monthlyData[monthYear] = {
@@ -61,7 +57,7 @@ export function MonthlyChart({ expenses, incomes,size = 'small'  }) {
         data: monthlyData.map(data => data.expenses), //Expenses data each month in order
         backgroundColor: 'rgba(229, 115, 115, 0.8)',
         borderColor: 'rgba(229, 115, 115, 1)',
-        borderWidth: size === 'small' ? 1 : 2,
+        borderWidth: 1 ,
         borderRadius: 4,
         hoverBackgroundColor: 'rgba(229, 115, 115, 1)',
         },
@@ -70,7 +66,7 @@ export function MonthlyChart({ expenses, incomes,size = 'small'  }) {
         data: monthlyData.map(data => data.incomes),
         backgroundColor: 'rgba(129, 199, 132, 0.8)',
         borderColor: 'rgba(129, 199, 132, 1)',
-        borderWidth: size === 'small' ? 1 : 2,
+        borderWidth:  1 ,
         borderRadius: 4,
         hoverBackgroundColor: 'rgba(129, 199, 132, 1)',
         },
@@ -82,21 +78,21 @@ export function MonthlyChart({ expenses, incomes,size = 'small'  }) {
     maintainAspectRatio: false, //Allow CSS to control
     plugins: {
         legend: {
-        position: size === 'small' ? 'bottom' : 'top',
+        position: 'bottom' ,
         labels: {
             color: 'white',
             font: {
-            size: size === 'small' ? 12 : 14,
+            size: 13,
             },
-            boxWidth: size === 'small' ? 12 : 15,
+            boxWidth: 20,
         }
         },
         tooltip: {
             bodyFont: {
-            size: size === 'small' ? 11 : 12,
+            size:  12,
             },
             titleFont: {
-            size: size === 'small' ? 12 : 13,
+            size:  13,
             }
         }
     },
@@ -106,55 +102,44 @@ export function MonthlyChart({ expenses, incomes,size = 'small'  }) {
         ticks: {
             color: '#e0e0e0',
             font: {
-            size: size === 'small' ? 10 : 12,
+            size: 11,
             },
-            maxTicksLimit: size === 'small' ? 5 : 8,
+            maxTicksLimit: 5,
         },
         title: {
-            display: size !== 'small',
             text: 'Amount (€)',
             color: 'white',
         },
         grid: {
-            color: size === 'small' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.2)',
+            color: 'rgba(255,255,255,0.1)' ,
         }
         },
         x: {
         ticks: {
             color: '#e0e0e0',
             font: {
-            size: size === 'small' ? 10 : 12,
+            size:  11,
             },
-            maxRotation: size === 'small' ? 45 : 0,
+            maxRotation: 45 ,
         },
         title: {
-            display: size !== 'small',
             text: 'Months',
-            color: 'white',
-        },
-        grid: {
-            display: size !== 'small',
+            color: 'hite',
         }
         }
     }
     };
-    const containerStyle = {
-    margin: size === 'small' ? '10px 0' : '20px 0',
-    padding: size === 'small' ? '12px' : '20px',
-    backgroundColor: '#16213e', 
-    borderRadius: '8px',
-    height: size === 'small' ? '250px' : 'auto',
-    width: size === 'small' ? '500px' : '100%',
-    minHeight: size === 'small' ? '250px' : '400px',
-    };
 
     return (
-    <div style={containerStyle}>
-        {monthlyData.length > 0 ? (
-        <Bar data={chartData} options={options} />
-        ) : (
-        <p>No data to show</p>
-        )}
+    <div className="chart-card bar-chart-container">
+        <h4 className="chart-title"> Total Expenses </h4>
+        <div className="chart-content">
+            {monthlyData.length > 0 ? (
+            <Bar data={chartData} options={options} />
+            ) : (
+            <p className='chart-no-data'>No data to show</p>
+            )}
+        </div>
     </div>
     );
 }

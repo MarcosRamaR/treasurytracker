@@ -3,9 +3,10 @@ import { Pie } from 'react-chartjs-2';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-export function ExpenseCategoryChart({ expenses, size = 'large' }) {
+export function ExpenseCategoryChart({ expenses}) {
     const getCategoryData = () => {
     const categoryData = {};
+    let totalAmount = 0;
     
     expenses.forEach(expense => {
         const category = expense.category || 'Others';
@@ -13,14 +14,15 @@ export function ExpenseCategoryChart({ expenses, size = 'large' }) {
         categoryData[category] = 0;
         }
         categoryData[category] += expense.amount;
+        totalAmount += expense.amount;
     });
     
-    return categoryData;
+    return { categoryData: categoryData, totalAmount: totalAmount};
     };
 
     const categoryData = getCategoryData();
-    const categories = Object.keys(categoryData);
-    const amounts = Object.values(categoryData);
+    const categories = Object.keys(categoryData.categoryData);
+    const amounts = Object.values(categoryData.categoryData);
 
 
     const backgroundColors = [
@@ -43,7 +45,7 @@ export function ExpenseCategoryChart({ expenses, size = 'large' }) {
         data: amounts, //Import the amounts calculated for category
         backgroundColor: backgroundColors.slice(0, categories.length), //So many colors as categories
         borderColor: borderColors.slice(0, categories.length),
-        borderWidth: size === 'small' ? 1 : 2,
+        borderWidth:  1 ,
         hoverOffset: 15, 
         },
     ],
@@ -52,16 +54,24 @@ export function ExpenseCategoryChart({ expenses, size = 'large' }) {
     const options = {
     responsive: true,
     maintainAspectRatio: false,
+    layout:{
+        padding: {
+            top: 10,    
+            bottom: 15,  
+            left: 10,
+            right: 10
+        }
+    },
     plugins: {
         legend: {
-        position: size === 'small' ? 'bottom' : 'right',
+        position:  'bottom' ,
         labels: {
             color: 'white',
             font: {
-            size: size === 'small' ? 10 : 12,
+            size: 12,
             },
-            boxWidth: size === 'small' ? 12 : 15,
-            padding: size === 'small' ? 10 : 15,
+            boxWidth: 12 ,
+            padding: 10 ,
         },
         },
         tooltip: {
@@ -74,34 +84,26 @@ export function ExpenseCategoryChart({ expenses, size = 'large' }) {
             return `${label}: €${value.toFixed(2)} (${percentage}%)`;
             }
         },
-        bodyFont: {
-            size: size === 'small' ? 11 : 12,
-        },
         },
     },
     };
-
-    const containerStyle = {
-    margin: size === 'small' ? '10px 0' : '20px 0',
-    padding: size === 'small' ? '12px' : '20px',
-    backgroundColor: '#16213e',
-    borderRadius: '8px',
-    height: size === 'small' ? '250px' : '400px',
-    minHeight: size === 'small' ? '250px' : '400px',
-    };
-
     return (
-    <div style={containerStyle}>
-        <h4 style={{ color: 'white', textAlign: 'center', margin: '0 0 15px 0', fontSize: size === 'small' ? '0.9rem' : '1.1rem' }}>
+    <div className="chart-card pie-chart-container">
+        <h4 className="chart-title">
         Expenses by Category
+            <div className="chart-subtitle">
+                Total: €{categoryData.totalAmount.toFixed(2)}
+            </div>
         </h4>
-        {categories.length > 0 ? (
-        <Pie data={chartData} options={options} />
-        ) : (
-        <p style={{ color: 'white', textAlign: 'center', margin: '20px 0' }}>
-            No expenses to show
-        </p>
-        )}
+        <div className="chart-content">
+            {categories.length > 0 ? (
+            <Pie data={chartData} options={options} />
+            ) : (
+            <p className='chart-no-data'>
+                No expenses to show
+            </p>
+            )}
+        </div>
     </div>
     );
 }

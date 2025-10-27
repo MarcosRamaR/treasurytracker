@@ -8,19 +8,19 @@ export function DashboardCharts({ expenses, incomes }) {
     return (
     <div className="dashboard-grid">  
         <div className="chart-card">
-            <MonthlyChart expenses={expenses} incomes={incomes} size="small" />
+            <MonthlyChart expenses={expenses} incomes={incomes}/>
         </div>
 
         <div className="chart-card">
-            <MonthlyExpenses expenses={expenses} size="small" />
+            <MonthlyExpenses expenses={expenses}/>
         </div>
 
         <div className="chart-card">
-            <ExpenseCategoryChart expenses={expenses} size="small" />
+            <ExpenseCategoryChart expenses={expenses} />
         </div>
 
         <div className="chart-card">
-            <IncomeCategoryChart incomes={incomes} size="small" />
+            <IncomeCategoryChart incomes={incomes}/>
         </div>
 
     </div>

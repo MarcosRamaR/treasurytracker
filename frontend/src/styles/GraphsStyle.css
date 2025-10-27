@@ -17,10 +17,54 @@
     min-height: 300px; 
 }
 
-.chart-card h4 {
+.bar-chart-container .chart-title {
     color: white;
-    margin: 0 0 15px 0;
-    font-size: 1rem;
     text-align: center;
+    margin: 0 0 10px 0;
+    font-size: 1rem; 
     font-weight: 600;
+}
+
+.bar-chart-container .chart-subtitle {
+    font-size: 0.9rem; 
+    opacity: 0.8;
+    margin-top: 5px;
+}
+
+.bar-chart-container .chart-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.pie-chart-container .chart-title {
+    color: white;
+    text-align: center;
+    margin: 0 0 15px 0;
+    font-size: 0.9rem; 
+    font-weight: 600;
+}
+
+.pie-chart-container .chart-subtitle {
+    font-size: 0.8rem; 
+    opacity: 0.8;
+    margin-top: 5px;
+}
+
+.pie-chart-container .chart-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chart-no-data {
+    color: white;
+    text-align: center;
+    font-size: 0.9rem;
+    opacity: 0.7;
+}
+
+.chart-no-data small {
+    font-size: 0.8rem;
 }
