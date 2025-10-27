@@ -39,7 +39,7 @@ export function IncomeForm({onSubmit,editIncome}) {
         })
     }
 }
-    const categories = ['Food', 'Transport', 'Entertainment ', 'Others']
+    const categories = ['Salary', 'Investiments', 'Others']
 
   return (
     <div>

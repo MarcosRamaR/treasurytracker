@@ -15,7 +15,7 @@ export function IncomesPage() {
     const [categorySelect, setCategorySelect] = useState('')
     const [minAmount, setMinAmount] = useState('')
     const [maxAmount, setMaxAmount] = useState('')
-    const categories = ['Food', 'Transport', 'Entertainment', 'Others']
+    const categories = ['Salary', 'Investiments', 'Others']
 
     const handleAddIncome = async (income) => {
     await createIncome(income)
