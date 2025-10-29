@@ -10,10 +10,13 @@ import org.springframework.stereotype.Repository;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface IncomeRepository extends JpaRepository<Income,Long> {
-    @Query(value = "SELECT * FROM incomes e WHERE " +
+    List<Income> findByUserIdOrderByDateDesc(Long userId);
+
+    @Query(value = "SELECT * FROM incomes e WHERE e.user_id = :userId AND " +
             "(CAST(:category AS TEXT) IS NULL OR e.category = :category) AND " +
             "(CAST(:startDate AS DATE) IS NULL OR e.date >= :startDate) AND " +
             "(CAST(:endDate AS DATE) IS NULL OR e.date <= :endDate) AND " +
@@ -22,10 +25,14 @@ public interface IncomeRepository extends JpaRepository<Income,Long> {
             "ORDER BY e.date DESC",
             nativeQuery = true)
     List<Income> findByFilters(
+            @Param("userId") Long userId,
             @Param("category") String category,
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate,
             @Param("minAmount") BigDecimal minAmount,
             @Param("maxAmount") BigDecimal maxAmount);
+
+    @Query("SELECT SUM(i.amount) FROM Income i WHERE i.user.id = :userId")
+    Optional<BigDecimal> getTotalByUser(@Param("userId") Long userId);
 
 }
