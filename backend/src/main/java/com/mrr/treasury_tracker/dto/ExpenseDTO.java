@@ -1,11 +1,9 @@
 package com.mrr.treasury_tracker.dto;
 
-import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-@Data
 public class ExpenseDTO {
     private String description;
     private BigDecimal amount;

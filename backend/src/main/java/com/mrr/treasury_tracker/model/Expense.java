@@ -34,12 +34,16 @@ public class Expense {
     @Column(name="updated_at")
     private LocalDateTime updatedAt;
 
+    @ManyToOne
+    @JoinColumn(name="user_id", nullable = false)
+    private User user;
+
 
     public Expense(){
         //Void constructor needed by JPA
     }
     public Expense(Long id, String description, BigDecimal amount, String category, LocalDate date,
-                   LocalDateTime createdAt, LocalDateTime updatedAt){
+                   LocalDateTime createdAt, LocalDateTime updatedAt, User user){
         this.id=id;
         this.description = description;
         this.amount = amount;
@@ -47,6 +51,7 @@ public class Expense {
         this.date = date;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.user=user;
     }
 
     public Long getId() {
@@ -117,10 +122,11 @@ public class Expense {
     }
 
     //without id and dates that sets automatically
-    public Expense(String description, BigDecimal amount, String category, LocalDate date){
+    public Expense(String description, BigDecimal amount, String category, LocalDate date, User user){
         this.description = description;
         this.amount = amount;
         this.category = category;
         this.date = date;
+        this.user = user;
     }
 }
