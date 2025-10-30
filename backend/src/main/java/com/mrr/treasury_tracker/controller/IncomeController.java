@@ -1,6 +1,7 @@
 package com.mrr.treasury_tracker.controller;
 
 
+
 import com.mrr.treasury_tracker.dto.IncomeDTO;
 import com.mrr.treasury_tracker.dto.IncomeResponseDTO;
 import com.mrr.treasury_tracker.model.Income;
@@ -57,6 +58,28 @@ public class IncomeController {
         }
         return response;
     }
+    @GetMapping("/{id}")
+    public ResponseEntity<IncomeResponseDTO> getIncomeById(@PathVariable Long id, Authentication authentication){
+        User user = getCurrentUser(authentication);
+        //Search on DB all incomes for user
+        Optional<Income> income = incomeRepository.findById(id);
+
+        if (income.isPresent() && income.get().getUser().getId().equals(user.getId())) {
+            Income incomeData = income.get();
+            IncomeResponseDTO response = new IncomeResponseDTO();
+            response.setId(incomeData.getId());
+            response.setDescription(incomeData.getDescription());
+            response.setAmount(incomeData.getAmount());
+            response.setCategory(incomeData.getCategory());
+            response.setDate(incomeData.getDate());
+            response.setCreatedAt(incomeData.getCreatedAt());
+            response.setUserEmail(incomeData.getUser().getEmail());
+
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
     @PostMapping
     public ResponseEntity<?> createIncome(@RequestBody IncomeDTO requestIncome, Authentication authentication){
@@ -74,6 +97,7 @@ public class IncomeController {
                 user);
         Income savedIncome =  incomeRepository.save(newIncome);
 
+        //Create DTO to response
         IncomeResponseDTO response = new IncomeResponseDTO();
         response.setId(savedIncome.getId());
         response.setDescription(savedIncome.getDescription());
@@ -164,5 +188,10 @@ public class IncomeController {
         BigDecimal total = incomeRepository.getTotalByUser(user.getId()).orElse(BigDecimal.ZERO);
         return ResponseEntity.ok(Map.of("total", total));
     }
-
+    @GetMapping("/category-totals")
+    public ResponseEntity<List<Object[]>> getCategoryTotals(Authentication authentication) {
+        User user = getCurrentUser(authentication);
+        List<Object[]> categoryTotals = incomeRepository.getCategoryTotalsByUser(user.getId());
+        return ResponseEntity.ok(categoryTotals);
+    }
 }

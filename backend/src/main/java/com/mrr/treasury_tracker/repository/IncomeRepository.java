@@ -35,4 +35,7 @@ public interface IncomeRepository extends JpaRepository<Income,Long> {
     @Query("SELECT SUM(i.amount) FROM Income i WHERE i.user.id = :userId")
     Optional<BigDecimal> getTotalByUser(@Param("userId") Long userId);
 
+    @Query("SELECT e.category, SUM(e.amount) FROM Income e WHERE e.user.id = :userId GROUP BY e.category ORDER BY SUM(e.amount) DESC")
+    List<Object[]> getCategoryTotalsByUser(@Param("userId") Long userId);
+
 }
