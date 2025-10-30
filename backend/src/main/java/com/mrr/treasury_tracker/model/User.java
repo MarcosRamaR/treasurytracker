@@ -1,6 +1,7 @@
 package com.mrr.treasury_tracker.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.List;
 
@@ -16,6 +17,7 @@ public class User {
     private String email;
 
     @Column(nullable = false)
+    @JsonIgnore
     private String password;
 
     @Column(unique = true,nullable = false)
@@ -24,9 +26,11 @@ public class User {
     //mappedBy  indicates that Expense entity must have a filed user @ManyToOne
     //cascade propagates user operations to the expenses, all is for all operations(save, delete, update)
     @OneToMany(mappedBy = "user", cascade=CascadeType.ALL)
+    @JsonIgnore
     private List<Expense> expenses;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Income> incomes;
 
     public User(){

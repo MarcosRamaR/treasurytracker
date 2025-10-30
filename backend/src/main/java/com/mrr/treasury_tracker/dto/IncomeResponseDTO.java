@@ -1,44 +1,22 @@
-package com.mrr.treasury_tracker.model;
-
-import jakarta.persistence.*;
+package com.mrr.treasury_tracker.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name="incomes")
-public class Income {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class IncomeResponseDTO {
     private Long id;
-
-    @Column(nullable = false)
     private String description;
-
-    @Column(nullable = false)
     private BigDecimal amount;
-
-    @Column(nullable = false)
     private String category;
-
-    @Column(nullable = false)
     private LocalDate date;
-
-    @Column(name="created_at", updatable = false)
     private LocalDateTime createdAt;
-
-    @Column(name="updated_at")
     private LocalDateTime updatedAt;
+    private String userEmail;
 
-    @ManyToOne
-    @JoinColumn(name="user_id", nullable = false)
-    private User user;
+    public IncomeResponseDTO(){}
 
-    public Income(){
-
-    }
-    public Income(Long id, String description, BigDecimal amount, String category, LocalDate date, LocalDateTime createdAt, LocalDateTime updatedAt, User user) {
+    public IncomeResponseDTO(Long id, String description, BigDecimal amount, String category, LocalDate date, LocalDateTime createdAt, LocalDateTime updatedAt, String userEmail) {
         this.id = id;
         this.description = description;
         this.amount = amount;
@@ -46,15 +24,7 @@ public class Income {
         this.date = date;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-        this.user = user;
-    }
-
-    public Income(String description, BigDecimal amount, String category, LocalDate date, User user) {
-        this.description = description;
-        this.amount = amount;
-        this.category = category;
-        this.date = date;
-        this.user = user;
+        this.userEmail = userEmail;
     }
 
     public Long getId() {
@@ -113,22 +83,11 @@ public class Income {
         this.updatedAt = updatedAt;
     }
 
-    public User getUser() {
-        return user;
+    public String getUserEmail() {
+        return userEmail;
     }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    @PrePersist
-    protected void onCreate(){
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate(){
-        updatedAt = LocalDateTime.now();
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
     }
 }
