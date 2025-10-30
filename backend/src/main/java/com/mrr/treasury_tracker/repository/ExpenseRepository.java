@@ -16,15 +16,9 @@ import java.util.Optional;
 //JpaRepository give basic CRUD, expense is the entity type and long the PK type
 public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     List<Expense> findByUserIdOrderByDateDesc(Long userId);
-    List<Expense> findByUserIdAndCategoryOrderByDateDesc (Long userId, String category);
-    List<Expense> findByUserIdAndDateBetweenOrderByDateDesc (Long userId, LocalDate startDate, LocalDate endDate);
-    List<Expense> findByUserIdAndAmountGreaterThanOrderByDateDesc(Long userId, BigDecimal amount);
-    List<Expense> findByUserIdAndAmountLessThanOrderByDateDesc(Long userId, BigDecimal amount);
-    List<Expense> findByUserIdAndAmountBetweenOrderByDateDesc(Long userId, BigDecimal minAmount,BigDecimal maxAmount);
-    List<Expense> findByUserIdAndCategoryAndDateBetween(Long userId, String category,LocalDate startDate, LocalDate endDate);
 
     @Query("SELECT e.category, SUM(e.amount) FROM Expense e WHERE e.user.id = :userId GROUP BY e.category ORDER BY SUM(e.amount) DESC")
-    List<Object[]> getCategoryTotalsByUser(@Param("userid") Long userId); //With object this array can contain any type, each object have category + total
+    List<Object[]> getCategoryTotalsByUser(@Param("userId") Long userId); //With object this array can contain any type, each object have category + total
 
     @Query("SELECT SUM(e.amount) FROM Expense e WHERE e.user.id = :userId AND e.date BETWEEN :startDate AND :endDate")
     //Optional to not return null if not expense on that range
@@ -37,7 +31,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
             "MONTH(e.date) = MONTH(CURRENT_DATE) ORDER BY e.date DESC")
     List<Expense> findCurrentMonthExpenses(@Param("userId") Long userId); //Find all expenses of actual month
 
-    @Query(value = "SELECT * FROM expenses e WHERE e.user.id = :userId AND" +
+    @Query(value = "SELECT * FROM expenses e WHERE e.user_id = :userId AND" +
             "(CAST(:category AS TEXT) IS NULL OR e.category = :category) AND " +
             "(CAST(:startDate AS DATE) IS NULL OR e.date >= :startDate) AND " +
             "(CAST(:endDate AS DATE) IS NULL OR e.date <= :endDate) AND " +
@@ -53,11 +47,8 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
             @Param("minAmount") BigDecimal minAmount,
             @Param("maxAmount") BigDecimal maxAmount);
 
-
     @Query("SELECT SUM(e.amount) FROM Expense e WHERE e.user.id = :userId")
     Optional<BigDecimal> getTotalByUser(@Param("userId") Long userId);
 
-    @Query("SELECT SUM(e.amount) FROM Expense e WHERE e.user.id = :userId AND e.category = :category")
-    Optional<BigDecimal> getTotalByUserAndCategory(@Param("userId") Long userId, @Param("category") String category);
 
 }

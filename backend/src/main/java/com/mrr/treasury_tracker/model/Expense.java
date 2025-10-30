@@ -110,6 +110,14 @@ public class Expense {
         this.updatedAt = updatedAt;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     @PrePersist //JPA: runs automatically before saving new data
     protected void onCreate(){
         createdAt = LocalDateTime.now();

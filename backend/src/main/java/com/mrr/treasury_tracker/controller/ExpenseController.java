@@ -1,15 +1,20 @@
 package com.mrr.treasury_tracker.controller;
 
 import com.mrr.treasury_tracker.dto.ExpenseDTO;
+import com.mrr.treasury_tracker.dto.ExpenseResponseDTO;
 import com.mrr.treasury_tracker.model.Expense;
+import com.mrr.treasury_tracker.model.User;
 import com.mrr.treasury_tracker.repository.ExpenseRepository;
+import com.mrr.treasury_tracker.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -19,141 +24,173 @@ import java.util.Optional;
 public class ExpenseController {
 
     @Autowired
-    private ExpenseRepository expenseRepository;
+    private  ExpenseRepository expenseRepository;
+
+    @Autowired
+    private  UserService userService;
+
+
+    private User getCurrentUser(Authentication authentication) {
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        return userService.findByEmail(userDetails.getUsername());
+    }
 
     @GetMapping
-    public List<Expense> getAllExpenses(){
-        return expenseRepository.findAll();
+    public List<ExpenseResponseDTO> getAllExpenses(Authentication authentication) {
+        User user = getCurrentUser(authentication);
+        List<Expense> expenses = expenseRepository.findByUserIdOrderByDateDesc(user.getId());
+
+        List<ExpenseResponseDTO> response = new ArrayList<>();
+        for (Expense expense : expenses) {
+            ExpenseResponseDTO dto = new ExpenseResponseDTO();
+            dto.setId(expense.getId());
+            dto.setDescription(expense.getDescription());
+            dto.setAmount(expense.getAmount());
+            dto.setCategory(expense.getCategory());
+            dto.setDate(expense.getDate());
+            dto.setCreatedAt(expense.getCreatedAt());
+            dto.setUserEmail(expense.getUser().getEmail());
+            response.add(dto);
+        }
+        return response;
     }
 
     @GetMapping("/{id}")
-    //ResponseEntity allow control http response
-    public ResponseEntity<Expense> getExpenseById(@PathVariable Long id){
+    public ResponseEntity<ExpenseResponseDTO> getExpenseById(@PathVariable Long id, Authentication authentication) {
+        User user = getCurrentUser(authentication);
         Optional<Expense> expense = expenseRepository.findById(id);
-        if (expense.isPresent()){
-            return ResponseEntity.ok(expense.get());
-        }else{
+
+        //If this expense exists and is for current user
+        if (expense.isPresent() && expense.get().getUser().getId().equals(user.getId())) {
+            Expense expenseData = expense.get();
+            ExpenseResponseDTO response = new ExpenseResponseDTO();
+            response.setId(expenseData.getId());
+            response.setDescription(expenseData.getDescription());
+            response.setAmount(expenseData.getAmount());
+            response.setCategory(expenseData.getCategory());
+            response.setDate(expenseData.getDate());
+            response.setCreatedAt(expenseData.getCreatedAt());
+            response.setUserEmail(expenseData.getUser().getEmail());
+
+            return ResponseEntity.ok(response);
+        } else {
             return ResponseEntity.notFound().build();
         }
     }
 
     @PostMapping
-    public Expense createExpense(@RequestBody ExpenseDTO request){
-        LocalDate date = request.getDate();
+    public ResponseEntity<?> createExpense(@RequestBody ExpenseDTO requestExpense, Authentication authentication) {
+        User user = getCurrentUser(authentication);
+        LocalDate date = requestExpense.getDate();
         if(date == null){
-            date = LocalDate.now();
+            date=LocalDate.now();
         }
-        Expense newExpense = new Expense(request.getDescription(), request.getAmount(), request.getCategory(), date);
-        return expenseRepository.save(newExpense);
+        Expense newExpense = new Expense(
+                requestExpense.getDescription(),
+                requestExpense.getAmount(),
+                requestExpense.getCategory(),
+                date,
+                user
+        );
+
+        Expense savedExpense = expenseRepository.save(newExpense);
+
+        ExpenseResponseDTO response = new ExpenseResponseDTO();
+        response.setId(savedExpense.getId());
+        response.setDescription(savedExpense.getDescription());
+        response.setAmount(savedExpense.getAmount());
+        response.setCategory(savedExpense.getCategory());
+        response.setDate(savedExpense.getDate());
+        response.setCreatedAt(savedExpense.getCreatedAt());
+        response.setUserEmail(savedExpense.getUser().getEmail());
+
+        return ResponseEntity.ok(response);
     }
 
+
     @PutMapping("/{id}")
-    public ResponseEntity<Expense> updateExpense(@PathVariable Long id, @RequestBody ExpenseDTO request){
+    public ResponseEntity<?> updateExpense(
+            @PathVariable Long id, @RequestBody ExpenseDTO request, Authentication authentication) {
+        User user = getCurrentUser(authentication);
         Optional<Expense> expense = expenseRepository.findById(id);
-        if (expense.isPresent()){
-            Expense newExpense = expense.get();
 
-            newExpense.setDescription(request.getDescription());
-            newExpense.setAmount(request.getAmount());
-            newExpense.setCategory(request.getCategory());
-            newExpense.setDate(request.getDate());
+        if (expense.isPresent() && expense.get().getUser().getId().equals(user.getId())) {
+            Expense existingExpense = expense.get();
+            existingExpense.setDescription(request.getDescription());
+            existingExpense.setAmount(request.getAmount());
+            existingExpense.setCategory(request.getCategory());
+            existingExpense.setDate(request.getDate());
 
-            Expense updateExpense = expenseRepository.save(newExpense);
-            return ResponseEntity.ok(updateExpense);
-        }else{
+            Expense updatedExpense = expenseRepository.save(existingExpense);
+
+            ExpenseResponseDTO response = new ExpenseResponseDTO();
+            response.setId(updatedExpense.getId());
+            response.setDescription(updatedExpense.getDescription());
+            response.setAmount(updatedExpense.getAmount());
+            response.setCategory(updatedExpense.getCategory());
+            response.setDate(updatedExpense.getDate());
+            response.setCreatedAt(updatedExpense.getCreatedAt());
+            response.setUserEmail(updatedExpense.getUser().getEmail());
+
+            return ResponseEntity.ok(response);
+        } else {
             return ResponseEntity.notFound().build();
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Expense> deleteExpense(@PathVariable Long id){
-        if(expenseRepository.existsById(id)){
+    public ResponseEntity<Void> deleteExpense(@PathVariable Long id, Authentication authentication) {
+        User user = getCurrentUser(authentication);
+        Optional<Expense> expense = expenseRepository.findById(id);
+
+        if (expense.isPresent() && expense.get().getUser().getId().equals(user.getId())) {
             expenseRepository.deleteById(id);
             return ResponseEntity.ok().build();
-        }else{
+        } else {
             return ResponseEntity.notFound().build();
         }
     }
 
-    @GetMapping("/category/{category}")
-    public List<Expense> getExpensesByCategory(@PathVariable String category){
-        return expenseRepository.findByCategoryOrderByDateDesc(category);
-    }
 
-    @GetMapping("/between-date")
-    public List<Expense> getExpensesByDateRange(@RequestParam LocalDate startDate, @RequestParam LocalDate endDate){
-        return expenseRepository.findByDateBetweenOrderByDateDesc(startDate,endDate);
-    }
-
-    @GetMapping("/amount-greater-than/{amount}")
-    public List<Expense> getExpensesGreaterThan(@PathVariable BigDecimal amount){
-        return expenseRepository.findByAmountGreaterThanOrderByDateDesc(amount);
-    }
-    @GetMapping("/amount-less-than/{amount}")
-    public List<Expense> getExpensesLessThan(@PathVariable BigDecimal amount){
-        return expenseRepository.findByAmountLessThanOrderByDateDesc(amount);
-    }
-    @GetMapping("/amount-between")
-    public List<Expense> getExpensesBetweenAmounts(
-            @RequestParam BigDecimal minAmount,
-            @RequestParam BigDecimal maxAmount){
-        return expenseRepository.findByAmountBetweenOrderByDateDesc(minAmount, maxAmount);
-    }
     @GetMapping("/filters")
-    public List<Expense> filterExpenses(
-        @RequestParam(required = false) String category,
-        @RequestParam(required = false) LocalDate startDate,
-        @RequestParam(required = false) LocalDate endDate,
-        @RequestParam(required = false) BigDecimal minAmount,
-        @RequestParam(required = false) BigDecimal maxAmount){
-        return expenseRepository.findByFilters(category, startDate, endDate, minAmount, maxAmount);
-    }
+    public List<ExpenseResponseDTO> filterExpenses(
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate,
+            @RequestParam(required = false) BigDecimal minAmount,
+            @RequestParam(required = false) BigDecimal maxAmount,
+            Authentication authentication) {
 
-    @GetMapping("category/{category}/date-range")
-    public List<Expense> getExpensesByCategoryAndDateRange(
-            @PathVariable String category, @RequestParam LocalDate startDate, @RequestParam LocalDate endDate){
-        return expenseRepository.findByCategoryAndDateBetween(category,startDate,endDate);
+        User user = getCurrentUser(authentication);
+        List<Expense> expenses = expenseRepository.findByFiltersAndUser(
+                user.getId(), category, startDate, endDate, minAmount, maxAmount);
+
+        List<ExpenseResponseDTO> response = new ArrayList<>();
+        for (Expense expense : expenses) {
+            ExpenseResponseDTO dto = new ExpenseResponseDTO();
+            dto.setId(expense.getId());
+            dto.setDescription(expense.getDescription());
+            dto.setAmount(expense.getAmount());
+            dto.setCategory(expense.getCategory());
+            dto.setDate(expense.getDate());
+            dto.setCreatedAt(expense.getCreatedAt());
+            dto.setUserEmail(expense.getUser().getEmail());
+            response.add(dto);
+        }
+        return response;
     }
 
     @GetMapping("/total")
-    public double getTotalExpenses(){
-        List<Expense> expenses = expenseRepository.findAll();
-        double total = 0;
-        for (Expense expense: expenses){
-            total += expense.getAmount().doubleValue();
-        }
-        return total;
+    public ResponseEntity<Map<String, BigDecimal>> getTotalExpenses(Authentication authentication) {
+        User user = getCurrentUser(authentication);
+        BigDecimal total = expenseRepository.getTotalByUser(user.getId()).orElse(BigDecimal.ZERO);
+        return ResponseEntity.ok(Map.of("total", total));
     }
 
-    @GetMapping("/total/category/{category}")
-    public double getTotalByCategory(@PathVariable String category){
-        List<Expense> expenses = expenseRepository.findByCategoryOrderByDateDesc(category);
-        double total = 0;
-        for (Expense expense: expenses){
-            total += expense.getAmount().doubleValue();
-        }
-        return total;
+    @GetMapping("/category-totals")
+    public ResponseEntity<List<Object[]>> getCategoryTotals(Authentication authentication) {
+        User user = getCurrentUser(authentication);
+        List<Object[]> categoryTotals = expenseRepository.getCategoryTotalsByUser(user.getId());
+        return ResponseEntity.ok(categoryTotals);
     }
-
-    @GetMapping("total/date-range")
-    public double getTotalByDateRange(@RequestParam LocalDate startDate, @RequestParam LocalDate endDate){
-        List<Expense> expenses = expenseRepository.findByDateBetweenOrderByDateDesc(startDate,endDate);
-        double total = 0;
-        for (Expense expense: expenses){
-            total += expense.getAmount().doubleValue();
-        }
-        return total;
-    }
-    @GetMapping("/total/current-month")
-    public double getCurrentMonthTotal() {
-        List<Expense> expenses = expenseRepository.findCurrentMonthExpenses();
-        double total = 0.0;
-
-        for (Expense expense : expenses) {
-            total += expense.getAmount().doubleValue();
-        }
-
-        return total;
-    }
-
 }
