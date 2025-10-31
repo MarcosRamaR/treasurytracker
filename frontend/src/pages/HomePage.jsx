@@ -12,6 +12,7 @@ export function HomePage()  {
       const authenticated = authService.isAuthenticated();
       setIsLogged(authenticated);
   }, []);
+  
   const handleLoginSuccess = () => {
     setIsLogged(true);
     setShowRegister(false);

@@ -1,5 +1,30 @@
 const API_EXPENSE_BASE = '/api/expenses'
 const API_INCOMES_BASE = '/api/incomes'
+import { authService } from './authService.js'
+
+const getAuthHeaders = () => {
+  const token = authService.getToken()
+  const headers = {
+    'Content-Type': 'application/json'
+  };
+  
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`
+  }
+  
+  return headers
+};
+
+const handleResponse = async (response) => {
+  if (!response.ok) {
+    if (response.status === 401) {
+      authService.logout();
+      window.location.reload();
+    }
+    throw new Error(`HTTP error! status: ${response.status}`)
+  }
+  return response.json();
+};
 
 export const apiService = {
     getAll: async (type) => {
@@ -11,32 +36,37 @@ export const apiService = {
         }else{
             throw new Error('Invalid type for getting all')
         }
-        const response = await fetch(newUrl)
-        if(!response.ok) throw new Error('Error fetching expenses')
-        return response.json()
+        const response = await fetch(newUrl, {
+            headers: getAuthHeaders()
+        })
+        return handleResponse(response);
     },
     getExpenseById: async (id) => {
-        const response = await fetch(`${API_EXPENSE_BASE}/${id}`)
-        if(!response.ok) throw new Error('Error fetching expense')
-        return response.json()
+        const response = await fetch(`${API_EXPENSE_BASE}/${id}`, {
+            headers: getAuthHeaders()
+        })
+        return handleResponse(response);
     },
     getTotalExpenses: async () => {
-        const response = await fetch(`${API_EXPENSE_BASE}/total`)
-        if(!response.ok) throw new Error('Error fetching total expenses')
-        return response.json()
+        const response = await fetch(`${API_EXPENSE_BASE}/total`, {
+            headers: getAuthHeaders()
+        })
+        return handleResponse(response);
     },
     getCurrentMonthExpenses: async () => {
-        const response = await fetch(`${API_EXPENSE_BASE}/total/current-month`)
-        if(!response.ok) throw new Error('Error fetching current month expenses')
-        return response.json()
+        const response = await fetch(`${API_EXPENSE_BASE}/total/current-month`, {
+            headers: getAuthHeaders()
+        })
+        return handleResponse(response);
     },
     getTotalExpensesByDateRange: async (startDate, endDate) => {
-        const response = await fetch(`${API_EXPENSE_BASE}/total/date-range?startDate=${startDate}&endDate=${endDate}`)
-        if(!response.ok) throw new Error('Error fetching total expenses by date range')
-        return response.json()
+        const response = await fetch(
+            `${API_EXPENSE_BASE}/total/date-range?startDate=${startDate}&endDate=${endDate}`, 
+            { headers: getAuthHeaders() }
+        );
+        return handleResponse(response);
     },
     create: async (data,type) => {
-
         let newUrl= ''
         if(type === 'expense'){
             newUrl = API_EXPENSE_BASE
@@ -47,13 +77,10 @@ export const apiService = {
         }
         const response = await fetch(newUrl, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: getAuthHeaders(),
             body: JSON.stringify(data),
-            })
-        if(!response.ok) throw new Error('Error posting expense')
-        return response.json()
+        })
+        return handleResponse(response);
     },
     update: async (id, expense,type) => {
         let newUrl= ''
@@ -66,13 +93,10 @@ export const apiService = {
         }
         const response = await fetch(`${newUrl}/${id}`, {
             method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: getAuthHeaders(),
             body: JSON.stringify(expense),
         })
-        if(!response.ok) throw new Error('Error updating expense')
-        return response.json()
+        return handleResponse(response);
     },
     delete: async (id,type) => {
         let newUrl= ''
@@ -85,9 +109,18 @@ export const apiService = {
         }
         const response = await fetch(`${newUrl}/${id}`, {
             method: 'DELETE',
-    })
-        if(!response.ok) throw new Error('Error deleting expense')
-        return true
+            headers: getAuthHeaders(),
+        });
+        
+        if (!response.ok) {
+            if (response.status === 401) {
+                authService.logout();
+                window.location.reload();
+            }
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        return true;
     },
     filterExpenses: async (filters,type) => {
         const {category, startDate, endDate, minAmount, maxAmount} = filters
@@ -109,10 +142,11 @@ export const apiService = {
         }else{
             throw new Error('Invalid type for filtering expenses')
         }
-        const urlFiltered = queryStringParams ? `${newUrl}/filters?${queryStringParams}` : `${newUrl}/filters`
-        const response = await fetch(urlFiltered)
-        if(!response.ok) throw new Error('Error filtering expenses')
-        return response.json()
+        const urlFiltered = queryStringParams ? `${newUrl}/filters?${queryStringParams}` : `${newUrl}/filters`;
+        const response = await fetch(urlFiltered, {
+            headers: getAuthHeaders()
+        });
+        return handleResponse(response);
     }
 
 }

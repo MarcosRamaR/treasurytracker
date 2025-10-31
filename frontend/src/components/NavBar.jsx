@@ -1,16 +1,39 @@
 import {NavLink} from 'react-router-dom';
 import '../styles/NavBarStyle.css';
 import {authService} from '../services/authService';
+import {useState, useEffect} from 'react'
 
 export const NavBar = () => {
     // Check if user is authenticated and user data
-    const isLogged = authService.isAuthenticated();
-    const user = authService.getUser();
+    const [isLogged, setIsLogged] = useState(false);
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+    const checkAuth = () => {
+        setIsLogged(authService.isAuthenticated());
+        setUser(authService.getUser());
+    };
+    //Verify with load
+    checkAuth();
+
+    //Look for changes on storage
+    const handleStorageChange = () => {
+        checkAuth();
+    };
+    window.addEventListener('storage', handleStorageChange);
+    //Periodic check
+    const interval = setInterval(checkAuth, 1000);
+    return () => {
+        window.removeEventListener('storage', handleStorageChange);
+        clearInterval(interval);
+    };
+    }, []);
 
     //Functon to allow logout
     const handleLogout = () => {
         authService.logout();
-        window.location.href = '/'; // Redirect to login page after logout
+        setIsLogged(false);
+        setUser(null);
     }
 
     return (
@@ -27,7 +50,7 @@ export const NavBar = () => {
 
             <div className="collapse navbar-collapse" id="navbarNav">
                 <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-                    {!isLogged ? (
+                    {isLogged ? (
                         <>
                     <li className="nav-item">
                         <NavLink to='/summary' className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
