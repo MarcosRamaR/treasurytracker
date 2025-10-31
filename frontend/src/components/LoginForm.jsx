@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { authService } from '../services/authService'
 
 export function LoginForm({onSwitchToRegister, onLoginSuccess}){
     //Set form state
@@ -6,6 +7,8 @@ export function LoginForm({onSwitchToRegister, onLoginSuccess}){
         email: '',
         password: ''
     });
+    const [errors, setErrors] = useState({});
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -15,9 +18,28 @@ export function LoginForm({onSwitchToRegister, onLoginSuccess}){
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Datos del login:', formData);
+        setIsLoading(true);
+        setErrors({});
+
+        try{
+            const result = await authService.login(formData)
+
+            if(result.token){
+                authService.saveData(result.token,{email:result.email, username: result.username})
+                setFormData({email: '', username: ''})
+                if(onLoginSuccess){
+                    onLoginSuccess(result)
+                }
+            }else{
+                setErrors(result)
+            }
+        }catch(error){
+            setErrors(error)
+        }finally{
+            setIsLoading(false)
+        }
     };
 
     return(
@@ -31,10 +53,19 @@ export function LoginForm({onSwitchToRegister, onLoginSuccess}){
             </div>
             <div>
             <label htmlFor="loginPassword" className="form-label">Password</label>
-            <input type="password" className="form-control" id="loginPassword" name="password"  value={formData.password} onChange={handleChange} required
-            />
+            <input type="password" className="form-control" id="loginPassword" name="password"  value={formData.password} onChange={handleChange} required/>
             </div>
-            <button type="submit">Login</button>
+
+            {errors.error && (
+            <div className="alert alert-danger">{errors.error}</div>)}
+            
+            <button type="submit" disabled={isLoading}>{isLoading ? 'Loggin in...': 'Login'}</button>
+            <div className="text-center mt-3">
+                <p className="mb-0">
+                Don't have an account?{' '}
+                    <button type="button" onClick={onSwitchToRegister}>Register</button>
+                </p>
+            </div>
         </form>
         </div>
     </div>
