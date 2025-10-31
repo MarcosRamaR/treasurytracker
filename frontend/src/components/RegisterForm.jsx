@@ -38,7 +38,7 @@ export function RegisterForm({onSubmit,editUser, onSwitchToLogin}) {
             const result = await authService.register(formData)
 
             if(result.token){
-                authService.saveData(result.token, {email: result.email, username: result.username})
+                authService.saveData(result.token, {email: result.email, username: result.userName})
                 setFormData({username:'',email:'', password: ''})
                 if(onSubmit){
                     onSubmit(result)

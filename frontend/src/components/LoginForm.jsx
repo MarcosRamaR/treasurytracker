@@ -27,7 +27,7 @@ export function LoginForm({onSwitchToRegister, onLoginSuccess}){
             const result = await authService.login(formData)
 
             if(result.token){
-                authService.saveData(result.token,{email:result.email, username: result.username})
+                authService.saveData(result.token,{email:result.email, username: result.userName})
                 setFormData({email: '', username: ''})
                 if(onLoginSuccess){
                     onLoginSuccess(result)
@@ -58,7 +58,7 @@ export function LoginForm({onSwitchToRegister, onLoginSuccess}){
 
             {errors.error && (
             <div className="alert alert-danger">{errors.error}</div>)}
-            
+
             <button type="submit" disabled={isLoading}>{isLoading ? 'Loggin in...': 'Login'}</button>
             <div className="text-center mt-3">
                 <p className="mb-0">

@@ -2,6 +2,7 @@ import {useState, useEffect} from 'react'
 import { authService } from '../services/authService';
 import { LoginForm } from '../components/LoginForm';
 import { RegisterForm } from '../components/RegisterForm';
+import { UserProfile } from '../components/UserProfile';
 
 export function HomePage()  {
   const [isLogged, setIsLogged] = useState(false);
@@ -40,13 +41,7 @@ export function HomePage()  {
           <h1 className="text-center mb-4">Welcome to Treasury Tracker</h1>
           
           {isLogged ? (
-            <div className="card">
-              <div className="card-body">
-                <p>You are now logged in. Use the navigation menu to manage your finances.</p>
-                <button onClick={handleLogout} className="btn btn-danger">Logout</button>
-              </div>
-            </div>
-          ) : (
+            <UserProfile onLogout={handleLogout}/>):(
             <>
               {showRegister ? (
                 <RegisterForm 
