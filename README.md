@@ -13,15 +13,13 @@
 A web application for personal finance management and cash flow tracking. Developed with a React frontend and a Spring Boot backend, it allows users to monitor expenses, filter transactions, and gain insights into their finances.
 
 ## Functionalities
-- `Expense Management`: Add, edit, and delete expenses with detailed information
-- `Income Management`: Similar functionality for tracking income sources
+- `User Authentication`: Register, log in, and manage individual user accounts. Each user's data is displayed only to the logged-in user.
+- `Expense Management`: Add, edit, and delete expenses with detailed information. Each user only can manage their own personal expense records.
+- `Income Management`: Similar functionality for tracking income sources, tracked separately for each user.
 - `Expenses Categorization`: Organize expenses into categories (Food, Transport, Entertainment, Others)
 - `Advanced Filtering`: Multi-criteria filtering (Dates, Category and imports)
 - `Real-time Summary`: View total and average expenses in the summary section
 - `Advanced Analytics`: Charts and graphs for financial insights
-
-### Planned Features
-- `Future Projections`: Forecast upcoming expenses and income
 
 
 ## Access to the project
