@@ -3,27 +3,25 @@ const API_INCOMES_BASE = '/api/incomes'
 import { authService } from './authService.js'
 
 const getAuthHeaders = () => {
-  const token = authService.getToken()
-  const headers = {
+    const token = authService.getToken()
+    const headers = {
     'Content-Type': 'application/json'
-  };
-  
-  if (token) {
+    };
+    if (token) {
     headers['Authorization'] = `Bearer ${token}`
-  }
-  
-  return headers
+    }
+    return headers
 };
 
 const handleResponse = async (response) => {
-  if (!response.ok) {
+    if (!response.ok) {
     if (response.status === 401) {
-      authService.logout();
-      window.location.reload();
+        authService.logout();
+        window.location.reload();
     }
     throw new Error(`HTTP error! status: ${response.status}`)
-  }
-  return response.json();
+    }
+    return response.json();
 };
 
 export const apiService = {

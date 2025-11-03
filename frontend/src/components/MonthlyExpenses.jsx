@@ -1,42 +1,57 @@
-import {Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend} from 'chart.js';
+import {Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend} from 'chart.js'
 import { Bar } from 'react-chartjs-2';
 import '../styles/GraphsStyle.css'
+import {useState} from 'react'
 
-ChartJS.register( CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+ChartJS.register( CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
 export function MonthlyExpenses({ expenses }) {
-    const getCurrentMonthData = () => {
-        const currentDate = new Date();
-        const currentMonth = currentDate.getMonth();
-        const currentYear = currentDate.getFullYear();
-        const categoryData = {};
-        let totalAmount = 0;
+    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth())
+    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
+    const months = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+
+    const currentYear = new Date().getFullYear()
+    const years = Array.from({ length: 8 }, (_, i) => currentYear - 5 + i)
+
+    const getCurrentMonthData = (month = selectedMonth, year = selectedYear) => {
+        const categoryData = {}
+        let totalAmount = 0
 
         expenses.forEach(expense => {
             const date = new Date(expense.date);
 
-            if(date.getMonth() === currentMonth && date.getFullYear() === currentYear) {
-                const category = expense.category || 'Others';
+            if(date.getMonth() === month && date.getFullYear() === year) {
+                const category = expense.category || 'Others'
                 if (!categoryData[category]) {
-                    categoryData[category] = 0;
+                    categoryData[category] = 0
                 }
-                categoryData[category] += expense.amount;
-                totalAmount += expense.amount;
+                categoryData[category] += expense.amount
+                totalAmount += expense.amount
             }
         });
-        return { categoryData, totalAmount };
+        return { categoryData, totalAmount }
     }
-    const monthData = getCurrentMonthData();
-    const categories = Object.keys(monthData.categoryData);
-    const amounts = Object.values(monthData.categoryData);
+    const handleMonthChange = (e) => {
+        setSelectedMonth(parseInt(e.target.value))
+    };
+
+    const handleYearChange = (e) => {
+        setSelectedYear(parseInt(e.target.value))
+    };
+    const monthData = getCurrentMonthData()
+    const categories = Object.keys(monthData.categoryData)
+    const amounts = Object.values(monthData.categoryData)
     const sortedData = categories.map((category, index) => ({
         category,
         amount: amounts[index]
-    })).sort((a, b) => b.amount - a.amount);
+    })).sort((a, b) => b.amount - a.amount)
 
     //Get sorted categories and amounts separately
-    const sortedCategories = sortedData.map(data => data.category);
-    const sortedAmounts = sortedData.map(data => data.amount);
+    const sortedCategories = sortedData.map(data => data.category)
+    const sortedAmounts = sortedData.map(data => data.amount)
 
     const backgroundColors = [
     'rgba(255, 99, 132, 0.8)',    
@@ -44,7 +59,7 @@ export function MonthlyExpenses({ expenses }) {
     'rgba(255, 206, 86, 0.8)',   
     'rgba(75, 192, 192, 0.8)',    
     ];
-    const borderColors = backgroundColors.map(color => color.replace('0.8', '1'));
+    const borderColors = backgroundColors.map(color => color.replace('0.8', '1'))
 
     const chartData = {
     labels: sortedCategories,
@@ -71,10 +86,10 @@ export function MonthlyExpenses({ expenses }) {
         tooltip: {
         callbacks: {
             label: function(context) {
-            const value = context.parsed.y;
-            const total = monthData.total;
-            const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-            return `€${value.toFixed(2)} (${percentage}% of total)`;
+            const value = context.parsed.y
+            const total = monthData.total
+            const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0
+            return `€${value.toFixed(2)} (${percentage}% of total)`
             }
         },
         },
@@ -125,16 +140,40 @@ export function MonthlyExpenses({ expenses }) {
     const currentMonthName = currentDate.toLocaleString('default', { 
         month: 'long' 
     });
-    const currentYear = currentDate.getFullYear();
+    const selectedMonthName = months[selectedMonth]
 
     return (
     <div className="chart-card bar-chart-container">
         <h4 className="chart-title">
-        Expenses for {currentMonthName} {currentYear}
+        Expenses for {selectedMonthName} {selectedYear}
             <div className='chart-subtitle'>
             Total: €{monthData.totalAmount.toFixed(2)}
             </div>
         </h4>
+        <div className='date-selector'>
+            <select 
+                value={selectedMonth} 
+                onChange={handleMonthChange}
+                className="month-select">
+
+                {months.map((month, index) => (
+                    <option key={month} value={index}>
+                        {month}
+                    </option>
+                ))}
+            </select>
+            <select 
+                value={selectedYear} 
+                onChange={handleYearChange}
+                className="year-select">
+
+                {years.map(year => (
+                    <option key={year} value={year}>
+                        {year}
+                    </option>
+                ))}
+            </select>
+        </div>
         <div className='chart-content'>
             {categories.length > 0 ? (
             <Bar data={chartData} options={options} />
