@@ -1,0 +1,37 @@
+
+.register-form {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #16213e;               
+    background-clip: border-box;
+    border: 2px solid #b88d00; 
+    border-radius: 0.375rem;       
+    padding: 10px       
+}
+
+.register-login-button {
+    padding: 8px 16px;
+    background-color: #b88d00;
+    color: rgb(0, 0, 0);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.title-h5{
+    color: white;
+    font-size: 25px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.label-text{
+    color: white;
+    font-size: 17px;
+    font-weight: 500;
+    line-height: 1.9;
+}
