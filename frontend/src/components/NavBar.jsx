@@ -1,4 +1,4 @@
-import {NavLink} from 'react-router-dom';
+import {NavLink, useNavigate} from 'react-router-dom';
 import '../styles/NavBarStyle.css';
 import {authService} from '../services/authService';
 import {useState, useEffect} from 'react'
@@ -7,6 +7,7 @@ export const NavBar = () => {
     // Check if user is authenticated and user data
     const [isLogged, setIsLogged] = useState(false);
     const [user, setUser] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
     const checkAuth = () => {
@@ -34,6 +35,7 @@ export const NavBar = () => {
         authService.logout();
         setIsLogged(false);
         setUser(null);
+        navigate('/')
     }
 
     return (
