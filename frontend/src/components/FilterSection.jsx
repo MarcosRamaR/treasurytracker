@@ -1,4 +1,4 @@
-import '../styles/ExpensesStyle.css';
+import '../styles/ExpensesStyle.css'
 
 export function FilterSection({
     startDate,
@@ -82,5 +82,5 @@ export function FilterSection({
         </div>
         )}
     </div>
-    );
+    )
 }

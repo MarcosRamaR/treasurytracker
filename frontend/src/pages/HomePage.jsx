@@ -1,40 +1,40 @@
 import {useState, useEffect} from 'react'
-import { authService } from '../services/authService';
-import { LoginForm } from '../components/LoginForm';
-import { RegisterForm } from '../components/RegisterForm';
-import { UserProfile } from '../components/UserProfile';
+import { authService } from '../services/authService'
+import { LoginForm } from '../components/LoginForm'
+import { RegisterForm } from '../components/RegisterForm'
+import { UserProfile } from '../components/UserProfile'
 
 export function HomePage()  {
-  const [isLogged, setIsLogged] = useState(false);
-  const [showRegister, setShowRegister] = useState(false);
+  const [isLogged, setIsLogged] = useState(false)
+  const [showRegister, setShowRegister] = useState(false)
 
     useEffect(() => {
-      const authenticated = authService.isAuthenticated();
-      setIsLogged(authenticated);
-  }, []);
+      const authenticated = authService.isAuthenticated()
+      setIsLogged(authenticated)
+  }, [])
   
   const handleLoginSuccess = () => {
-    setIsLogged(true);
-    setShowRegister(false);
-  };
+    setIsLogged(true)
+    setShowRegister(false)
+  }
 
   const handleRegisterSuccess = () => {
-    setIsLogged(true);
-    setShowRegister(false);
-  };
+    setIsLogged(true)
+    setShowRegister(false)
+  }
 
   const handleLogout = () => {
-    setIsLogged(false);
-    setShowRegister(false);
-  };
+    setIsLogged(false)
+    setShowRegister(false)
+  }
 
   const handleSwitchToRegister = () => {
-    setShowRegister(true);
-  };
+    setShowRegister(true)
+  }
 
   const handleSwitchToLogin = () => {
-    setShowRegister(false);
-  };
+    setShowRegister(false)
+  }
   return (
     <div className="container">
       <div className="row justify-content-center">

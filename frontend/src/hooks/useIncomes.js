@@ -19,9 +19,9 @@ export const useIncomes = () => {
         try{
             setLoading(true)
             if (!authService.isAuthenticated()) {
-                setError('User not authenticated. Please log in.');
-                setincomes([]);
-                return;
+                setError('User not authenticated. Please log in.')
+                setincomes([])
+                return
             }
             const data = await apiService.getAll(type)
             setincomes(data)
@@ -36,8 +36,8 @@ export const useIncomes = () => {
     const createIncome = async (income) => {
         try{
             if (!authService.isAuthenticated()) {
-                setError('User not authenticated. Please log in.');
-                return;
+                setError('User not authenticated. Please log in.')
+                return
             }
             const  newIncome = await apiService.create(income,type)
             setincomes([...incomes, newIncome])
@@ -50,8 +50,8 @@ export const useIncomes = () => {
     const updateIncome = async (id, income) => {
         try{
             if (!authService.isAuthenticated()) {
-                setError('User not authenticated. Please log in.');
-                return;
+                setError('User not authenticated. Please log in.')
+                return
             }
             const updatedIncome = await apiService.update(id, income,type)
             setincomes(incomes.map(inc => inc.id === id ? updatedIncome : inc))
@@ -64,8 +64,8 @@ export const useIncomes = () => {
     const deleteIncome = async (id) => {
         try{
             if (!authService.isAuthenticated()) {
-                setError('User not authenticated. Please log in.');
-                return;
+                setError('User not authenticated. Please log in.')
+                return
             }
             await apiService.delete(id,type)
             setincomes(incomes.filter(item => item.id !== id))
@@ -79,8 +79,8 @@ export const useIncomes = () => {
         try{
             setLoading(true)
             if (!authService.isAuthenticated()) {
-                setError('User not authenticated. Please log in.');
-                return;
+                setError('User not authenticated. Please log in.')
+                return
             }
             const filtered = await apiService.filterExpenses(filters,type)
             setFilteredIncomes(filtered)

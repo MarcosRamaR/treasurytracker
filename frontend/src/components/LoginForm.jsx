@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from "react"
 import { authService } from '../services/authService'
 
 export function LoginForm({onSwitchToRegister, onLoginSuccess}){
@@ -6,22 +6,22 @@ export function LoginForm({onSwitchToRegister, onLoginSuccess}){
     const [formData, setFormData] = useState({
         email: '',
         password: ''
-    });
-    const [errors, setErrors] = useState({});
-    const [isLoading, setIsLoading] = useState(false);
+    })
+    const [errors, setErrors] = useState({})
+    const [isLoading, setIsLoading] = useState(false)
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
+        const { name, value } = e.target
         setFormData(prev => ({
             ...prev,
             [name]: value
-        }));
-    };
+        }))
+    }
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        setIsLoading(true);
-        setErrors({});
+        e.preventDefault()
+        setIsLoading(true)
+        setErrors({})
 
         try{
             const result = await authService.login(formData)
@@ -40,7 +40,7 @@ export function LoginForm({onSwitchToRegister, onLoginSuccess}){
         }finally{
             setIsLoading(false)
         }
-    };
+    }
 
     return(
     <div >

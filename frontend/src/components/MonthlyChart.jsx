@@ -1,18 +1,17 @@
-import React from 'react';
-import {Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend} from 'chart.js';
-import { Bar } from 'react-chartjs-2';
+import {Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend} from 'chart.js'
+import { Bar } from 'react-chartjs-2'
 
-ChartJS.register( CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+ChartJS.register( CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
 export function MonthlyChart({ expenses, incomes}) {
 
     const getMonthlyData = () => {
-    const monthlyData = {};
+    const monthlyData = {}
     
     expenses.forEach(expense => {
-        const date = new Date(expense.date);
-        const monthYear = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
-        const monthName = date.toLocaleString('default', { month: 'short', year: 'numeric' }); //LocaleString for month name
+        const date = new Date(expense.date)
+        const monthYear = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`
+        const monthName = date.toLocaleString('default', { month: 'short', year: 'numeric' }) //LocaleString for month name
 
         if (!monthlyData[monthYear]) {
         monthlyData[monthYear] = {
@@ -20,15 +19,15 @@ export function MonthlyChart({ expenses, incomes}) {
             monthKey: monthYear,
             expenses: 0,
             incomes: 0
-        };
         }
-        monthlyData[monthYear].expenses += expense.amount;
-    });
+        }
+        monthlyData[monthYear].expenses += expense.amount
+    })
     
     incomes.forEach(income => {
-        const date = new Date(income.date);
-        const monthYear = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
-        const monthName = date.toLocaleString('default', { month: 'short', year: 'numeric' });
+        const date = new Date(income.date)
+        const monthYear = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`
+        const monthName = date.toLocaleString('default', { month: 'short', year: 'numeric' })
 
         if (!monthlyData[monthYear]) {
         monthlyData[monthYear] = {
@@ -36,18 +35,18 @@ export function MonthlyChart({ expenses, incomes}) {
             monthKey: monthYear,
             expenses: 0,
             incomes: 0
-        };
         }
-        monthlyData[monthYear].incomes += income.amount;
-    });
+        }
+        monthlyData[monthYear].incomes += income.amount
+    })
     
     return Object.values(monthlyData).sort((a, b) => {
         //Compare by monthKey to ensure chronological order
-        return a.monthKey.localeCompare(b.monthKey);
-    });
-    };
+        return a.monthKey.localeCompare(b.monthKey)
+    })
+    }
 
-    const monthlyData = getMonthlyData();
+    const monthlyData = getMonthlyData()
 
     const chartData = {
     labels: monthlyData.map(data => data.month),
@@ -71,7 +70,7 @@ export function MonthlyChart({ expenses, incomes}) {
         hoverBackgroundColor: 'rgba(129, 199, 132, 1)',
         },
     ],
-    };
+    }
 
     const options = {
     responsive: true,
@@ -128,7 +127,7 @@ export function MonthlyChart({ expenses, incomes}) {
         }
         }
     }
-    };
+    }
 
     return (
     <div className="chart-card bar-chart-container">
@@ -141,5 +140,5 @@ export function MonthlyChart({ expenses, incomes}) {
             )}
         </div>
     </div>
-    );
+    )
 }

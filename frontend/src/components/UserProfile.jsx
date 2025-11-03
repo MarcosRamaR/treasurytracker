@@ -1,14 +1,14 @@
-import { authService } from "../services/authService";
+import { authService } from "../services/authService"
 
 export function UserProfile({onLogout}) {
-    const user = authService.getUser();
+    const user = authService.getUser()
 
     const handleLogout = () => {
-        authService.logout();
+        authService.logout()
         if (onLogout) {
-        onLogout();
+        onLogout()
     }
-  };
+  }
   return (
     <div>
         <h5>User Profile</h5>
@@ -27,5 +27,5 @@ export function UserProfile({onLogout}) {
         </div>
         <button onClick={handleLogout}>Logout</button>
     </div>
-  );
+  )
 }

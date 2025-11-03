@@ -1,4 +1,4 @@
-import '../styles/ExpensesStyle.css';
+import '../styles/ExpensesStyle.css'
 
 export function IncomeList({incomes, onDelete, onEdit}) {
 

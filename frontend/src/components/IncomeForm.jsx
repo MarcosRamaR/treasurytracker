@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import '../styles/ExpensesStyle.css';
+import '../styles/ExpensesStyle.css'
 
 export function IncomeForm({onSubmit,editIncome}) {
 

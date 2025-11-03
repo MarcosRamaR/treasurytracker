@@ -4,8 +4,8 @@ import { SummaryPage } from './pages/SummaryPage'
 import { ExpensesPage } from './pages/ExpensesPage'
 import { HomePage } from './pages/HomePage'
 import {IncomesPage} from './pages/IncomesPage'
-import './styles/TreasuryAppStyle.css';
-import './styles/NavBarStyle.css';
+import './styles/TreasuryAppStyle.css'
+import './styles/NavBarStyle.css'
 
 export const TreasuryApp = () => {
   return (

@@ -1,5 +1,5 @@
 import {Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend} from 'chart.js'
-import { Bar } from 'react-chartjs-2';
+import { Bar } from 'react-chartjs-2'
 import '../styles/GraphsStyle.css'
 import {useState} from 'react'
 
@@ -11,7 +11,7 @@ export function MonthlyExpenses({ expenses }) {
     const months = [
         'January', 'February', 'March', 'April', 'May', 'June',
         'July', 'August', 'September', 'October', 'November', 'December'
-    ];
+    ]
 
     const currentYear = new Date().getFullYear()
     const years = Array.from({ length: 8 }, (_, i) => currentYear - 5 + i)
@@ -21,7 +21,7 @@ export function MonthlyExpenses({ expenses }) {
         let totalAmount = 0
 
         expenses.forEach(expense => {
-            const date = new Date(expense.date);
+            const date = new Date(expense.date)
 
             if(date.getMonth() === month && date.getFullYear() === year) {
                 const category = expense.category || 'Others'
@@ -31,16 +31,16 @@ export function MonthlyExpenses({ expenses }) {
                 categoryData[category] += expense.amount
                 totalAmount += expense.amount
             }
-        });
+        })
         return { categoryData, totalAmount }
     }
     const handleMonthChange = (e) => {
         setSelectedMonth(parseInt(e.target.value))
-    };
+    }
 
     const handleYearChange = (e) => {
         setSelectedYear(parseInt(e.target.value))
-    };
+    }
     const monthData = getCurrentMonthData()
     const categories = Object.keys(monthData.categoryData)
     const amounts = Object.values(monthData.categoryData)
@@ -58,7 +58,7 @@ export function MonthlyExpenses({ expenses }) {
     'rgba(54, 162, 235, 0.8)',    
     'rgba(255, 206, 86, 0.8)',   
     'rgba(75, 192, 192, 0.8)',    
-    ];
+    ]
     const borderColors = backgroundColors.map(color => color.replace('0.8', '1'))
 
     const chartData = {
@@ -74,7 +74,7 @@ export function MonthlyExpenses({ expenses }) {
         hoverBackgroundColor: 'rgba(229, 115, 115, 0.9)',
         },
     ],
-    };
+    }
 
     const options = {
     responsive: true,
@@ -103,7 +103,7 @@ export function MonthlyExpenses({ expenses }) {
             size:11 ,
             },
             callback: function(value) {
-            return '€' + value;
+            return '€' + value
             }
         },
         title: {
@@ -134,12 +134,12 @@ export function MonthlyExpenses({ expenses }) {
     animation: {
         duration:  500 ,
     }
-    };
+    }
 
-    const currentDate = new Date();
+    const currentDate = new Date()
     const currentMonthName = currentDate.toLocaleString('default', { 
         month: 'long' 
-    });
+    })
     const selectedMonthName = months[selectedMonth]
 
     return (
@@ -185,6 +185,6 @@ export function MonthlyExpenses({ expenses }) {
             )}
         </div>
     </div>
-    );
+    )
 
 }

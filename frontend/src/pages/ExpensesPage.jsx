@@ -1,9 +1,9 @@
-import { ExpenseForm } from "../components/ExpenseForm";
-import { ExpenseList } from "../components/ExpenseList";
-import { FilterSection } from "../components/FilterSection";
-import { useExpenses } from "../hooks/useExpenses";
-import { useState } from "react";
-import '../styles/ExpensesStyle.css';
+import { ExpenseForm } from "../components/ExpenseForm"
+import { ExpenseList } from "../components/ExpenseList"
+import { FilterSection } from "../components/FilterSection"
+import { useExpenses } from "../hooks/useExpenses"
+import { useState } from "react"
+import '../styles/ExpensesStyle.css'
 
 export function ExpensesPage() {
     const {expenses, loading, error,isFiltered, 

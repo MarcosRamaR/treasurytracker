@@ -1,40 +1,40 @@
-import {NavLink, useNavigate} from 'react-router-dom';
-import '../styles/NavBarStyle.css';
-import {authService} from '../services/authService';
+import {NavLink, useNavigate} from 'react-router-dom'
+import '../styles/NavBarStyle.css'
+import {authService} from '../services/authService'
 import {useState, useEffect} from 'react'
 
 export const NavBar = () => {
     // Check if user is authenticated and user data
-    const [isLogged, setIsLogged] = useState(false);
-    const [user, setUser] = useState(null);
-    const navigate = useNavigate();
+    const [isLogged, setIsLogged] = useState(false)
+    const [user, setUser] = useState(null)
+    const navigate = useNavigate()
 
     useEffect(() => {
     const checkAuth = () => {
-        setIsLogged(authService.isAuthenticated());
-        setUser(authService.getUser());
-    };
+        setIsLogged(authService.isAuthenticated())
+        setUser(authService.getUser())
+    }
     //Verify with load
-    checkAuth();
+    checkAuth()
 
     //Look for changes on storage
     const handleStorageChange = () => {
-        checkAuth();
-    };
-    window.addEventListener('storage', handleStorageChange);
+        checkAuth()
+    }
+    window.addEventListener('storage', handleStorageChange)
     //Periodic check
-    const interval = setInterval(checkAuth, 1000);
+    const interval = setInterval(checkAuth, 1000)
     return () => {
-        window.removeEventListener('storage', handleStorageChange);
-        clearInterval(interval);
-    };
-    }, []);
+        window.removeEventListener('storage', handleStorageChange)
+        clearInterval(interval)
+    }
+    }, [])
 
     //Functon to allow logout
     const handleLogout = () => {
-        authService.logout();
-        setIsLogged(false);
-        setUser(null);
+        authService.logout()
+        setIsLogged(false)
+        setUser(null)
         navigate('/')
     }
 

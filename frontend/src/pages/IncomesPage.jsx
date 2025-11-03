@@ -1,9 +1,9 @@
-import { IncomeForm } from "../components/IncomeForm";
-import { IncomeList } from "../components/IncomeList";
-import { FilterSection } from "../components/FilterSection";
-import { useIncomes } from "../hooks/useIncomes";
-import { useState } from "react";
-import '../styles/ExpensesStyle.css';
+import { IncomeForm } from "../components/IncomeForm"
+import { IncomeList } from "../components/IncomeList"
+import { FilterSection } from "../components/FilterSection"
+import { useIncomes } from "../hooks/useIncomes"
+import { useState } from "react"
+import '../styles/ExpensesStyle.css'
 
 export function IncomesPage() {
     const {incomes, loading, error,isFiltered, 

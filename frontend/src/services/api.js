@@ -6,23 +6,23 @@ const getAuthHeaders = () => {
     const token = authService.getToken()
     const headers = {
     'Content-Type': 'application/json'
-    };
+    }
     if (token) {
     headers['Authorization'] = `Bearer ${token}`
     }
     return headers
-};
+}
 
 const handleResponse = async (response) => {
     if (!response.ok) {
     if (response.status === 401) {
-        authService.logout();
-        window.location.reload();
+        authService.logout()
+        window.location.reload()
     }
     throw new Error(`HTTP error! status: ${response.status}`)
     }
-    return response.json();
-};
+    return response.json()
+}
 
 export const apiService = {
     getAll: async (type) => {
@@ -37,32 +37,32 @@ export const apiService = {
         const response = await fetch(newUrl, {
             headers: getAuthHeaders()
         })
-        return handleResponse(response);
+        return handleResponse(response)
     },
     getExpenseById: async (id) => {
         const response = await fetch(`${API_EXPENSE_BASE}/${id}`, {
             headers: getAuthHeaders()
         })
-        return handleResponse(response);
+        return handleResponse(response)
     },
     getTotalExpenses: async () => {
         const response = await fetch(`${API_EXPENSE_BASE}/total`, {
             headers: getAuthHeaders()
         })
-        return handleResponse(response);
+        return handleResponse(response)
     },
     getCurrentMonthExpenses: async () => {
         const response = await fetch(`${API_EXPENSE_BASE}/total/current-month`, {
             headers: getAuthHeaders()
         })
-        return handleResponse(response);
+        return handleResponse(response)
     },
     getTotalExpensesByDateRange: async (startDate, endDate) => {
         const response = await fetch(
             `${API_EXPENSE_BASE}/total/date-range?startDate=${startDate}&endDate=${endDate}`, 
             { headers: getAuthHeaders() }
-        );
-        return handleResponse(response);
+        )
+        return handleResponse(response)
     },
     create: async (data,type) => {
         let newUrl= ''
@@ -78,7 +78,7 @@ export const apiService = {
             headers: getAuthHeaders(),
             body: JSON.stringify(data),
         })
-        return handleResponse(response);
+        return handleResponse(response)
     },
     update: async (id, expense,type) => {
         let newUrl= ''
@@ -94,7 +94,7 @@ export const apiService = {
             headers: getAuthHeaders(),
             body: JSON.stringify(expense),
         })
-        return handleResponse(response);
+        return handleResponse(response)
     },
     delete: async (id,type) => {
         let newUrl= ''
@@ -108,17 +108,17 @@ export const apiService = {
         const response = await fetch(`${newUrl}/${id}`, {
             method: 'DELETE',
             headers: getAuthHeaders(),
-        });
+        })
         
         if (!response.ok) {
             if (response.status === 401) {
-                authService.logout();
-                window.location.reload();
+                authService.logout()
+                window.location.reload()
             }
-            throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error(`HTTP error! status: ${response.status}`)
         }
         
-        return true;
+        return true
     },
     filterExpenses: async (filters,type) => {
         const {category, startDate, endDate, minAmount, maxAmount} = filters
@@ -140,11 +140,11 @@ export const apiService = {
         }else{
             throw new Error('Invalid type for filtering expenses')
         }
-        const urlFiltered = queryStringParams ? `${newUrl}/filters?${queryStringParams}` : `${newUrl}/filters`;
+        const urlFiltered = queryStringParams ? `${newUrl}/filters?${queryStringParams}` : `${newUrl}/filters`
         const response = await fetch(urlFiltered, {
             headers: getAuthHeaders()
-        });
-        return handleResponse(response);
+        })
+        return handleResponse(response)
     }
 
 }

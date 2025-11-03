@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { authService } from '../services/authService';
+import { authService } from '../services/authService'
 
 export function RegisterForm({onSubmit,editUser, onSwitchToLogin}) {
     const [formData, setFormData] = useState({
@@ -8,8 +8,8 @@ export function RegisterForm({onSubmit,editUser, onSwitchToLogin}) {
         password: ''
     })
     
-    const [errors, setErrors] = useState({});
-    const [isLoading, setIsLoading] = useState(false);
+    const [errors, setErrors] = useState({})
+    const [isLoading, setIsLoading] = useState(false)
 
     useEffect(() => {
         if (editUser) {
@@ -22,17 +22,17 @@ export function RegisterForm({onSubmit,editUser, onSwitchToLogin}) {
     }, [editUser])
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
+        const { name, value } = e.target
         setFormData(prev => ({
             ...prev,
             [name]: value
-        }));
-    };
+        }))
+    }
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        setIsLoading(true);
-        setErrors({});
+        e.preventDefault()
+        setIsLoading(true)
+        setErrors({})
 
         try{
             const result = await authService.register(formData)
@@ -51,7 +51,7 @@ export function RegisterForm({onSubmit,editUser, onSwitchToLogin}) {
         }finally{
             setIsLoading(false)
         }
-    };
+    }
 
     return (
         <div className="card">

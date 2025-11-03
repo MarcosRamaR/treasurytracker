@@ -1,29 +1,29 @@
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { Pie } from 'react-chartjs-2';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
+import { Pie } from 'react-chartjs-2'
 
-ChartJS.register(ArcElement, Tooltip, Legend);
+ChartJS.register(ArcElement, Tooltip, Legend)
 
 export function IncomeCategoryChart({ incomes}) {
 
     const getCategoryData = () => {
-    const categoryData = {};
-    let totalAmount = 0;
+    const categoryData = {}
+    let totalAmount = 0
     
     incomes.forEach(income => {
-        const category = income.category || 'Others';
+        const category = income.category || 'Others'
         if (!categoryData[category]) {
-        categoryData[category] = 0;
+        categoryData[category] = 0
         }
-        categoryData[category] += income.amount;
-        totalAmount += income.amount;
-    });
+        categoryData[category] += income.amount
+        totalAmount += income.amount
+    })
     
-    return {categoryData: categoryData, totalAmount: totalAmount};
-    };
+    return {categoryData: categoryData, totalAmount: totalAmount}
+    }
 
-    const categoryData = getCategoryData();
-    const categories = Object.keys(categoryData.categoryData);
-    const amounts = Object.values(categoryData.categoryData);
+    const categoryData = getCategoryData()
+    const categories = Object.keys(categoryData.categoryData)
+    const amounts = Object.values(categoryData.categoryData)
 
 
     const backgroundColors = [
@@ -35,9 +35,9 @@ export function IncomeCategoryChart({ incomes}) {
     'rgba(129, 199, 132, 0.8)',   
     'rgba(100, 181, 246, 0.8)',   
     'rgba(77, 182, 172, 0.8)',   
-    ];
+    ]
 
-    const borderColors = backgroundColors.map(color => color.replace('0.8', '1'));
+    const borderColors = backgroundColors.map(color => color.replace('0.8', '1'))
 
     const chartData = {
     labels: categories,
@@ -50,7 +50,7 @@ export function IncomeCategoryChart({ incomes}) {
         hoverOffset: 15,
         },
     ],
-    };
+    }
 
     const options = {
     responsive: true,
@@ -78,16 +78,16 @@ export function IncomeCategoryChart({ incomes}) {
         tooltip: {
         callbacks: {
             label: function(context) {
-            const label = context.label || '';
-            const value = context.parsed;
-            const total = context.dataset.data.reduce((a, b) => a + b, 0);
-            const percentage = ((value / total) * 100).toFixed(1);
-            return `${label}: €${value.toFixed(2)} (${percentage}%)`;
+            const label = context.label || ''
+            const value = context.parsed
+            const total = context.dataset.data.reduce((a, b) => a + b, 0)
+            const percentage = ((value / total) * 100).toFixed(1)
+            return `${label}: €${value.toFixed(2)} (${percentage}%)`
             }
         },
         },
     },
-    };
+    }
 
     return (
     <div className="chart-card pie-chart-container">
@@ -107,5 +107,5 @@ export function IncomeCategoryChart({ incomes}) {
             )}
         </div>
     </div>
-    );
+    )
 }
