@@ -13,6 +13,7 @@
 }
 
 .register-login-button {
+    margin-top: 20px;
     padding: 8px 16px;
     background-color: #b88d00;
     color: rgb(0, 0, 0);
@@ -34,4 +35,16 @@
     font-size: 17px;
     font-weight: 500;
     line-height: 1.9;
+}
+
+.container-register-login{
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    padding: 20px;
+    background-color: #16213e;
+    max-width: 1600px;
+    width: auto;
+    margin-left:auto;
+    margin-right:auto;
 }

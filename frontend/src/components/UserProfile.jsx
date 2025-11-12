@@ -1,4 +1,5 @@
 import { authService } from "../services/authService"
+import '../styles/RegisterLoginStyle.css'
 
 export function UserProfile({onLogout}) {
     const user = authService.getUser()
@@ -25,7 +26,7 @@ export function UserProfile({onLogout}) {
                 {user?.email || 'N/A'}
             </div>
         </div>
-        <button onClick={handleLogout}>Logout</button>
+        <button className="register-login-button"  onClick={handleLogout}>Logout</button>
     </div>
   )
 }

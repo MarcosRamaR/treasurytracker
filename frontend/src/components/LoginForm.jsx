@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { authService } from '../services/authService'
+import '../styles/RegisterLoginStyle.css'
 
 export function LoginForm({onSwitchToRegister, onLoginSuccess}){
     //Set form state
@@ -61,11 +62,11 @@ export function LoginForm({onSwitchToRegister, onLoginSuccess}){
             {errors.error && (
             <div className="alert alert-danger">{errors.error}</div>)}
 
-            <button type="submit" disabled={isLoading}>{isLoading ? 'Loggin in...': 'Login'}</button>
+            <button className="register-login-button" type="submit" disabled={isLoading}>{isLoading ? 'Loggin in...': 'Login'}</button>
             <div className="text-center mt-3">
                 <p className="mb-0">
                 Don't have an account?{' '}
-                    <button type="button" onClick={onSwitchToRegister}>Register</button>
+                    <button className="register-login-button"  type="button" onClick={onSwitchToRegister}>Register</button>
                 </p>
             </div>
         </form>

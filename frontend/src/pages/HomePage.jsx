@@ -3,10 +3,12 @@ import { authService } from '../services/authService'
 import { LoginForm } from '../components/LoginForm'
 import { RegisterForm } from '../components/RegisterForm'
 import { UserProfile } from '../components/UserProfile'
+import '../styles/RegisterLoginStyle.css'
 
 export function HomePage()  {
   const [isLogged, setIsLogged] = useState(false)
   const [showRegister, setShowRegister] = useState(false)
+  const user = JSON.parse(localStorage.getItem('user'))
 
     useEffect(() => {
       const authenticated = authService.isAuthenticated()
@@ -36,13 +38,14 @@ export function HomePage()  {
     setShowRegister(false)
   }
   return (
-    <div className="container">
+    <div className="container-register-login">
       <div className="row justify-content-center">
         <div className="col-md-6">
-          <h1 className="text-center mb-4">Welcome to Treasury Tracker</h1>
-          
+          {isLogged ? <h1 className="text-center mb-4">Welcome to Treasury Tracker, <b>{user.username}</b></h1> : <h1 className="text-center mb-4">Welcome to Treasury Tracker</h1>}
           {isLogged ? (
-            <UserProfile onLogout={handleLogout}/>):(
+            <>
+              <UserProfile onLogout={handleLogout}/>
+            </>):(
             <>
               {showRegister ? (
                 <RegisterForm 

@@ -9,9 +9,9 @@ import './styles/NavBarStyle.css'
 
 export const TreasuryApp = () => {
   return (
-      <div className="fixed-top">
+      <div className="app-container">
         <NavBar/>
-        <div className="container mt-2">
+        <div className="main-container">
           <Routes>
             <Route path="/" element={<HomePage/>}/>
             <Route path="/summary" element={<SummaryPage/>}/>

@@ -88,3 +88,9 @@
     align-items: center;
     margin: 5px;
 }
+
+@media (max-width: 768px) {
+    .dashboard-grid {
+    grid-template-columns: 1fr;
+    }
+}
