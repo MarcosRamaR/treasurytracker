@@ -6,13 +6,11 @@ import {useState, useEffect} from 'react'
 export const NavBar = () => {
     // Check if user is authenticated and user data
     const [isLogged, setIsLogged] = useState(false)
-    const [user, setUser] = useState(null)
     const navigate = useNavigate()
 
     useEffect(() => {
     const checkAuth = () => {
         setIsLogged(authService.isAuthenticated())
-        setUser(authService.getUser())
     }
     //Verify with load
     checkAuth()
@@ -34,7 +32,6 @@ export const NavBar = () => {
     const handleLogout = () => {
         authService.logout()
         setIsLogged(false)
-        setUser(null)
         navigate('/')
     }
 
@@ -42,10 +39,6 @@ export const NavBar = () => {
     <nav className="navbar navbar-expand-lg bg-body-tertiary sticky-top">
         <div className="container-fluid" >
             <NavLink to='/' className="navbar-brand">Treasury Tracker</NavLink>
-            {/*Show name if logged*/}
-            {isLogged && (
-                <span className="navbar-text me-3"> Welcome, {user.username}!</span>
-            )}
             <button className="navbar-dark navbar-toggler custom-color-navbar" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span className="navbar-toggler-icon"></span>
             </button>
