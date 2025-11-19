@@ -17,7 +17,6 @@ public class JwtServiceTest {
     private JwtService jwtService;
     private UserDetails userDetails;
 
-
     @BeforeEach //Method run before each test
     void setUp(){
         jwtService = new JwtService(); //Real instance of JwtService
