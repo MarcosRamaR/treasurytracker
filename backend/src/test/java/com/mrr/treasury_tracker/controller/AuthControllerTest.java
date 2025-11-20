@@ -1,0 +1,103 @@
+package com.mrr.treasury_tracker.controller;
+
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mrr.treasury_tracker.dto.RegisterRequestDTO;
+import com.mrr.treasury_tracker.model.User;
+import com.mrr.treasury_tracker.service.JwtService;
+import com.mrr.treasury_tracker.service.UserService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.MediaType;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import java.util.Collections;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+@ExtendWith(MockitoExtension.class)
+public class AuthControllerTest {
+    @Mock //Create false object
+    private UserService userService;
+
+    @Mock
+    private JwtService jwtService;
+
+    @Mock
+    private AuthenticationManager authenticationManager;
+
+    @InjectMocks //Inject mocks on class to test
+    private AuthController authController;
+
+    private MockMvc mockMvc; //Emulate HTTP request
+    private ObjectMapper objectMapper; //To convert Java -> JSON
+
+    @BeforeEach
+    void setUp(){
+        //New ObjectMappjer object
+        objectMapper = new ObjectMapper();
+        //Configuration MockMvc with controller we want test
+        mockMvc = MockMvcBuilders.standaloneSetup(authController).build();
+    }
+
+    //Successfully register
+    @Test
+    void registerWithValidData_returnJwtTokenAndUserInfo() throws Exception{
+        //Arrange
+
+        //Create data
+        RegisterRequestDTO request = new RegisterRequestDTO(
+                "test3@test.com",
+                "password123",
+                "newUser"
+        );
+        //Creates simulated user
+        User usuarioSimulado = new User();
+        usuarioSimulado.setEmail("test3@test.com");
+        usuarioSimulado.setUserName("newUser");
+
+        //Configuration mocks behavior: when(mock.method()).thenReturn(value)
+        when(userService.registerUser(any(User.class))).thenReturn(usuarioSimulado);
+        when(userService.loadUserByUsername("test3@test.com"))
+                .thenReturn(new org.springframework.security.core.userdetails
+                        .User("test3@test.com", "password123", Collections.emptyList()));
+        when(jwtService.generateToken(any(UserDetails.class)))
+                .thenReturn("fake-jwt-token");
+
+        //Act and Assert
+
+        //Simulate a http request for post method
+        mockMvc.perform(
+                post("/api/auth/register")//URL and request type
+                        .contentType(MediaType.APPLICATION_JSON) //Header
+                        .content(objectMapper.writeValueAsString(request)) //Body on JSON
+        )
+        .andExpect(status().isOk()) //we look for status 200
+        .andExpect(jsonPath("$.token").value("fake-jwt-token"))//Check right token
+        .andExpect(jsonPath("$.email").value("test3@test.com"))//Check right email
+        .andExpect(jsonPath("$.userName").value("newUser"));//Check username
+
+        //Verify we call this methods
+        verify(userService).registerUser(any(User.class));
+        verify(jwtService).generateToken(any(UserDetails.class));
+    }
+
+    //Register with invalid data
+    @Test
+    void registerWithInvalidData() throws Exception{
+
+
+    }
+
+
+}
