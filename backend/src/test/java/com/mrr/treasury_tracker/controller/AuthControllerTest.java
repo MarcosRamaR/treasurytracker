@@ -117,7 +117,30 @@ public class AuthControllerTest {
         verify(jwtService, never()).generateToken(any(UserDetails.class));
     }
 
-    
+    //Register with an existing email
+    @Test
+    void whenRegisterExistingEmail_thenReturnError() throws Exception {
+
+        //Create a right format data
+        RegisterRequestDTO request = new RegisterRequestDTO(
+                "test3@test.com",
+                "password123",
+                "userTest"
+        );
+
+        //Configuration mock to throw an exception when try save a existent user
+        when(userService.registerUser(any(User.class)))
+                .thenThrow(new RuntimeException("Email already exists"));
+
+        mockMvc.perform(
+                        post("/api/auth/register")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request))
+                )
+                .andExpect(status().isBadRequest()) //Status 400
+                .andExpect(jsonPath("$.error").value("Email already exists")); //Verify mention on email already exists
+    }
+
     //Sucessfully login
     @Test
     void loginWithValidCredentials() throws Exception{
