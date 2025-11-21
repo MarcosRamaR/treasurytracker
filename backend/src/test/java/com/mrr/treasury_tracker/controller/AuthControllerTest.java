@@ -2,6 +2,7 @@ package com.mrr.treasury_tracker.controller;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mrr.treasury_tracker.dto.AuthRequestDTO;
 import com.mrr.treasury_tracker.dto.RegisterRequestDTO;
 import com.mrr.treasury_tracker.model.User;
 import com.mrr.treasury_tracker.service.JwtService;
@@ -92,10 +93,31 @@ public class AuthControllerTest {
         verify(jwtService).generateToken(any(UserDetails.class));
     }
 
-    //Register with invalid data
+    //Sucessfully login
     @Test
-    void registerWithInvalidData() throws Exception{
+    void loginWithValidCredentials() throws Exception{
+        //Creates valid login data
+        AuthRequestDTO request = new AuthRequestDTO("test3@test.com", "password123");
 
+        //Creates a simulated user
+        User user = new User();
+        user.setEmail("test3@test.com");
+        user.setUserName("userTest");
+
+        when(userService.findByEmail("test3@test.com")).thenReturn(user);
+        when(userService.loadUserByUsername("test3@test.com")).thenReturn(
+                new org.springframework.security.core.userdetails.User(
+                        "test3@test.com", "password", Collections.emptyList()));
+        when(jwtService.generateToken(any(UserDetails.class))).thenReturn("jwt-token-login");
+
+        //Simulated post http request
+        mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.token").value("jwt-token-login"))
+                .andExpect(jsonPath("$.email").value("test3@test.com"))
+                .andExpect(jsonPath("$.userName").value("userTest"));
 
     }
 
