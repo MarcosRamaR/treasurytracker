@@ -93,6 +93,31 @@ public class AuthControllerTest {
         verify(jwtService).generateToken(any(UserDetails.class));
     }
 
+    //Wrong register (invalid data)
+    @Test
+    void registerWithInvalidData() throws Exception {
+        //We want to use a string instead of a java object to avoid the verification on object creation
+        String invalidJsonRequest = """
+            {
+                "email": "not-an-email",
+                "password": "123",
+                "userName": "ab"
+            }
+            """;
+
+        mockMvc.perform(post("/api/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(invalidJsonRequest))
+                .andExpect(status().isBadRequest()) //Status http must be 400, not 200 ok
+                .andExpect(jsonPath("$.email").exists()) //Must exist an error to email field
+                .andExpect(jsonPath("$.password").exists()) //Must exist an error to password field
+                .andExpect(jsonPath("$.userName").exists()); //Must exist an error to userName field
+
+        verify(userService, never()).registerUser(any(User.class));
+        verify(jwtService, never()).generateToken(any(UserDetails.class));
+    }
+
+    
     //Sucessfully login
     @Test
     void loginWithValidCredentials() throws Exception{
