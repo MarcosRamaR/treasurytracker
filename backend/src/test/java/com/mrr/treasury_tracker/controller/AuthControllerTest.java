@@ -15,6 +15,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -168,6 +170,27 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.userName").value("userTest"));
 
     }
+    //Register with wrong data
+    @Test
+    void loginWithInvalidCredentials() throws Exception {
+        AuthRequestDTO request = new AuthRequestDTO("test3@test.com", "wrongpassword");
 
+
+        //Configuration mock to throw an exception. doThrow() instead of "when..." due to authenticate not return data, only exception or end
+        doThrow(new BadCredentialsException("Invalid credentials"))
+                .when(authenticationManager)
+                .authenticate(any(UsernamePasswordAuthenticationToken.class));
+
+        mockMvc.perform(
+                        post("/api/auth/login")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request))
+                )
+                .andExpect(status().isBadRequest()) //Status 400
+                .andExpect(jsonPath("$.error").value("Invalid credentials")); //Verify error inform to invalid credentials
+        
+        //Verify this not generate a token, controller must denied before token generation
+        verify(jwtService, never()).generateToken(any(UserDetails.class));
+    }
 
 }
