@@ -12,16 +12,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -102,6 +101,27 @@ public class IncomeControllerTest {
         assertNotNull(result); //List exists
         assertTrue(result.isEmpty());  //List empty
     }
+    @Test
+    void getIncomeById_ReturnIncome_WhenIncomeExists() {
+        //Sim we find the income on DB
+        when(incomeRepository.findById(1L)).thenReturn(Optional.of(testIncome));
 
-    
+        ResponseEntity<IncomeResponseDTO> result = incomeController.getIncomeById(1L, authentication);
+        
+        assertEquals(HttpStatus.OK, result.getStatusCode()); //200 status code
+        assertNotNull(result.getBody()); //Body with data
+        assertEquals("January Salary",result.getBody().getDescription());
+        assertEquals(1L,result.getBody().getId());
+    }
+    @Test
+    void getIncomeById_ReturnNotFound_WhenIncomeDoesNotExist() {
+        when(incomeRepository.findById(1L)).thenReturn(Optional.empty());
+
+        ResponseEntity<IncomeResponseDTO> result = incomeController.getIncomeById(1L, authentication);
+
+        assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode()); //400 status code
+        assertNull(result.getBody()); //Not data
+
+    }
+
 }
