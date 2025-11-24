@@ -139,5 +139,134 @@ public class IncomeControllerTest {
 
         assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
     }
+    @Test
+    void createIncome_CreateAndReturnIncome() {
+        //Sim the repository answer
+        when(incomeRepository.save(any(Income.class))).thenReturn(testIncome);
 
+        ResponseEntity<?> result = incomeController.createIncome(testIncomeDTO, authentication);
+
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertNotNull(result.getBody());
+
+        //(IncomeResponseDTO) due to we know is this object type
+        IncomeResponseDTO response = (IncomeResponseDTO) result.getBody();
+        assertEquals("January Salary", response.getDescription());
+
+        verify(incomeRepository, times(1)).save(any(Income.class));
+    }
+
+    @Test
+    void updateIncome_UpdateAndReturnIncome_WhenIncomeExists() {
+        when(incomeRepository.findById(1L)).thenReturn(Optional.of(testIncome));
+
+        //New data
+        IncomeDTO updateDTO = new IncomeDTO();
+        updateDTO.setDescription("Updated Salary");  // Descripción nueva
+        updateDTO.setAmount(new BigDecimal("3500.00"));    // Monto nuevo
+        updateDTO.setCategory("Salary");
+        updateDTO.setDate(LocalDate.now());
+
+        Income updatedIncome = new Income();
+        updatedIncome.setId(1L);
+        updatedIncome.setDescription("Updated Salary");
+        updatedIncome.setAmount(new BigDecimal("3500.00"));
+        updatedIncome.setCategory("Salary");
+        updatedIncome.setDate(LocalDate.now());
+        updatedIncome.setCreatedAt(LocalDateTime.now());
+        updatedIncome.setUser(testUser);
+
+        //Set mock to return updated income
+        when(incomeRepository.save(any(Income.class))).thenReturn(updatedIncome);
+
+        ResponseEntity<?> result = incomeController.updateIncome(1L, updateDTO, authentication);
+
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        IncomeResponseDTO response = (IncomeResponseDTO) result.getBody();
+        assertEquals("Updated Salary", response.getDescription());
+        assertEquals(new BigDecimal("3500.00"), response.getAmount());
+        verify(incomeRepository, times(1)).save(any(Income.class));
+    }
+
+    @Test
+    void deleteIncome_DeleteIncome_WhenIncomeExists() {
+        when(incomeRepository.findById(1L)).thenReturn(Optional.of(testIncome));
+
+        //Tell mockito do nothing special with method, "it's ok"
+        doNothing().when(incomeRepository).deleteById(1L);
+
+        ResponseEntity<Income> result = incomeController.deleteIncome(1L, authentication);
+
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        verify(incomeRepository, times(1)).deleteById(1L);
+    }
+
+    @Test
+    void filterIncomes_ReturnFilteredIncomes() {
+        List<Income> incomes = Collections.singletonList(testIncome);
+
+        // eq() = "equal to"
+        // any() = "any value"
+        when(incomeRepository.findByFilters(
+                eq(1L),
+                eq("Salary"),
+                any(LocalDate.class),
+                any(LocalDate.class),
+                any(BigDecimal.class),
+                any(BigDecimal.class))).thenReturn(incomes);
+
+        List<IncomeResponseDTO> result = incomeController.filterIncomes(
+                "Salary",
+                LocalDate.now().minusDays(30),
+                LocalDate.now(),
+                new BigDecimal("1000.00"),
+                new BigDecimal("5000.00"),
+                authentication);
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals("January Salary", result.getFirst().getDescription());
+    }
+
+    @Test
+    void getTotalIncomes_ReturnTotal() {
+        BigDecimal total = new BigDecimal("10000.00");
+        when(incomeRepository.getTotalByUser(1L)).thenReturn(Optional.of(total));
+
+        ResponseEntity<?> result = incomeController.getTotalIncomes(authentication);
+
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+
+        @SuppressWarnings("unchecked") //To ignore cast warning
+        Map<String, BigDecimal> body = (Map<String, BigDecimal>) result.getBody();
+
+        assertNotNull(body);
+        assertEquals(total, body.get("total"));
+    }
+
+    @Test
+    void getCategoryTotals_ReturnCategoryTotals() {
+        List<Object[]> categoryTotals = new ArrayList<>();
+
+        //Object[] is a row from the result
+        Object[] category1 = {"Salary", new BigDecimal("5000.00")};
+        Object[] category2 = {"Transport", new BigDecimal("2000.00")};
+        categoryTotals.add(category1);
+        categoryTotals.add(category2);
+
+        //Emulates two rows, Salary and Transport
+        when(incomeRepository.getCategoryTotalsByUser(1L)).thenReturn(categoryTotals);
+
+        //Get user authenticated (id=1), call method to get an Object[] list, return
+        ResponseEntity<List<Object[]>> result = incomeController.getCategoryTotals(authentication);
+
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertNotNull(result.getBody());
+        assertEquals(2, result.getBody().size()); //We expected two categories
+
+        assertEquals("Salary", result.getBody().get(0)[0]);
+        assertEquals(new BigDecimal("5000.00"), result.getBody().get(0)[1]);
+        assertEquals("Transport", result.getBody().get(1)[0]);
+        assertEquals(new BigDecimal("2000.00"), result.getBody().get(1)[1]);
+    }
 }
