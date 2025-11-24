@@ -101,18 +101,20 @@ public class IncomeControllerTest {
         assertNotNull(result); //List exists
         assertTrue(result.isEmpty());  //List empty
     }
+
     @Test
     void getIncomeById_ReturnIncome_WhenIncomeExists() {
         //Sim we find the income on DB
         when(incomeRepository.findById(1L)).thenReturn(Optional.of(testIncome));
 
         ResponseEntity<IncomeResponseDTO> result = incomeController.getIncomeById(1L, authentication);
-        
+
         assertEquals(HttpStatus.OK, result.getStatusCode()); //200 status code
         assertNotNull(result.getBody()); //Body with data
         assertEquals("January Salary",result.getBody().getDescription());
         assertEquals(1L,result.getBody().getId());
     }
+
     @Test
     void getIncomeById_ReturnNotFound_WhenIncomeDoesNotExist() {
         when(incomeRepository.findById(1L)).thenReturn(Optional.empty());
@@ -121,7 +123,21 @@ public class IncomeControllerTest {
 
         assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode()); //400 status code
         assertNull(result.getBody()); //Not data
+    }
 
+    @Test
+    void getIncomeById_ReturnNotFound_WhenIncomeDoesNotBelongToUser() {
+        //Creates income from other user
+        User otherUser = new User();
+        otherUser.setId(2L);  //Different user id
+        testIncome.setUser(otherUser);
+
+        when(incomeRepository.findById(1L)).thenReturn(Optional.of(testIncome));
+
+        //User with Id=1 try wee the income to user with id=2
+        ResponseEntity<IncomeResponseDTO> result = incomeController.getIncomeById(1L, authentication);
+
+        assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
     }
 
 }
