@@ -188,7 +188,7 @@ public class AuthControllerTest {
                 )
                 .andExpect(status().isBadRequest()) //Status 400
                 .andExpect(jsonPath("$.error").value("Invalid credentials")); //Verify error inform to invalid credentials
-        
+
         //Verify this not generate a token, controller must denied before token generation
         verify(jwtService, never()).generateToken(any(UserDetails.class));
     }
