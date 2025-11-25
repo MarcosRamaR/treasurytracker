@@ -139,7 +139,7 @@ public class ExpenseController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteExpense(@PathVariable Long id, Authentication authentication) {
+    public ResponseEntity<Expense> deleteExpense(@PathVariable Long id, Authentication authentication) {
         User user = getCurrentUser(authentication);
         Optional<Expense> expense = expenseRepository.findById(id);
 

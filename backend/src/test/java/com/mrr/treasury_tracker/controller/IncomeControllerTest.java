@@ -69,7 +69,7 @@ public class IncomeControllerTest {
         testIncomeDTO.setCategory("Salary");
         testIncomeDTO.setDate(LocalDate.now());
 
-        //Emulate obtain user since authentication token
+        //Emulates authentication
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(userDetails.getUsername()).thenReturn("test4@test.com");
         when(userService.findByEmail("test4@test.com")).thenReturn(testUser);
@@ -77,9 +77,10 @@ public class IncomeControllerTest {
 
     @Test
     void getAllIncomes_ReturnListOfIncomes() {
-        List<Income> incomes = Collections.singletonList(testIncome);
+        List<Income> incomes = Collections.singletonList(testIncome); //Inmutable one element list
         when(incomeRepository.findByUserIdOrderByDateDesc(1L)).thenReturn(incomes);
 
+        //Call real method, but using mock repository (we get previous list)
         List<IncomeResponseDTO> result = incomeController.getAllIncomes(authentication);
 
         assertNotNull(result);
@@ -192,7 +193,7 @@ public class IncomeControllerTest {
     void deleteIncome_DeleteIncome_WhenIncomeExists() {
         when(incomeRepository.findById(1L)).thenReturn(Optional.of(testIncome));
 
-        //Tell mockito do nothing special with method, "it's ok"
+        //Tell mockito do nothing special with method, "it's ok", necessary due to method without return data
         doNothing().when(incomeRepository).deleteById(1L);
 
         ResponseEntity<Income> result = incomeController.deleteIncome(1L, authentication);
