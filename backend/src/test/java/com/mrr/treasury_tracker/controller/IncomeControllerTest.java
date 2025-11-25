@@ -251,7 +251,7 @@ public class IncomeControllerTest {
 
         //Object[] is a row from the result
         Object[] category1 = {"Salary", new BigDecimal("5000.00")};
-        Object[] category2 = {"Transport", new BigDecimal("2000.00")};
+        Object[] category2 = {"Investments", new BigDecimal("2000.00")};
         categoryTotals.add(category1);
         categoryTotals.add(category2);
 
@@ -267,7 +267,7 @@ public class IncomeControllerTest {
 
         assertEquals("Salary", result.getBody().get(0)[0]);
         assertEquals(new BigDecimal("5000.00"), result.getBody().get(0)[1]);
-        assertEquals("Transport", result.getBody().get(1)[0]);
+        assertEquals("Investments", result.getBody().get(1)[0]);
         assertEquals(new BigDecimal("2000.00"), result.getBody().get(1)[1]);
     }
 }

@@ -21,9 +21,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -173,6 +171,41 @@ public class ExpenseControllerTest {
         assertEquals(1,result.size());
         assertEquals("Gasoline",result.getFirst().getDescription());
         assertEquals((new BigDecimal("200.00")),result.getFirst().getAmount());
+    }
+
+    @Test
+    void getTotalExpenses_ReturnTotal(){
+        BigDecimal total = new BigDecimal("10000.00");
+        when(expenseRepository.getTotalByUser(1L)).thenReturn(Optional.of(total));
+
+        ResponseEntity<?> result = expenseController.getTotalExpenses(authentication);
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        @SuppressWarnings("unchecked")
+        Map<String, BigDecimal> body = (Map<String, BigDecimal>) result.getBody();
+
+        assertNotNull(body);
+        assertEquals(total,body.get("total"));
+    }
+
+    @Test
+    void getCategoryTotals_ReturnCategoryExpensesTotals(){
+        List<Object[]> categoryTotals = new ArrayList<>();
+        Object[] category1 = {"Transport", new BigDecimal("5000.00")};
+        Object[] category2 = {"Food", new BigDecimal("2000.00")};
+        categoryTotals.add(category1);
+        categoryTotals.add(category2);
+
+        when(expenseRepository.getCategoryTotalsByUser(1L)).thenReturn(categoryTotals);
+        ResponseEntity<List<Object[]>> result = expenseController.getCategoryTotals(authentication);
+
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertNotNull(result.getBody());
+        assertEquals(2,result.getBody().size());
+        assertEquals("Transport",result.getBody().get(0)[0]);
+        assertEquals(new BigDecimal("5000.00"),result.getBody().get(0)[1]);
+        assertEquals("Food",result.getBody().get(1)[0]);
+        assertEquals(new BigDecimal("2000.00"),result.getBody().get(1)[1]);
+
     }
 
 }
