@@ -49,9 +49,6 @@ public class BalanceService {
         if (balanceOpt.isEmpty()) return null;
 
         Balance balance = balanceOpt.get();
-        LocalDateTime lastUpdate = balance.getUpdatedAt();
-        LocalDate startDate = lastUpdate.toLocalDate();
-        LocalDate endDate = LocalDate.now();
 
         List<Income> incomes = incomeRepository.findPendingIncomesToApply(user.getId());
         List<Expense> expenses = expenseRepository.findPendingExpensesToApply(user.getId());
