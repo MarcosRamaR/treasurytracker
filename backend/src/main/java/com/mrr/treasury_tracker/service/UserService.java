@@ -1,6 +1,8 @@
 package com.mrr.treasury_tracker.service;
 
+import com.mrr.treasury_tracker.model.Balance;
 import com.mrr.treasury_tracker.model.User;
+import com.mrr.treasury_tracker.repository.BalanceRepository;
 import com.mrr.treasury_tracker.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -8,16 +10,20 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Collections;
 
 @Service
 public class UserService implements UserDetailsService { //UserDetailsService is interface from Spring Security to load user data
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final BalanceRepository balanceRepository;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, BalanceRepository balanceRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.balanceRepository = balanceRepository;
     }
 
     //Search a user by email and convert into right format for Spring Security
@@ -41,7 +47,16 @@ public class UserService implements UserDetailsService { //UserDetailsService is
         }
         //Encrypt password before save user
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+
+        Balance balance = new Balance(
+                BigDecimal.ZERO,
+                savedUser,
+                LocalDateTime.now(),
+                "SYSTEM"
+        );
+        balanceRepository.save(balance);
+        return savedUser;
     }
 
     public User findByEmail(String email){
