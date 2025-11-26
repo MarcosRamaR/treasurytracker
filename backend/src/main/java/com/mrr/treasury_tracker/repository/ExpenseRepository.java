@@ -51,6 +51,8 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     @Query("SELECT SUM(e.amount) FROM Expense e WHERE e.user.id = :userId")
     Optional<BigDecimal> getTotalByUser(@Param("userId") Long userId);
 
+    @Query("SELECT e FROM Expense e WHERE e.user.id = :userId AND e.applicated = false AND e.date <= CURRENT_DATE")
+    List<Expense> findPendingExpensesToApply(@Param("userId") Long userId);
 
 
 }

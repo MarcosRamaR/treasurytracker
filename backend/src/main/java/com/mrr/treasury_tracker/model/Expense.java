@@ -38,12 +38,15 @@ public class Expense {
     @JoinColumn(name="user_id", nullable = false)
     private User user;
 
+    @Column(name="applicated_at_balance", nullable = false)
+    private boolean applicated = false;
+
 
     public Expense(){
         //Void constructor needed by JPA
     }
     public Expense(Long id, String description, BigDecimal amount, String category, LocalDate date,
-                   LocalDateTime createdAt, LocalDateTime updatedAt, User user){
+                   LocalDateTime createdAt, LocalDateTime updatedAt, User user, boolean applicated){
         this.id=id;
         this.description = description;
         this.amount = amount;
@@ -52,6 +55,8 @@ public class Expense {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.user=user;
+        this.applicated = applicated;
+
     }
 
     public Long getId() {
@@ -116,6 +121,14 @@ public class Expense {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public boolean isApplicated() {
+        return applicated;
+    }
+
+    public void setApplicated(boolean applicated) {
+        this.applicated = applicated;
     }
 
     @PrePersist //JPA: runs automatically before saving new data

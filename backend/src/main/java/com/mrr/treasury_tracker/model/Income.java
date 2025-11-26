@@ -35,10 +35,13 @@ public class Income {
     @JoinColumn(name="user_id", nullable = false)
     private User user;
 
+    @Column(name="applicated_at_balance", nullable = false)
+    private boolean applicated = false;
+
     public Income(){
 
     }
-    public Income(Long id, String description, BigDecimal amount, String category, LocalDate date, LocalDateTime createdAt, LocalDateTime updatedAt, User user) {
+    public Income(Long id, String description, BigDecimal amount, String category, LocalDate date, LocalDateTime createdAt, LocalDateTime updatedAt, User user, boolean applicated) {
         this.id = id;
         this.description = description;
         this.amount = amount;
@@ -47,14 +50,16 @@ public class Income {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.user = user;
+        this.applicated = applicated;
     }
 
-    public Income(String description, BigDecimal amount, String category, LocalDate date, User user) {
+    public Income(String description, BigDecimal amount, String category, LocalDate date, User user, boolean applicated) {
         this.description = description;
         this.amount = amount;
         this.category = category;
         this.date = date;
         this.user = user;
+        this.applicated = applicated;
     }
 
     public Long getId() {
@@ -119,6 +124,14 @@ public class Income {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public boolean isApplicated() {
+        return applicated;
+    }
+
+    public void setApplicated(boolean applicated) {
+        this.applicated = applicated;
     }
 
     @PrePersist

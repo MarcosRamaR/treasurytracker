@@ -94,7 +94,8 @@ public class IncomeController {
                 requestIncome.getAmount(),
                 requestIncome.getCategory(),
                 date,
-                user);
+                user,
+                false);
         Income savedIncome =  incomeRepository.save(newIncome);
 
         //Create DTO to response

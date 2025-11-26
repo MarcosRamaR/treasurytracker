@@ -53,26 +53,24 @@ public class BalanceService {
         LocalDate startDate = lastUpdate.toLocalDate();
         LocalDate endDate = LocalDate.now();
 
-        List<Income> incomes = incomeRepository.findByFilters(
-                user.getId(), null, startDate, endDate, null, null
-        );
-        List<Expense> expenses = expenseRepository.findByFiltersAndUser(
-                user.getId(), null, startDate, endDate, null, null
-        );
+        List<Income> incomes = incomeRepository.findPendingIncomesToApply(user.getId());
+        List<Expense> expenses = expenseRepository.findPendingExpensesToApply(user.getId());
 
-        BigDecimal totalIncome = incomes.stream()
-                .map(Income::getAmount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal totalExpense = expenses.stream()
-                .map(Expense::getAmount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal totalIncome = incomes.stream().map(Income::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal totalExpense = expenses.stream().map(Expense::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
 
         BigDecimal newBalanceAmount = balance.getAmount().add(totalIncome).subtract(totalExpense);
         balance.setAmount(newBalanceAmount);
         balance.setModifiedBy("SYSTEM");
         balance.setUpdatedAt(LocalDateTime.now());
+        Balance updatedBalance = balanceRepository.save(balance);
 
-        return balanceRepository.save(balance);
+        incomes.forEach(i -> i.setApplicated(true));
+        expenses.forEach(e -> e.setApplicated(true));
+        incomeRepository.saveAll(incomes);
+        expenseRepository.saveAll(expenses);
+
+        return updatedBalance;
     }
 
 }

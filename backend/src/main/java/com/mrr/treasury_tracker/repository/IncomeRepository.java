@@ -38,4 +38,7 @@ public interface IncomeRepository extends JpaRepository<Income,Long> {
     @Query("SELECT e.category, SUM(e.amount) FROM Income e WHERE e.user.id = :userId GROUP BY e.category ORDER BY SUM(e.amount) DESC")
     List<Object[]> getCategoryTotalsByUser(@Param("userId") Long userId);
 
+    @Query("SELECT i FROM Income i WHERE i.user.id = :userId AND i.applicated = false AND i.date <= CURRENT_DATE")
+    List<Income> findPendingIncomesToApply(@Param("userId") Long userId);
+
 }
