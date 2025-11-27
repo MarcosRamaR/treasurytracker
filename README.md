@@ -16,10 +16,10 @@ A web application for personal finance management and cash flow tracking. Develo
 - `User Authentication`: Register, log in, and manage individual user accounts. Each user's data is displayed only to the logged-in user.
 - `Expense Management`: Add, edit, and delete expenses with detailed information. Each user only can manage their own personal expense records.
 - `Income Management`: Similar functionality for tracking income sources, tracked separately for each user.
-- `Expenses Categorization`: Organize expenses into categories (Food, Transport, Entertainment, Others)
-- `Advanced Filtering`: Multi-criteria filtering (Dates, Category and imports)
-- `Real-time Summary`: View total and average expenses in the summary section
-- `Advanced Analytics`: Charts and graphs for financial insights
+- `Expenses Categorization`: Organize expenses into categories (Food, Transport, Entertainment, Others).
+- `Advanced Filtering`: Multi-criteria filtering (Dates, Category and Imports).
+- `Real-time Summary`: Displays your current bank balance, projected balance in 30 days, and year-end balance. Alerts you if your balance is expected to go negative within the next 7 days.
+- `Advanced Analytics`: Charts and graphs for financial insights.
 
 
 ## Access to the project
@@ -81,7 +81,7 @@ This application uses **React** together with **Vite** for bundling and Hot Modu
 
 <div align="left">
   
-**Current Status:** Open Source - Free to use, modify and distribute
+**Current Status:** Open Source - Free to use, modify and free distribute
 
 **Future Considerations:** Licensing terms may evolve as the project matures. 
 Users are advised to check this section periodically for updates.
