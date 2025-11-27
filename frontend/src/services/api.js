@@ -157,7 +157,7 @@ export const apiService = {
         const response = await fetch(`${API_BALANCE_BASE}/manual`, {
             method: 'PUT',
             headers: getAuthHeaders(),
-            body: JSON.stringify({balance: newBalance}),
+            body: JSON.stringify({amount: newBalance}),
         })
         return handleResponse(response)
     },
