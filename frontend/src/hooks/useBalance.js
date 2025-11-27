@@ -8,7 +8,7 @@ export const useBalance = () => {
     const [error, setError] = useState('') 
     useEffect(() => {
         loadBalance()
-    }, [balance])
+    }, [])
 
     const loadBalance = async () => {
         try{
@@ -64,5 +64,11 @@ export const useBalance = () => {
         }
     }
 
-    return {balance, loading, error, loadBalance, updateManualBalance, updateAutomaticBalance}
+    return {
+        balance, 
+        loading, 
+        error, 
+        loadBalance, 
+        updateManualBalance, 
+        updateAutomaticBalance}
 }

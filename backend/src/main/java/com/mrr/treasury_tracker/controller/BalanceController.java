@@ -36,7 +36,7 @@ public class BalanceController {
         if(balance == null){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Balance not found");
         }
-        return ResponseEntity.ok(balance);
+        return ResponseEntity.ok(balance.getAmount());
     }
 
     @PutMapping("/manual")

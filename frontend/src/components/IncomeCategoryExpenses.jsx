@@ -27,14 +27,9 @@ export function IncomeCategoryChart({ incomes}) {
 
 
     const backgroundColors = [
-    'rgba(75, 192, 192, 0.8)',    
+    'rgba(219, 101, 23, 0.8)',    
     'rgba(54, 162, 235, 0.8)',    
     'rgba(153, 102, 255, 0.8)',   
-    'rgba(102, 187, 106, 0.8)',   
-    'rgba(79, 195, 247, 0.8)',    
-    'rgba(129, 199, 132, 0.8)',   
-    'rgba(100, 181, 246, 0.8)',   
-    'rgba(77, 182, 172, 0.8)',   
     ]
 
     const borderColors = backgroundColors.map(color => color.replace('0.8', '1'))
