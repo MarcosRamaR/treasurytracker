@@ -1,5 +1,6 @@
 const API_EXPENSE_BASE = '/api/expenses'
 const API_INCOMES_BASE = '/api/incomes'
+const API_BALANCE_BASE = '/api/balance'
 import { authService } from './authService.js'
 
 const getAuthHeaders = () => {
@@ -143,6 +144,27 @@ export const apiService = {
         const urlFiltered = queryStringParams ? `${newUrl}/filters?${queryStringParams}` : `${newUrl}/filters`
         const response = await fetch(urlFiltered, {
             headers: getAuthHeaders()
+        })
+        return handleResponse(response)
+    },
+    getBalance: async () => {
+        const response = await fetch(`${API_BALANCE_BASE}`, {
+            headers: getAuthHeaders()
+        })
+        return handleResponse(response)
+    },
+    updateManualBalance: async (newBalance) => {
+        const response = await fetch(`${API_BALANCE_BASE}/manual`, {
+            method: 'PUT',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({balance: newBalance}),
+        })
+        return handleResponse(response)
+    },
+    updateAutomaticBalance: async () => {
+        const response = await fetch(`${API_BALANCE_BASE}/auto`, {
+            method: 'PUT',
+            headers: getAuthHeaders(),
         })
         return handleResponse(response)
     }
