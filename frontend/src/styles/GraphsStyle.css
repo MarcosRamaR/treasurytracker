@@ -119,7 +119,34 @@
     background-color: #16213e;
     color: rgb(184, 182, 182);
 }
+.balance-input {
+    display: grid;
+    grid-template-columns: 200px 100px 1fr;
+    margin-bottom: 15px;
+}
 
+.balance-warning {
+    position: fixed;        /* It will stay on screen when scroll*/
+    bottom: 20px;           
+    right: 20px;            
+    background-color: #ffcccc;
+    color: #800000;         
+    padding: 10px 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    font-weight: bold;
+    z-index: 9999;          /*Show over all elements*/
+}
+.balance-warning {
+    animation: fadeInOut 10s ease-in-out forwards;
+}
+
+@keyframes fadeInOut {
+    0% {opacity: 0;}
+    10% {opacity: 1;}
+    90% {opacity: 1;}
+    100% {opacity: 0;}
+}
 @media (max-width: 768px) {
     .dashboard-grid {
     grid-template-columns: 1fr;
