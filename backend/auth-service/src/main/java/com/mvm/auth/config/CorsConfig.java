@@ -2,22 +2,26 @@ package com.mvm.auth.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
 
 @Configuration
 public class CorsConfig {
-    @Bean //Bean to personalice the configuration web on Spring
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) { //CorsRegistry is an object to register CORS rules
-                registry.addMapping("/**") //Apply CORS to all rutes
-                        .allowedOrigins("http://localhost:5173") //Allow request only from this
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") //Allow this methods
-                        .allowedHeaders("*") //All headers allowed
-                        .allowCredentials(true); //Allow to send credentials, important for JWT to send Authorization header
-            }
-        };
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOriginPatterns(Arrays.asList("*")); //Allow any origin
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")); //HTTP methods allowed
+        configuration.setAllowedHeaders(Arrays.asList("*"));//Allowed Headers
+        configuration.setAllowCredentials(true);//Allow cookies and auth headers
+
+        //Apply this config on all routes
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }
