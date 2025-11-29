@@ -37,7 +37,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()//Public routes
                         .anyRequest().authenticated()//All other requires authentication
                 )
-                //Config stateles sessions (we use JWT, not http sessions)
+                //Config stateless sessions (we use JWT, not http sessions)
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
