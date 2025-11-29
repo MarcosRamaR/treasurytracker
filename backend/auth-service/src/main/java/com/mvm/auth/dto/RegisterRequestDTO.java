@@ -1,11 +1,17 @@
 package com.mvm.auth.dto;
 
+//DTO for registration application
 public class RegisterRequestDTO {
     private String email;
     private String password;
     private String userName;
 
-    // Getters and Setters
+    public RegisterRequestDTO(String email, String password, String userName) {
+        this.email = email;
+        this.password = password;
+        this.userName = userName;
+    }
+
     public String getEmail() {
         return email;
     }
@@ -14,9 +20,7 @@ public class RegisterRequestDTO {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
-    }
+    public String getPassword() {return password;}
 
     public void setPassword(String password) {
         this.password = password;

@@ -1,11 +1,11 @@
 package com.mvm.auth.dto;
 
+//DTO for user response (Not sensitive information)
 public class UserResponseDTO {
     private Long id;
     private String email;
     private String userName;
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }
