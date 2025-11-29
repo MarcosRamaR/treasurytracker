@@ -5,13 +5,12 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
-@Data
 @Entity
 @Table(name = "users")
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY) //Creates IDs automatically in an auto-incrementing manner
     private Long id;
 
     @NotBlank(message = "Username is mandatory")
@@ -26,7 +25,6 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    // Constructor adicional sin las relaciones eliminadas
     public User() {}
 
     public User(Long id, String email, String password, String userName) {
@@ -34,5 +32,37 @@ public class User {
         this.email = email;
         this.password = password;
         this.userName = userName;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public @NotBlank(message = "Username is mandatory") String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(@NotBlank(message = "Username is mandatory") String userName) {
+        this.userName = userName;
+    }
+
+    public @Email(message = "Email should be valid") String getEmail() {
+        return email;
+    }
+
+    public void setEmail(@Email(message = "Email should be valid") String email) {
+        this.email = email;
+    }
+
+    public @NotBlank(message = "Password is mandatory") String getPassword() {
+        return password;
+    }
+
+    public void setPassword(@NotBlank(message = "Password is mandatory") String password) {
+        this.password = password;
     }
 }
