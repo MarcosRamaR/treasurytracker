@@ -6,13 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
 @RestController
 @RequestMapping("/api/balance")
 public class BalanceController {
-
     @Autowired
     private BalanceService balanceService;
 
+    //All methods need the header "X-User-Id", is injected by the auth-service after validates the token
     @GetMapping
     public ResponseEntity<BalanceDTO> getBalance(@RequestHeader("X-User-Id") Long userId) {
         BalanceDTO balance = balanceService.getBalanceByUserId(userId);

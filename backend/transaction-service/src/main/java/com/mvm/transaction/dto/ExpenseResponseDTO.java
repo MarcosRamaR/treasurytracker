@@ -10,7 +10,7 @@ public class ExpenseResponseDTO {
     private LocalDate date;
     private Long userId;
 
-    // Getters and Setters
+
     public Long getId() {
         return id;
     }

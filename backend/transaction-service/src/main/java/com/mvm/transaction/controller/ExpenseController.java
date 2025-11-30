@@ -14,24 +14,25 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/expenses")
 public class ExpenseController {
-
     @Autowired
     private ExpenseRepository expenseRepository;
+
+    //All methods need the header "X-User-Id", is injected by the auth-service after validates the token
 
     @GetMapping
     public ResponseEntity<List<ExpenseResponseDTO>> getAllExpenses(@RequestHeader("X-User-Id") Long userId) {
         List<Expense> expenses = expenseRepository.findByUserId(userId);
-        List<ExpenseResponseDTO> expenseDTOs = expenses.stream()
+        List<ExpenseResponseDTO> expenseDTOs = expenses.stream()//To allow better conversion with .map
                 .map(this::convertToResponseDTO)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList());//convert the stream to normal list
         return ResponseEntity.ok(expenseDTOs);
     }
 
     @PostMapping
-    public ResponseEntity<ExpenseResponseDTO> createExpense(@RequestBody ExpenseDTO expenseDTO, 
-                                                          @RequestHeader("X-User-Id") Long userId) {
+    public ResponseEntity<ExpenseResponseDTO> createExpense(@RequestBody ExpenseDTO expenseDTO,
+                                                            @RequestHeader("X-User-Id") Long userId) {
         Expense expense = convertToEntity(expenseDTO);
-        expense.setUserId(userId);
+        expense.setUserId(userId); //Link the expense with the user (ExpenseDTO haven't user)
         Expense savedExpense = expenseRepository.save(expense);
         return ResponseEntity.ok(convertToResponseDTO(savedExpense));
     }

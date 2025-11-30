@@ -11,12 +11,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+//Similar to ExpenseController
 @RestController
 @RequestMapping("/api/incomes")
 public class IncomeController {
-
     @Autowired
     private IncomeRepository incomeRepository;
+
+    //All methods need the header "X-User-Id", is injected by the auth-service after validates the token
 
     @GetMapping
     public ResponseEntity<List<IncomeResponseDTO>> getAllIncomes(@RequestHeader("X-User-Id") Long userId) {

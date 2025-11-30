@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class BalanceService {
-
     @Autowired
     private BalanceRepository balanceRepository;
 
@@ -22,12 +21,12 @@ public class BalanceService {
     public BalanceDTO updateBalanceAutomatically(Long userId) {
         Balance balance = balanceRepository.findByUserId(userId)
                 .orElseGet(() -> createInitialBalance(userId));
-        
-        // Aquí irá la lógica para calcular el balance basado en expenses e incomes
-        // Por ahora devolvemos el balance actual
+
+        //To-do: logic for update
         return convertToDTO(balance);
     }
 
+    //Search the users balance or creates one if don't exist
     public BalanceDTO getBalanceByUserId(Long userId) {
         Balance balance = balanceRepository.findByUserId(userId)
                 .orElseGet(() -> createInitialBalance(userId));

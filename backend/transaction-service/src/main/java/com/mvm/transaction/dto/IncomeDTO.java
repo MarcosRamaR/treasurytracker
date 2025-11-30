@@ -8,7 +8,6 @@ public class IncomeDTO {
     private String category;
     private LocalDate date;
 
-    // Getters and Setters
     public Double getAmount() {
         return amount;
     }

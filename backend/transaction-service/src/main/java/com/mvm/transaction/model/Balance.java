@@ -3,7 +3,7 @@ package com.mvm.transaction.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
-@Data
+@Data //Manage constructor, getters and setters
 @Entity
 @Table(name = "balances")
 public class Balance {
@@ -17,6 +17,4 @@ public class Balance {
 
     @Column(name = "total_balance", nullable = false)
     private Double totalBalance;
-
-    // Constructor, getters y setters son manejados por Lombok @Data
 }

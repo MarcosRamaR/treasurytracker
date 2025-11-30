@@ -10,7 +10,6 @@ public class IncomeResponseDTO {
     private LocalDate date;
     private Long userId;
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }

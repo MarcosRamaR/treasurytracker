@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDate;
 
-@Data
+@Data //Manage constructor, getters and setters
 @Entity
 @Table(name = "incomes")
 public class Income {
@@ -27,5 +27,4 @@ public class Income {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    // Constructor, getters y setters son manejados por Lombok @Data
 }

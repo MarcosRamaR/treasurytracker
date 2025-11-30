@@ -1,11 +1,11 @@
 package com.mvm.transaction.dto;
 
+//Balance will be more attributes, for that BalanceDTO is necessary even if for the moment is the same as balance entity
 public class BalanceDTO {
     private Long id;
     private Long userId;
     private Double totalBalance;
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }
