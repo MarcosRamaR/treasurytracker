@@ -24,22 +24,44 @@ public class JwtService {
     @Value("${jwt.expiration}")
     private long jwtExpiration;
 
+    //Generate token jwt for user
+    public String generateToken(UserDetails userDetails) {
+        return generateToken(new HashMap<>(), userDetails);
+    }
+
+    //Generate token with additional calims
+    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+        return Jwts.builder()
+                .setClaims(extraClaims) //Extra claims
+                .setSubject(userDetails.getUsername()) //Get user email (that is unique)
+                .setIssuedAt(new Date(System.currentTimeMillis())) //Creation date
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration)) //Expiration date
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256) //Sign the token with secret key
+                .compact(); //Generates the string
+    }
+
+    //Validates the token
+    public boolean isTokenValid(String token, UserDetails userDetails) {
+        final String username = extractUsername(token); //Extract the token user
+        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token); //compares token user with auth user
+    }
+
     //Convert "secretKey" from Base64 to Key for JWT
     private Key getSignInKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey); //converts the Base64 String into a byte array
-        return Keys.hmacShaKeyFor(keyBytes); //Creates cryptographic key for HMAC-SHA algorithm
+        return Keys.hmacShaKeyFor(keyBytes); //creates cryptographic key for HMAC-SHA algorithm
     }
+
     //Parse and validate the token, returning all data (claims)
     private Claims extractAllClaims(String token) {
-        return Jwts
-                .parserBuilder() //prepare the JWT parser
+        return Jwts.parserBuilder()
                 .setSigningKey(getSignInKey()) //Set the key used to verify
                 .build()
                 .parseClaimsJws(token) //Parses and validates the signature
-                .getBody(); //Extract the token content
+                .getBody(); //Extract the content
     }
 
-    //Obtain any data from the token, use T to make it generic
+    //Obtain any data from the token
     //Function<Claims,T> function to extract a specific data from Claims
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
@@ -58,25 +80,6 @@ public class JwtService {
         return extractExpiration(token).before(new Date()); //Obtain data expiration and compare if is earlier than current date
     }
 
-    public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
-    }
 
-    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        return Jwts
-                .builder() //Start token building
-                .setClaims(extraClaims) //Extra data
-                .setSubject(userDetails.getUsername()) //Main identifier
-                .setIssuedAt(new Date(System.currentTimeMillis())) //Creation date
-                .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration)) //Expiration date
-                .signWith(getSignInKey(), SignatureAlgorithm.HS256) //Sign the token with secret key
-                .compact(); //Generates the string at the end
-    }
-
-    //Validates the token
-    public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String username = extractUsername(token); //Extract the token user
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token); //compares token user with auth user
-    }
 }
 
