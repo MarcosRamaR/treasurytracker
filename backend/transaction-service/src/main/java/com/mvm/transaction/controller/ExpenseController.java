@@ -4,6 +4,7 @@ import com.mvm.transaction.dto.ExpenseDTO;
 import com.mvm.transaction.dto.ExpenseResponseDTO;
 import com.mvm.transaction.model.Expense;
 import com.mvm.transaction.repository.ExpenseRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,10 +18,11 @@ public class ExpenseController {
     @Autowired
     private ExpenseRepository expenseRepository;
 
-    //All methods need the header "X-User-Id", is injected by the auth-service after validates the token
+    //Now we obtain userId from JWT filter
 
     @GetMapping
-    public ResponseEntity<List<ExpenseResponseDTO>> getAllExpenses(@RequestHeader("X-User-Id") Long userId) {
+    public ResponseEntity<List<ExpenseResponseDTO>> getAllExpenses(HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute("userId");
         List<Expense> expenses = expenseRepository.findByUserId(userId);
         List<ExpenseResponseDTO> expenseDTOs = expenses.stream()//To allow better conversion with .map
                 .map(this::convertToResponseDTO)
@@ -30,7 +32,8 @@ public class ExpenseController {
 
     @PostMapping
     public ResponseEntity<ExpenseResponseDTO> createExpense(@RequestBody ExpenseDTO expenseDTO,
-                                                            @RequestHeader("X-User-Id") Long userId) {
+                                                            HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute("userId");
         Expense expense = convertToEntity(expenseDTO);
         expense.setUserId(userId); //Link the expense with the user (ExpenseDTO haven't user)
         Expense savedExpense = expenseRepository.save(expense);

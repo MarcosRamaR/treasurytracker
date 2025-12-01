@@ -11,15 +11,19 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.security.Key;
+import java.util.ArrayList;
 
 @Configuration
 @EnableWebSecurity
@@ -49,8 +53,7 @@ public class SecurityConfig {
                 String authHeader = request.getHeader("Authorization"); //Get this header
 
                 if(authHeader == null || !authHeader.startsWith("Bearer ")){
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    response.getWriter().write("Required JWT token");
+                    filterChain.doFilter(request, response);
                     return;
                 }
                 String token = authHeader.substring((7));
@@ -63,14 +66,27 @@ public class SecurityConfig {
 
 
                     Long userId = claims.get("userId", Long.class); //Get hte userId that auth-service set on token
+                    String userEmail = claims.getSubject();
 
-                    if (userId == null) {
-                        throw new RuntimeException("Token valid but without userId");
+                    if (userId == null|| userEmail == null) {
+                        throw new RuntimeException("Token valid but without userId or email");
                     }
 
                     //Save userId for controllers
                     request.setAttribute("userId", userId);
 
+                    //Creates a authentication for Spring Security
+                    UsernamePasswordAuthenticationToken authentication =
+                            new UsernamePasswordAuthenticationToken(
+                                    userEmail,  // principal
+                                    null,       // credentials (null because user is authenticated)
+                                    new ArrayList<>()  // authorities (void without roles)
+                            );
+                    //Set the authentication on security context
+                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+                    // Establece la autenticación en el contexto de seguridad
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
                 } catch (Exception e) {
                     //Token invalid
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

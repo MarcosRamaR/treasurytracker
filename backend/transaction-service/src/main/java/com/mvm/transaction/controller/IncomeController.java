@@ -4,6 +4,7 @@ import com.mvm.transaction.dto.IncomeDTO;
 import com.mvm.transaction.dto.IncomeResponseDTO;
 import com.mvm.transaction.model.Income;
 import com.mvm.transaction.repository.IncomeRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,10 +19,11 @@ public class IncomeController {
     @Autowired
     private IncomeRepository incomeRepository;
 
-    //All methods need the header "X-User-Id", is injected by the auth-service after validates the token
 
     @GetMapping
-    public ResponseEntity<List<IncomeResponseDTO>> getAllIncomes(@RequestHeader("X-User-Id") Long userId) {
+    public ResponseEntity<List<IncomeResponseDTO>> getAllIncomes(HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute("userId");
+
         List<Income> incomes = incomeRepository.findByUserId(userId);
         List<IncomeResponseDTO> incomeDTOs = incomes.stream()
                 .map(this::convertToResponseDTO)
@@ -31,7 +33,9 @@ public class IncomeController {
 
     @PostMapping
     public ResponseEntity<IncomeResponseDTO> createIncome(@RequestBody IncomeDTO incomeDTO,
-                                                        @RequestHeader("X-User-Id") Long userId) {
+                                                          HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute("userId");
+
         Income income = convertToEntity(incomeDTO);
         income.setUserId(userId);
         Income savedIncome = incomeRepository.save(income);

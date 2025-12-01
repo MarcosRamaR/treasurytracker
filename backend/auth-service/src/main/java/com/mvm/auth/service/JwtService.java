@@ -1,11 +1,13 @@
 package com.mvm.auth.service;
 
 
+import com.mvm.auth.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -18,15 +20,27 @@ import java.util.function.Function;
 
 @Service //Set this as a spring service
 public class JwtService {
+
     @Value("${jwt.secret}") //This @Value injects this value from application.properties
     private String secretKey;
     @Value("${jwt.expiration}")
     private long jwtExpiration;
 
+    @Autowired
+    private UserService userService;
+
     //Generate token jwt for user
     public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+        //Get complete user using email from UserDetails
+        User user = userService.findByEmail(userDetails.getUsername());
+
+        //Creates claims with userId
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", user.getId());
+
+        return generateToken(claims, userDetails);
     }
+
 
     //Generate token with additional calims
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {

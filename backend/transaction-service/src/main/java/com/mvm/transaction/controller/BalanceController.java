@@ -2,6 +2,7 @@ package com.mvm.transaction.controller;
 
 import com.mvm.transaction.dto.BalanceDTO;
 import com.mvm.transaction.service.BalanceService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,15 +14,16 @@ public class BalanceController {
     @Autowired
     private BalanceService balanceService;
 
-    //All methods need the header "X-User-Id", is injected by the auth-service after validates the token
     @GetMapping
-    public ResponseEntity<BalanceDTO> getBalance(@RequestHeader("X-User-Id") Long userId) {
+    public ResponseEntity<BalanceDTO> getBalance(HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute("userId");
         BalanceDTO balance = balanceService.getBalanceByUserId(userId);
         return ResponseEntity.ok(balance);
     }
 
     @PostMapping("/update")
-    public ResponseEntity<BalanceDTO> updateBalance(@RequestHeader("X-User-Id") Long userId) {
+    public ResponseEntity<BalanceDTO> updateBalance(HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute("userId");
         BalanceDTO balance = balanceService.updateBalanceAutomatically(userId);
         return ResponseEntity.ok(balance);
     }
