@@ -18,7 +18,6 @@ import java.util.function.Function;
 
 @Service //Set this as a spring service
 public class JwtService {
-
     @Value("${jwt.secret}") //This @Value injects this value from application.properties
     private String secretKey;
     @Value("${jwt.expiration}")
