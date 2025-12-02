@@ -6,6 +6,9 @@ public class RegisterRequestDTO {
     private String password;
     private String userName;
 
+    public RegisterRequestDTO() {
+    }
+
     public RegisterRequestDTO(String email, String password, String userName) {
         this.email = email;
         this.password = password;

@@ -42,27 +42,27 @@ public class User {
         this.id = id;
     }
 
-    public @NotBlank(message = "Username is mandatory") String getUserName() {
+    public String getUserName() {
         return userName;
     }
 
-    public void setUserName(@NotBlank(message = "Username is mandatory") String userName) {
+    public void setUserName(String userName) {
         this.userName = userName;
     }
 
-    public @Email(message = "Email should be valid") String getEmail() {
+    public String getEmail() {
         return email;
     }
 
-    public void setEmail(@Email(message = "Email should be valid") String email) {
+    public void setEmail(String email) {
         this.email = email;
     }
 
-    public @NotBlank(message = "Password is mandatory") String getPassword() {
+    public String getPassword() {
         return password;
     }
 
-    public void setPassword(@NotBlank(message = "Password is mandatory") String password) {
+    public void setPassword(String password) {
         this.password = password;
     }
 }

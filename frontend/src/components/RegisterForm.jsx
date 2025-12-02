@@ -4,7 +4,7 @@ import '../styles/RegisterLoginStyle.css'
 
 export function RegisterForm({onSubmit,editUser, onSwitchToLogin}) {
     const [formData, setFormData] = useState({
-        username: '',
+        userName: '',
         email: '',
         password: ''
     })
@@ -64,9 +64,9 @@ export function RegisterForm({onSubmit,editUser, onSwitchToLogin}) {
                         <input
                             type="text"
                             className="form-control"
-                            id="username"
-                            name="username"
-                            value={formData.username}
+                            id="userName"
+                            name="userName"
+                            value={formData.userName}
                             onChange={handleChange}
                             required
                         />
