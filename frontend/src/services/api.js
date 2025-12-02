@@ -9,8 +9,9 @@ const getAuthHeaders = () => {
     'Content-Type': 'application/json'
     }
     if (token) {
-    headers['Authorization'] = `Bearer ${token}`
+    headers['Authorization'] = token
     }
+    console.log('Headers:', headers)
     return headers
 }
 

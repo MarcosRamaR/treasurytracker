@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:8080/api/auth'
+const API_BASE_URL = 'http://localhost:8081/api/auth'
 
 export const authService = {
     async register(userData) {
@@ -27,14 +27,26 @@ export const authService = {
             },
             body: JSON.stringify(credentials) 
         })
+        
+        const token = response.headers.get('Authorization') //Token now in header
         const data = await response.json()
-        return data
+
+        if(!token){
+            throw new Error('No token received')
+        }
+        this.saveData(token,  {
+        email: data.email,
+        username: data.userName,
+        id: data.id
+      }) //Save token and user data
+
+        return { token, ...data}
     }catch (error) {
             console.error('Error during login:', error)
             throw error
         }
     },
-    //Save token and user data in local storage
+    //Save token WITH "Bearer" and user data in local storage
     saveData(token, userData){
         localStorage.setItem('token', token)
         localStorage.setItem('user', JSON.stringify(userData))

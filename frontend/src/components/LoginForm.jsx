@@ -27,17 +27,11 @@ export function LoginForm({onSwitchToRegister, onLoginSuccess}){
         try{
             //Send form data to try login
             const result = await authService.login(formData)
+            setFormData({email: '', password: ''})
 
-            //If result have token set credentials on storage and login is success
-            if(result.token){
-                authService.saveData(result.token,{email:result.email, username: result.userName})
-                setFormData({email: '', username: ''})
-                if(onLoginSuccess){
-                    onLoginSuccess(result)
-                }
-            }else{
-                setErrors(result)
-            }
+        if (onLoginSuccess) {
+        onLoginSuccess(result)
+        }
         }catch(error){
             setErrors(error)
         }finally{
