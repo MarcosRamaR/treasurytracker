@@ -104,7 +104,7 @@ public class SecurityConfig {
                             .build()
                             .parseClaimsJws(token)
                             .getBody();
-                    
+
                     Long userId = claims.get("userId", Long.class); //Get hte userId that auth-service set on token
                     String userEmail = claims.getSubject();
 

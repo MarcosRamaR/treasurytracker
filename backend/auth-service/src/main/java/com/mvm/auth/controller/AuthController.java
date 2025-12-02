@@ -7,6 +7,8 @@ import com.mvm.auth.model.User;
 import com.mvm.auth.service.JwtService;
 import com.mvm.auth.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -66,8 +68,13 @@ public class AuthController {
             response.setEmail(user.getEmail());
             response.setUserName(user.getUserName());
 
+            //Create answer with explicit header
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Authorization", "Bearer " + token);
+            headers.add("Access-Control-Expose-Headers", "Authorization");
+
             //Return answer with token on header
-            return ResponseEntity.ok().header("Authorization", "Bearer " + token).body(response);
+            return new ResponseEntity<>(response, headers, HttpStatus.OK);
         } else {
             throw new RuntimeException("Invalid credentials");
         }
