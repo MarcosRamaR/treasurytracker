@@ -17,7 +17,21 @@ public class BalanceService {
         Balance balance = new Balance();
         balance.setUserId(userId);
         balance.setTotalBalance(BigDecimal.ZERO);
+        balance.setModifiedBy("SYSTEM");
         return balanceRepository.save(balance);
+    }
+
+    //Method called by controller when auth-service requests the creation of an initial balance
+    public BalanceDTO createInitialBalanceForUser(Long userId) {
+        //First check if exists a balance for this user
+        //var type is deduced by compiler, is equivalen to Optional<Balance> existingBalance (Java 10+)
+        var existingBalance = balanceRepository.findByUserId(userId);
+        if (existingBalance.isPresent()) {
+            //If exists, we return the existent one
+            return convertToDTO(existingBalance.get());
+        }
+        Balance balance = createInitialBalance(userId);
+        return convertToDTO(balance);
     }
 
     public BalanceDTO updateBalanceAutomatically(Long userId) {

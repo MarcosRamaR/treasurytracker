@@ -44,6 +44,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll() //Allow OPTIONS request for preflight cors
+                        .requestMatchers("/api/balance/initial-create").permitAll()
                         .anyRequest().authenticated() //All requests need authentication
                 )
                 .addFilterBefore(jwtValidationFilter(), UsernamePasswordAuthenticationFilter.class); //Validates if token exists
@@ -84,6 +85,12 @@ public class SecurityConfig {
         return new OncePerRequestFilter() {
             @Override
             protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+                String requestURI = request.getRequestURI();
+                if(requestURI.equals("/api/balance/initial-create")){
+                    filterChain.doFilter(request,response);
+                    return;
+                }
+
                 if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
                     System.out.println("OPTIONS request - skipping JWT validation");
                     filterChain.doFilter(request, response);
