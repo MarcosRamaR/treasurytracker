@@ -1,10 +1,12 @@
 package com.mvm.transaction.dto;
 
+import java.math.BigDecimal;
+
 //Balance will be more attributes, for that BalanceDTO is necessary even if for the moment is the same as balance entity
 public class BalanceDTO {
     private Long id;
     private Long userId;
-    private Double totalBalance;
+    private BigDecimal totalBalance;
 
     public Long getId() {
         return id;
@@ -22,11 +24,11 @@ public class BalanceDTO {
         this.userId = userId;
     }
 
-    public Double getTotalBalance() {
+    public BigDecimal getTotalBalance() {
         return totalBalance;
     }
 
-    public void setTotalBalance(Double totalBalance) {
+    public void setTotalBalance(BigDecimal totalBalance) {
         this.totalBalance = totalBalance;
     }
 }

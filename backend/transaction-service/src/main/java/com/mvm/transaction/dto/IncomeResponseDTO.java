@@ -1,10 +1,11 @@
 package com.mvm.transaction.dto;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class IncomeResponseDTO {
     private Long id;
-    private Double amount;
+    private BigDecimal amount;
     private String description;
     private String category;
     private LocalDate date;
@@ -18,11 +19,11 @@ public class IncomeResponseDTO {
         this.id = id;
     }
 
-    public Double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(Double amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 

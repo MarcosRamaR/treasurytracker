@@ -6,6 +6,8 @@ import com.mvm.transaction.repository.BalanceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+
 @Service
 public class BalanceService {
     @Autowired
@@ -14,7 +16,7 @@ public class BalanceService {
     public Balance createInitialBalance(Long userId) {
         Balance balance = new Balance();
         balance.setUserId(userId);
-        balance.setTotalBalance(0.0);
+        balance.setTotalBalance(BigDecimal.ZERO);
         return balanceRepository.save(balance);
     }
 

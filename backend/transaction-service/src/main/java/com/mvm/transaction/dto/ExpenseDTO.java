@@ -1,19 +1,20 @@
 package com.mvm.transaction.dto;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class ExpenseDTO {
-    private Double amount;
+    private BigDecimal amount;
     private String description;
     private String category;
     private LocalDate date;
 
 
-    public Double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(Double amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 
