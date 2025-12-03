@@ -5,8 +5,10 @@ import com.mvm.transaction.model.Balance;
 import com.mvm.transaction.repository.BalanceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Service
 public class BalanceService {
@@ -40,6 +42,17 @@ public class BalanceService {
 
         //To-do: logic for update
         return convertToDTO(balance);
+    }
+    public BalanceDTO updateBalanceManual(Long userId, BigDecimal amount) {
+        Balance balance = balanceRepository.findByUserId(userId)
+                .orElseGet(() -> createInitialBalance(userId));
+        System.out.println("Amount on Service: " + amount);
+        balance.setTotalBalance(amount);
+        balance.setModifiedBy("MANUAL");
+        balance.setUpdatedAt(LocalDateTime.now());
+        Balance savedBalance = balanceRepository.save(balance);
+
+        return convertToDTO(savedBalance);
     }
 
     //Search the users balance or creates one if don't exist

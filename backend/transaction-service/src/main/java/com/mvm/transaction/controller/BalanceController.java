@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+
 
 @RestController
 @RequestMapping("/api/balance")
@@ -28,10 +30,18 @@ public class BalanceController {
         return ResponseEntity.ok(balance);
     }
 
-    @PostMapping("/update")
-    public ResponseEntity<BalanceDTO> updateBalance(HttpServletRequest request) {
+    @PutMapping("/update-auto")
+    public ResponseEntity<BalanceDTO> updateBalanceAutomatic(HttpServletRequest request) {
         Long userId = (Long) request.getAttribute("userId");
         BalanceDTO balance = balanceService.updateBalanceAutomatically(userId);
+        return ResponseEntity.ok(balance);
+    }
+    @PutMapping("/update-manual")
+    public ResponseEntity<BalanceDTO> updateBalanceManual(@RequestBody BalanceDTO balanceDTO,HttpServletRequest request) {
+        System.out.println("Resquest: " + request);
+        System.out.println("Amount on controller: "+ balanceDTO.getTotalBalance());
+        Long userId = (Long) request.getAttribute("userId");
+        BalanceDTO balance = balanceService.updateBalanceManual(userId,balanceDTO.getTotalBalance());
         return ResponseEntity.ok(balance);
     }
 

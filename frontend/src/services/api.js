@@ -156,11 +156,13 @@ export const apiService = {
         return handleResponse(response)
     },
     updateManualBalance: async (newBalance) => {
-        const response = await fetch(`${API_BALANCE_BASE}/manual`, {
+        console.log('Updating manual balance to:', newBalance)
+        const response = await fetch(`${API_BALANCE_BASE}/update-manual`, {
             method: 'PUT',
             headers: getAuthHeaders(),
-            body: JSON.stringify({amount: newBalance}),
+            body: JSON.stringify({totalBalance: newBalance}),
         })
+        console.log('Response from updateManualBalance:', response)
         return handleResponse(response)
     },
     updateAutomaticBalance: async () => {

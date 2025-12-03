@@ -30,6 +30,7 @@ export const useBalance = () => {
     }
 
     const updateManualBalance = async (newBalance) => {
+        console.log('Updating manual balance to/On updateManualBalance):', newBalance)
                 try{
             setLoading(true)
             if (!authService.isAuthenticated()) {
@@ -38,7 +39,9 @@ export const useBalance = () => {
                 return
             }
         const updatedBalance = await apiService.updateManualBalance(newBalance)
-        setBalance(updatedBalance.amount)
+        console.log('Updated balance data:', updatedBalance)
+        setBalance(updatedBalance.totalBalance)
+        console.log('Balance after update:', updatedBalance.totalBalance)
         setError('')
         }catch(err){
             setError('Error loading balance: ' + err.message)
