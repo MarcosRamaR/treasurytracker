@@ -20,7 +20,7 @@ export const useBalance = () => {
             }
             const data = await apiService.getBalance()
             console.log('Balance data:', data)
-            setBalance(data)
+            setBalance(data.totalBalance)
             setError('')
         }catch(err){
             setError('Error loading balance: ' + err.message)
@@ -38,6 +38,7 @@ export const useBalance = () => {
                 return
             }
         const updatedBalance = await apiService.updateManualBalance(newBalance)
+        console.log('API response for manual balance update:', updatedBalance)
         setBalance(updatedBalance.amount)
         console.log('Updated balance:', updatedBalance)
         setError('')
