@@ -6,6 +6,7 @@ import com.mvm.transaction.model.Income;
 import com.mvm.transaction.repository.IncomeRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,7 +42,38 @@ public class IncomeController {
         Income savedIncome = incomeRepository.save(income);
         return ResponseEntity.ok(convertToResponseDTO(savedIncome));
     }
+    @PutMapping("/{id}")
+    public ResponseEntity<IncomeResponseDTO> updateIncome(@PathVariable Long id, @RequestBody IncomeDTO incomeDTO, HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute("userId");
+        Income income = incomeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Income not found with id: " + id));
 
+        if (!income.getUserId().equals(userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        income.setAmount(incomeDTO.getAmount());
+        income.setDescription(incomeDTO.getDescription());
+        income.setCategory(incomeDTO.getCategory());
+        income.setDate(incomeDTO.getDate());
+
+        Income updatedIncome = incomeRepository.save(income);
+        return ResponseEntity.ok(convertToResponseDTO(updatedIncome));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteIncome(@PathVariable Long id, HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute("userId");
+        Income income = incomeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Income not found with id: " + id));
+
+        if (!income.getUserId().equals(userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        incomeRepository.delete(income);
+        return ResponseEntity.noContent().build();
+    }
     private Income convertToEntity(IncomeDTO dto) {
         Income income = new Income();
         income.setAmount(dto.getAmount());
