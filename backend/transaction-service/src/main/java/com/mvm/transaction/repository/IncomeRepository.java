@@ -30,4 +30,10 @@ public interface IncomeRepository extends JpaRepository<Income, Long> {
             @Param("endDate") LocalDate endDate,
             @Param("minAmount") BigDecimal minAmount,
             @Param("maxAmount") BigDecimal maxAmount);
+
+    @Query("SELECT DISTINCT i.userId FROM Income i WHERE i.date <= :today AND i.applicated = false")
+    List<Long> findUserIdsWithPendingTransactions(@Param("today") LocalDate today);
+
+    @Query("SELECT i FROM Income i WHERE i.userId = :userId AND i.date <= :today AND i.applicated = false")
+    List<Income> findPendingByUserIdAndDate(@Param("userId") Long userId, @Param("today") LocalDate today);
 }

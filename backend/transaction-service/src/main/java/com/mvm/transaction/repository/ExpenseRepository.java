@@ -29,4 +29,10 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
             @Param("endDate") LocalDate endDate,
             @Param("minAmount") BigDecimal minAmount,
             @Param("maxAmount") BigDecimal maxAmount);
+
+    @Query("SELECT DISTINCT e.userId FROM Expense e WHERE e.date <= :today AND e.applicated = false")
+    List<Long> findUserIdsWithPendingTransactions(@Param("today") LocalDate today);
+
+    @Query("SELECT e FROM Expense e WHERE e.userId = :userId AND e.date <= :today AND e.applicated = false")
+    List<Expense> findPendingByUserIdAndDate(@Param("userId") Long userId, @Param("today") LocalDate today);
 }
