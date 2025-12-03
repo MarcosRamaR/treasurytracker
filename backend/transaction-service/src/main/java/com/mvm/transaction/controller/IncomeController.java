@@ -2,6 +2,7 @@ package com.mvm.transaction.controller;
 
 import com.mvm.transaction.dto.IncomeDTO;
 import com.mvm.transaction.dto.IncomeResponseDTO;
+import com.mvm.transaction.model.Expense;
 import com.mvm.transaction.model.Income;
 import com.mvm.transaction.repository.IncomeRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -73,6 +76,24 @@ public class IncomeController {
 
         incomeRepository.delete(income);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/filters")
+    public ResponseEntity<List<IncomeResponseDTO>> filterIncomes(
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate,
+            @RequestParam(required = false) BigDecimal minAmount,
+            @RequestParam(required = false) BigDecimal maxAmount,
+            HttpServletRequest request) {
+
+        Long userId = (Long) request.getAttribute("userId");
+        List<Income> incomes = incomeRepository.findByFiltersAndUser(userId, category,startDate,endDate,minAmount,maxAmount);
+
+        List<IncomeResponseDTO> response = incomes.stream()
+                .map(this::convertToResponseDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(response);
     }
     private Income convertToEntity(IncomeDTO dto) {
         Income income = new Income();

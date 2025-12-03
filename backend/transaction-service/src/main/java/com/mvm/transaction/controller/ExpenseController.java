@@ -9,8 +9,12 @@ import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -71,6 +75,25 @@ public class ExpenseController {
 
         expenseRepository.delete(expense);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/filters")
+    public ResponseEntity<List<ExpenseResponseDTO>> filterExpenses(
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate,
+            @RequestParam(required = false) BigDecimal minAmount,
+            @RequestParam(required = false) BigDecimal maxAmount,
+            HttpServletRequest request) {
+
+        Long userId = (Long) request.getAttribute("userId");
+        List<Expense> expenses = expenseRepository.findByFiltersAndUser(
+                userId, category, startDate, endDate, minAmount, maxAmount);
+
+        List<ExpenseResponseDTO> response = expenses.stream()
+                .map(this::convertToResponseDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(response);
     }
 
     private Expense convertToEntity(ExpenseDTO dto) {

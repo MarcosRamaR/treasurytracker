@@ -134,7 +134,7 @@ export const apiService = {
         ] //Each filter is optional and assigned only if exists
         const noNullParams = queryParams.filter(param => param !== '') //remove empty params
         const queryStringParams = noNullParams.join('&') //join with &
-
+        
         let newUrl = ''
         if(type === 'expense'){
             newUrl = API_EXPENSE_BASE
