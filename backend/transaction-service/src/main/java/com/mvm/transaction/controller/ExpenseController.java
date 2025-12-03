@@ -5,7 +5,9 @@ import com.mvm.transaction.dto.ExpenseResponseDTO;
 import com.mvm.transaction.model.Expense;
 import com.mvm.transaction.repository.ExpenseRepository;
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,6 +40,37 @@ public class ExpenseController {
         expense.setUserId(userId); //Link the expense with the user (ExpenseDTO haven't user)
         Expense savedExpense = expenseRepository.save(expense);
         return ResponseEntity.ok(convertToResponseDTO(savedExpense));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ExpenseResponseDTO> updateExpense(@PathVariable Long id, @RequestBody ExpenseDTO expenseDTO, HttpServletRequest request){
+        Long userId = (Long) request.getAttribute("userId");
+        Expense existingExpense = expenseRepository.findById(id).orElseThrow(() -> new RuntimeException("Expense not found with id: " + id));
+
+        if(!existingExpense.getUserId().equals(userId)){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        existingExpense.setAmount(expenseDTO.getAmount());
+        existingExpense.setDescription(expenseDTO.getDescription());
+        existingExpense.setCategory(expenseDTO.getCategory());
+        existingExpense.setDate(expenseDTO.getDate());
+
+        Expense updatedExpense = expenseRepository.save(existingExpense);
+        return ResponseEntity.ok(convertToResponseDTO(updatedExpense));
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteExpense(@PathVariable Long id, HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute("userId");
+        Expense expense = expenseRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Expense not found with id: " + id));
+
+        if (!expense.getUserId().equals(userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        expenseRepository.delete(expense);
+        return ResponseEntity.noContent().build();
     }
 
     private Expense convertToEntity(ExpenseDTO dto) {

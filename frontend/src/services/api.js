@@ -9,7 +9,8 @@ const getAuthHeaders = () => {
     'Content-Type': 'application/json'
     }
     if (token) {
-    headers['Authorization'] = token
+        const authToken = token.startsWith('Bearer ') ? token : `Bearer ${token}`
+        headers['Authorization'] = authToken
     }
     console.log('Headers:', headers)
     return headers

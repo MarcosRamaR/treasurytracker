@@ -57,7 +57,7 @@ public class SecurityConfig {
         //Allow frontend since Vite
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
         //Allow the http methods
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE","PATCH", "OPTIONS"));
 
         //What headers are allowed
         configuration.setAllowedHeaders(Arrays.asList(
@@ -86,6 +86,13 @@ public class SecurityConfig {
             @Override
             protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
                 String requestURI = request.getRequestURI();
+                String method = request.getMethod();
+
+                System.out.println("=== JWT FILTER DEBUG ===");
+                System.out.println("Method: " + method);
+                System.out.println("URI: " + requestURI);
+                System.out.println("Origin: " + request.getHeader("Origin"));
+
                 if(requestURI.equals("/api/balance/initial-create")){
                     filterChain.doFilter(request,response);
                     return;
