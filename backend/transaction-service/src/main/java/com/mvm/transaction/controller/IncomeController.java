@@ -2,9 +2,7 @@ package com.mvm.transaction.controller;
 
 import com.mvm.transaction.dto.IncomeDTO;
 import com.mvm.transaction.dto.IncomeResponseDTO;
-import com.mvm.transaction.model.Expense;
-import com.mvm.transaction.model.Income;
-import com.mvm.transaction.repository.IncomeRepository;
+import com.mvm.transaction.service.IncomeService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,68 +12,70 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 //Similar to ExpenseController
 @RestController
 @RequestMapping("/api/incomes")
 public class IncomeController {
     @Autowired
-    private IncomeRepository incomeRepository;
+    private IncomeService incomeService;
 
 
     @GetMapping
     public ResponseEntity<List<IncomeResponseDTO>> getAllIncomes(HttpServletRequest request) {
         Long userId = (Long) request.getAttribute("userId");
-
-        List<Income> incomes = incomeRepository.findByUserId(userId);
-        List<IncomeResponseDTO> incomeDTOs = incomes.stream()
-                .map(this::convertToResponseDTO)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(incomeDTOs);
+        List<IncomeResponseDTO> incomes = incomeService.getAllIncomes(userId);
+        return ResponseEntity.ok(incomes);
+    }
+    @GetMapping("/{id}")
+    public ResponseEntity<IncomeResponseDTO> getIncomeById(@PathVariable Long id,
+                                                           HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute("userId");
+        try {
+            IncomeResponseDTO income = incomeService.getIncomeById(id, userId);
+            return ResponseEntity.ok(income);
+        } catch (RuntimeException e) {
+            if (e.getMessage().contains("Unauthorized")) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
     @PostMapping
     public ResponseEntity<IncomeResponseDTO> createIncome(@RequestBody IncomeDTO incomeDTO,
                                                           HttpServletRequest request) {
         Long userId = (Long) request.getAttribute("userId");
-
-        Income income = convertToEntity(incomeDTO);
-        income.setUserId(userId);
-        Income savedIncome = incomeRepository.save(income);
-        return ResponseEntity.ok(convertToResponseDTO(savedIncome));
+        IncomeResponseDTO createdIncome = incomeService.createIncome(incomeDTO, userId);
+        return ResponseEntity.ok(createdIncome);
     }
+
     @PutMapping("/{id}")
     public ResponseEntity<IncomeResponseDTO> updateIncome(@PathVariable Long id, @RequestBody IncomeDTO incomeDTO, HttpServletRequest request) {
         Long userId = (Long) request.getAttribute("userId");
-        Income income = incomeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Income not found with id: " + id));
-
-        if (!income.getUserId().equals(userId)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        try {
+            IncomeResponseDTO updatedIncome = incomeService.updateIncome(id, incomeDTO, userId);
+            return ResponseEntity.ok(updatedIncome);
+        } catch (RuntimeException e) {
+            if (e.getMessage().contains("Unauthorized")) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-
-        income.setAmount(incomeDTO.getAmount());
-        income.setDescription(incomeDTO.getDescription());
-        income.setCategory(incomeDTO.getCategory());
-        income.setDate(incomeDTO.getDate());
-
-        Income updatedIncome = incomeRepository.save(income);
-        return ResponseEntity.ok(convertToResponseDTO(updatedIncome));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteIncome(@PathVariable Long id, HttpServletRequest request) {
         Long userId = (Long) request.getAttribute("userId");
-        Income income = incomeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Income not found with id: " + id));
-
-        if (!income.getUserId().equals(userId)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        try {
+            incomeService.deleteIncome(id, userId);
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            if (e.getMessage().contains("Unauthorized")) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-
-        incomeRepository.delete(income);
-        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/filters")
@@ -88,30 +88,12 @@ public class IncomeController {
             HttpServletRequest request) {
 
         Long userId = (Long) request.getAttribute("userId");
-        List<Income> incomes = incomeRepository.findByFiltersAndUser(userId, category,startDate,endDate,minAmount,maxAmount);
+        List<IncomeResponseDTO> incomes = incomeService.filterIncomes(
+                userId, category, startDate, endDate, minAmount, maxAmount);
 
-        List<IncomeResponseDTO> response = incomes.stream()
-                .map(this::convertToResponseDTO)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(response);
-    }
-    private Income convertToEntity(IncomeDTO dto) {
-        Income income = new Income();
-        income.setAmount(dto.getAmount());
-        income.setDescription(dto.getDescription());
-        income.setCategory(dto.getCategory());
-        income.setDate(dto.getDate());
-        return income;
+        return ResponseEntity.ok(incomes);
     }
 
-    private IncomeResponseDTO convertToResponseDTO(Income income) {
-        IncomeResponseDTO dto = new IncomeResponseDTO();
-        dto.setId(income.getId());
-        dto.setAmount(income.getAmount());
-        dto.setDescription(income.getDescription());
-        dto.setCategory(income.getCategory());
-        dto.setDate(income.getDate());
-        dto.setUserId(income.getUserId());
-        return dto;
-    }
 }
+
+
