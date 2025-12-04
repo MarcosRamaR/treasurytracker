@@ -42,25 +42,25 @@ export const apiService = {
         })
         return handleResponse(response)
     },
-    getExpenseById: async (id) => {
+    getExpenseById: async (id) => { //Unused currently
         const response = await fetch(`${API_EXPENSE_BASE}/${id}`, {
             headers: getAuthHeaders()
         })
         return handleResponse(response)
     },
-    getTotalExpenses: async () => {
+    getTotalExpenses: async () => {//Unused currently
         const response = await fetch(`${API_EXPENSE_BASE}/total`, {
             headers: getAuthHeaders()
         })
         return handleResponse(response)
     },
-    getCurrentMonthExpenses: async () => {
+    getCurrentMonthExpenses: async () => {//Unused currently
         const response = await fetch(`${API_EXPENSE_BASE}/total/current-month`, {
             headers: getAuthHeaders()
         })
         return handleResponse(response)
     },
-    getTotalExpensesByDateRange: async (startDate, endDate) => {
+    getTotalExpensesByDateRange: async (startDate, endDate) => {//Unused currently
         const response = await fetch(
             `${API_EXPENSE_BASE}/total/date-range?startDate=${startDate}&endDate=${endDate}`, 
             { headers: getAuthHeaders() }
