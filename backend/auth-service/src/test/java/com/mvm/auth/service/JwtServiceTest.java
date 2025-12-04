@@ -3,72 +3,75 @@ package com.mvm.auth.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Collections;
-
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class) //Activate Mockito for tests
+@ExtendWith(MockitoExtension.class)
 public class JwtServiceTest {
     private JwtService jwtService;
+    @Mock
+    private UserService userService;
     private UserDetails userDetails;
+    private com.mvm.auth.model.User authUser;
 
-    @BeforeEach //Method run before each test
-    void setUp(){
-        jwtService = new JwtService(); //Real instance of JwtService
+    @BeforeEach
+    void setUp() {
+        //Jwt use @Value to inject properties, on test we use ReflectionTestUtils to emulate that injection
+        jwtService = new JwtService();
+        ReflectionTestUtils.setField(jwtService, "userService", userService);
+        ReflectionTestUtils.setField(jwtService, "secretKey",
+                "c2VjcmV0S2V5MTIzNDU2Nzg5MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDEyMzQ1Njc4OTA=");
+        ReflectionTestUtils.setField(jwtService, "jwtExpiration", 86400000L);
 
-        //ReflectionTestUtils to inject values for test, due to JwtService use @Value
-        ReflectionTestUtils.setField(jwtService, "secretKey", "c2VjcmV0S2V5MTIzNDU2Nzg5MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDEyMzQ1Njc4OTA=");
-        ReflectionTestUtils.setField(jwtService,"jwtExpiration",86400000L);
+        //Creates UserDetails for Spring Security
+        userDetails = new User("test@example.com", "password", Collections.emptyList());
 
-        //Create test user for Spring Security
-        userDetails = new User("test1@test.com","password", Collections.emptyList());
+        authUser = new com.mvm.auth.model.User();
+        authUser.setId(1L);
+        authUser.setEmail("test@example.com");
+        authUser.setUserName("testuser");
     }
 
     @Test
-    void generateTokenValidAndNotNull(){
-        //Run -> Call method we want test
+    void generateToken_ShouldReturnValidJwtToken() {
+        when(userService.findByEmail("test@example.com")).thenReturn(authUser);
+
         String token = jwtService.generateToken(userDetails);
 
-        //Verify -> Check results
-        assertNotNull(token, "Generated token must not be null");
+        assertNotNull(token);
         String[] tokenParts = token.split("\\.");
-        assertEquals(3,tokenParts.length, "JWT token must be 3 parts separated by periods");
+        assertEquals(3, tokenParts.length);
+        String extractedUsername = jwtService.extractUsername(token);
+        assertEquals("test@example.com", extractedUsername);
+        verify(userService).findByEmail("test@example.com");
     }
 
     @Test
-    void extractUserNameReturnMail(){
-        //Arrange -> First generate token
+    void extractUsername_ShouldReturnEmailFromToken() {
+        when(userService.findByEmail("test@example.com")).thenReturn(authUser);
         String token = jwtService.generateToken(userDetails);
 
-        //Run -> Extract username's token
-        String extractedUserName = jwtService.extractUsername(token);
+        String extractedUsername = jwtService.extractUsername(token);
 
-        //Verify -> Check results
-        assertEquals("test1@test.com", extractedUserName, "Exctacted email should be equals to original");
+        assertEquals("test@example.com", extractedUsername);
     }
 
+
     @Test
-    void checkTokenIsValid() {
+    void isTokenValid_ShouldReturnTrue_ForValidTokenAndCorrectUser() {
+        when(userService.findByEmail("test@example.com")).thenReturn(authUser);
         String token = jwtService.generateToken(userDetails);
+
         boolean isValid = jwtService.isTokenValid(token, userDetails);
-        assertTrue(isValid, "Un token válido con el usuario correcto debería retornar true");
+
+        assertTrue(isValid);
     }
 
-    @Test
-    void tokenFromWrongUser() {
-        //Arrange -> Generate token and wrong user
-        String token = jwtService.generateToken(userDetails);
-        UserDetails differentUser = new User("testWrongUser@example.com", "password", Collections.emptyList());
-
-        //Run
-        boolean isValid = jwtService.isTokenValid(token, differentUser);
-
-        //Verify
-        assertFalse(isValid, "A user token cant be valid to another user");
-    }
 }

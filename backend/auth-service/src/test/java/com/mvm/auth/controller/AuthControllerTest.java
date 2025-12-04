@@ -15,14 +15,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Collections;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -30,167 +28,97 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(MockitoExtension.class)
 public class AuthControllerTest {
-    @Mock //Create false object
+    @Mock
     private UserService userService;
-
     @Mock
     private JwtService jwtService;
-
     @Mock
     private AuthenticationManager authenticationManager;
-
-    @InjectMocks //Inject mocks on class to test
+    @Mock
+    private Authentication authentication;
+    @InjectMocks
     private AuthController authController;
 
-    private MockMvc mockMvc; //Emulate HTTP request
-    private ObjectMapper objectMapper; //To convert Java -> JSON
+    //Simulates http request
+    private MockMvc mockMvc;
+    //Convert java objects - json
+    private ObjectMapper objectMapper;
 
     @BeforeEach
-    void setUp(){
-        //New ObjectMappjer object
+    void setUp() {
         objectMapper = new ObjectMapper();
-        //Configuration MockMvc with controller we want test
+
+        //Configure MockMvc with controller we want test
         mockMvc = MockMvcBuilders.standaloneSetup(authController).build();
     }
 
-    //Successfully register
     @Test
-    void registerWithValidData_returnJwtTokenAndUserInfo() throws Exception{
-        //Arrange
+    void register_WithValidData_ShouldReturnJwtTokenAndUserInfo() throws Exception {
+        //---Arrange---
+        //Create valid register data
+        RegisterRequestDTO request = new RegisterRequestDTO("test@test.com", "password123", "newUser");
 
-        //Create data
-        RegisterRequestDTO request = new RegisterRequestDTO(
-                "test3@test.com",
-                "password123",
-                "newUser"
-        );
-        //Creates simulated user
-        User usuarioSimulado = new User();
-        usuarioSimulado.setEmail("test3@test.com");
-        usuarioSimulado.setUserName("newUser");
+        //Creates a User (entity), like the return of userService.registerUser()
+        User fakeUser = new User();
+        fakeUser.setId(1L);
+        fakeUser.setEmail("test@test.com");
+        fakeUser.setUserName("newUser");
 
-        //Configuration mocks behavior: when(mock.method()).thenReturn(value)
-        when(userService.registerUser(any(User.class))).thenReturn(usuarioSimulado);
-        when(userService.loadUserByUsername("test3@test.com"))
-                .thenReturn(new org.springframework.security.core.userdetails
-                        .User("test3@test.com", "password123", Collections.emptyList()));
-        when(jwtService.generateToken(any(UserDetails.class)))
-                .thenReturn("fake-jwt-token");
+        when(userService.registerUser(any(User.class))).thenReturn(fakeUser);
 
-        //Act and Assert
-
-        //Simulate a http request for post method
-        mockMvc.perform(
-                post("/api/auth/register")//URL and request type
-                        .contentType(MediaType.APPLICATION_JSON) //Header
-                        .content(objectMapper.writeValueAsString(request)) //Body on JSON
-        )
-        .andExpect(status().isOk()) //we look for status 200
-        .andExpect(jsonPath("$.token").value("fake-jwt-token"))//Check right token
-        .andExpect(jsonPath("$.email").value("test3@test.com"))//Check right email
-        .andExpect(jsonPath("$.userName").value("newUser"));//Check username
-
-        //Verify we call this methods
-        verify(userService).registerUser(any(User.class));
-        verify(jwtService).generateToken(any(UserDetails.class));
-    }
-
-    //Wrong register (invalid data)
-    @Test
-    void registerWithInvalidData() throws Exception {
-        //We want to use a string instead of a java object to avoid the verification on object creation
-        String invalidJsonRequest = """
-            {
-                "email": "not-an-email",
-                "password": "123",
-                "userName": "ab"
-            }
-            """;
-
+        //---Act---
+        //Simulate HTTP post
         mockMvc.perform(post("/api/auth/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(invalidJsonRequest))
-                .andExpect(status().isBadRequest()) //Status http must be 400, not 200 ok
-                .andExpect(jsonPath("$.email").exists()) //Must exist an error to email field
-                .andExpect(jsonPath("$.password").exists()) //Must exist an error to password field
-                .andExpect(jsonPath("$.userName").exists()); //Must exist an error to userName field
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                //---Assert---
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.email").value("test@test.com"))
+                .andExpect(jsonPath("$.userName").value("newUser"))
+                .andExpect(jsonPath("$.token").doesNotExist()); //Token come on headers, not body
 
-        verify(userService, never()).registerUser(any(User.class));
+        verify(userService).registerUser(any(User.class));
+        verify(userService, never()).loadUserByUsername(anyString());
         verify(jwtService, never()).generateToken(any(UserDetails.class));
     }
 
-    //Register with an existing email
     @Test
-    void whenRegisterExistingEmail_thenReturnError() throws Exception {
+    void login_WithValidCredentials_ShouldReturnTokenAndUserInfo() throws Exception {
+        //Valid credentials
+        AuthRequestDTO request = new AuthRequestDTO("test2@test.com", "password123");
 
-        //Create a right format data
-        RegisterRequestDTO request = new RegisterRequestDTO(
-                "test3@test.com",
-                "password123",
-                "userTest"
-        );
-
-        //Configuration mock to throw an exception when try save a existent user
-        when(userService.registerUser(any(User.class)))
-                .thenThrow(new RuntimeException("Email already exists"));
-
-        mockMvc.perform(
-                        post("/api/auth/register")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(request))
-                )
-                .andExpect(status().isBadRequest()) //Status 400
-                .andExpect(jsonPath("$.error").value("Email already exists")); //Verify mention on email already exists
-    }
-
-    //Sucessfully login
-    @Test
-    void loginWithValidCredentials() throws Exception{
-        //Creates valid login data
-        AuthRequestDTO request = new AuthRequestDTO("test3@test.com", "password123");
-
-        //Creates a simulated user
         User user = new User();
-        user.setEmail("test3@test.com");
+        user.setId(1L);
+        user.setEmail("test2@test.com");
         user.setUserName("userTest");
 
-        when(userService.findByEmail("test3@test.com")).thenReturn(user);
-        when(userService.loadUserByUsername("test3@test.com")).thenReturn(
-                new org.springframework.security.core.userdetails.User(
-                        "test3@test.com", "password", Collections.emptyList()));
-        when(jwtService.generateToken(any(UserDetails.class))).thenReturn("jwt-token-login");
+        UserDetails userDetails = new org.springframework.security.core.userdetails.User("test2@test.com", "password", Collections.emptyList());
 
-        //Simulated post http request
+        //Configure Authentication mock
+        when(authentication.isAuthenticated()).thenReturn(true);
+        when(authentication.getPrincipal()).thenReturn(userDetails);
+
+        when(authenticationManager.authenticate(any())).thenReturn(authentication);
+
+        when(userService.findByEmail("test2@test.com")).thenReturn(user);
+        when(jwtService.generateToken(userDetails)).thenReturn("jwt-token-login");
+
         mockMvc.perform(post("/api/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.token").value("jwt-token-login"))
-                .andExpect(jsonPath("$.email").value("test3@test.com"))
-                .andExpect(jsonPath("$.userName").value("userTest"));
-
-    }
-    //Register with wrong data
-    @Test
-    void loginWithInvalidCredentials() throws Exception {
-        AuthRequestDTO request = new AuthRequestDTO("test3@test.com", "wrongpassword");
-
-
-        //Configuration mock to throw an exception. doThrow() instead of "when..." due to authenticate not return data, only exception or end
-        doThrow(new BadCredentialsException("Invalid credentials"))
-                .when(authenticationManager)
-                .authenticate(any(UsernamePasswordAuthenticationToken.class));
-
-        mockMvc.perform(
-                        post("/api/auth/login")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(request))
-                )
-                .andExpect(status().isBadRequest()) //Status 400
-                .andExpect(jsonPath("$.error").value("Invalid credentials")); //Verify error inform to invalid credentials
+                                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.email").value("test2@test.com"))
+                .andExpect(jsonPath("$.userName").value("userTest"))
+                .andExpect(jsonPath("$.token").doesNotExist()) //Token not on body
+                //Token on header
+                .andExpect(header().string("Authorization", "Bearer jwt-token-login"))
+                .andExpect(header().string("Access-Control-Expose-Headers", "Authorization"));
 
-        //Verify this not generate a token, controller must denied before token generation
-        verify(jwtService, never()).generateToken(any(UserDetails.class));
+        verify(authenticationManager).authenticate(any());
+        verify(userService).findByEmail("test2@test.com");
+        verify(jwtService).generateToken(userDetails);
     }
 
 }

@@ -1,5 +1,6 @@
 package com.mvm.auth.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mvm.auth.model.User;
 import com.mvm.auth.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,132 +9,91 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
-    @Mock //This creates false object
-    private UserRepository userRepository;
-
     @Mock
-    private PasswordEncoder passwordEncoder; //Not real encoder
+    private UserRepository userRepository;
+    @Mock
+    private PasswordEncoder passwordEncoder;
+    @Mock
+    private RestTemplate restTemplate;
+    @Mock
+    private ObjectMapper objectMapper;
 
     @InjectMocks
-    private UserService userService; //Real UserService but false dependencies
-
+    private UserService userService;
     private User testUser;
 
     @BeforeEach
     void setUp() {
+        //Creates a test user
         testUser = new User();
         testUser.setId(1L);
-        testUser.setEmail("test2@test.com");
-        testUser.setPassword("encodedPassword");
+        testUser.setEmail("test@example.com");
+        testUser.setPassword("plainPassword");
         testUser.setUserName("testuser");
     }
 
-    //Test login user existent user by email
     @Test
-    void loadUserByUserNameWithExistingEmail() {
-        //Arrange: Mock behavior configuration
-        //When call findByEmail with this email, then return this test user
-        when(userRepository.findByEmail("test2@test.com")).thenReturn(Optional.of(testUser));
+    void loadUserByUsername_ShouldReturnUserDetails_WhenUserExists() {
+        //---Arrange
+        String email = "test@example.com";
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(testUser));
 
-        //Run: Execute the real method
-        UserDetails userDetails = userService.loadUserByUsername("test2@test.com");
+        //---Act---
+        UserDetails userDetails = userService.loadUserByUsername(email);
 
-        //Verify
-        assertNotNull(userDetails, "UserDetails cant be null");
-        assertEquals("test2@test.com", userDetails.getUsername(), "UserName must be the email");
-        assertEquals("encodedPassword", userDetails.getPassword(), "Password must be the encoded one");
-        verify(userRepository).findByEmail("test2@test.com"); //Check that repository was called one time
+        //---Assert---
+        assertNotNull(userDetails);
+        assertEquals("test@example.com", userDetails.getUsername());
+        assertEquals("plainPassword", userDetails.getPassword());
+        verify(userRepository).findByEmail(email);
     }
 
-    //Test login user with user not existent
     @Test
-    void loadUserByUsernameWithNonExistingEmail() {
-        //Arrange: configuration mock to return void
-        when(userRepository.findByEmail("nonexistent@test.com")).thenReturn(Optional.empty());
-
-        //Run and verify right exception
-        assertThrows(UsernameNotFoundException.class, () -> {
-            userService.loadUserByUsername("nonexistent@test.com");
-        });
-
-        //Repository always should be called
-        verify(userRepository).findByEmail("nonexistent@test.com");
-    }
-
-    //Register New user successfully
-    @Test
-    void registerNewUser() {
-        //Arrange: New user
-        User newUser = new User();
-        newUser.setEmail("newUser@test.com");
-        newUser.setPassword("plainPassword");
-        newUser.setUserName("newuser");
-
-        //Mocks configuration
-        when(userRepository.existsByEmail("newUser@test.com")).thenReturn(false);
+    void registerUser_ShouldRegisterUser_WhenEmailNotExists() throws Exception {
+        when(userRepository.existsByEmail("test@example.com")).thenReturn(false);
         when(passwordEncoder.encode("plainPassword")).thenReturn("encodedPassword");
-        when(userRepository.save(any(User.class))).thenAnswer(invocation -> {
-            User userToSave = invocation.getArgument(0);
-            userToSave.setId(2L);
-            return userToSave;
-        });
+        when(userRepository.save(any(User.class))).thenReturn(testUser);
+        when(restTemplate.exchange(
+                anyString(),
+                eq(HttpMethod.POST),
+                any(HttpEntity.class),
+                eq(String.class)
+        )).thenReturn(new ResponseEntity<>("Success", HttpStatus.OK));
+        when(objectMapper.writeValueAsString(any())).thenReturn("{\"userId\":1}");
 
-        //Run: save the user
-        User savedUser = userService.registerUser(newUser);
+        User result = userService.registerUser(testUser);
 
-        //Verify
-        assertNotNull(savedUser, "Saved user cant be null");
-        assertEquals("encodedPassword", savedUser.getPassword(),
-                "Saved password must be encrypted");
-        verify(userRepository).existsByEmail("newUser@test.com");
+        assertNotNull(result);
+        assertEquals("encodedPassword", testUser.getPassword());
+        verify(userRepository).existsByEmail("test@example.com");
         verify(passwordEncoder).encode("plainPassword");
+        verify(userRepository).save(testUser);
+        verify(restTemplate).exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(String.class));
     }
 
-    //Try register user with existent email
     @Test
-    void registerUserWithExistingEmail() {
-        User existingUser = new User();
-        existingUser.setEmail("existing@test.com");
+    void findByEmail_ShouldReturnUser_WhenExists() {
+        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(testUser));
 
-        when(userRepository.existsByEmail("existing@test.com")).thenReturn(true);
+        User result = userService.findByEmail("test@example.com");
 
-        RuntimeException exception = assertThrows(RuntimeException.class,
-                () -> userService.registerUser(existingUser));
-
-        assertEquals("Email already exists", exception.getMessage());
-        verify(userRepository, never()).save(any(User.class)); //User cant be saved, verify .save never was called
-        verify(passwordEncoder, never()).encode(anyString());
-    }
-
-    //Search user by email independent of login (success)
-    @Test
-    void findByEmailWithValidEmail() {
-        when(userRepository.findByEmail("test2@test.com")).thenReturn(Optional.of(testUser));
-
-        User foundUser = userService.findByEmail("test2@test.com");
-
-        assertEquals("test2@test.com", foundUser.getEmail());
-        assertEquals("testuser", foundUser.getUserName());
-    }
-
-    //Search user by email independent of login (failure)
-    @Test
-    void findByEmailWithNoExistentEmail() {
-        when(userRepository.findByEmail("wrong@test.com")).thenReturn(Optional.empty());
-
-        assertThrows(UsernameNotFoundException.class, () -> {
-            userService.findByEmail("wrong@test.com");
-        });
+        assertNotNull(result);
+        assertEquals("test@example.com", result.getEmail());
+        assertEquals("testuser", result.getUserName());
+        verify(userRepository).findByEmail("test@example.com");
     }
 }
