@@ -30,7 +30,7 @@ public class ExpenseService {
     }
 
     public ExpenseResponseDTO getExpenseById(Long id, Long userId){
-        Expense expense = expenseRepository.findById(userId).orElseThrow(() -> new RuntimeException("Expense not found with id: " + id));
+        Expense expense = expenseRepository.findById(id).orElseThrow(() -> new RuntimeException("Expense not found with id: " + id));
         if(!expense.getUserId().equals(userId)){
             throw new RuntimeException("Unauthorized acces to expense");
         }
