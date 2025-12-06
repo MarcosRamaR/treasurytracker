@@ -10,7 +10,7 @@
 
 
 ## Description
-A web application for personal finance management and cash flow tracking. Developed with a React frontend and a Spring Boot backend, it allows users to monitor expenses, filter transactions, and gain insights into their finances.The backend is tested with unit tests using JUnit and Mockito, ensuring that core functionalities such as creating, updating, retrieving, and deleting correctly.
+A web application for personal finance management and cash flow tracking. Developed with a React frontend and the backend is structured into two Spring Boot services: an authentication-service and a transaction-service. Although they currently share a database, they are organized as independent modules. It allows users to monitor expenses, filter transactions, and gain insights into their finances.The backend is tested with unit tests using JUnit and Mockito, ensuring that core functionalities such as creating, updating, retrieving, and deleting correctly.
 
 ## Functionalities
 - `User Authentication`: Register, log in, and manage individual user accounts. Each user's data is displayed only to the logged-in user.
