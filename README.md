@@ -43,34 +43,7 @@ A web application for personal finance management and cash flow tracking. Develo
 ## React and Vite
 This application uses **React** together with **Vite** for bundling and Hot Module Replacement (HMR).
 
-## API Endpoints
 
-### Base URL: `http://localhost:8080/api/expenses`
-
-### Recipe Operations
-
-| Method | Endpoint              | Description                          | Example Request Body |
-|--------|-----------------------|--------------------------------------|----------------------|
-| `GET`  | ``            | Get all expenses                      | -                    |
-| `GET`  | `/{id}`       | Get expense by ID                     | -                    |
-| `GET`  | `/category/{category}`       | Get expenses from one category                     | -                    |
-| `GET`  | `/between-date`       | Get expenses by a date range                   | -                    |
-| `GET`  | `/total`       | Get the sum of all expenses                   | -                    |
-| `POST` | ``            | Create new expense                    |  [See below](#-sample-requests)   |
-| `PUT`  | `/{id}`       | Update the expense of this id              |-                    |
-| `DELETE` | `/{id}`     | Delete expense by id                       | -                    |
-
-###  Sample Requests
-
-**Create expense** (`POST`)
-```json:
-{
-  "description": "Groceries",
-  "amount": 45.50,
-  "category": "Food",
-  "date": "2024-01-15"
-}
-```
 
 ## Developers
 
