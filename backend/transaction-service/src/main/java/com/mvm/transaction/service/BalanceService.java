@@ -84,7 +84,30 @@ public class BalanceService {
             System.out.println("Not pending transactions");
             return convertToDTO(balance);
         }
+    }
+    public BalanceDTO updateBalanceFromNewExpense(Long userId, BigDecimal expenseAmount){
+        Balance balance = balanceRepository.findByUserId(userId).orElseGet(() -> createInitialBalance(userId));
 
+        BigDecimal originalBalance = balance.getTotalBalance();
+        BigDecimal newBalance = originalBalance.subtract(expenseAmount);
+
+        balance.setTotalBalance(newBalance);
+        balance.setModifiedBy("SYSTEM");
+        balance.setUpdatedAt(LocalDateTime.now());
+        Balance savedBalance = balanceRepository.save(balance);
+        return convertToDTO(savedBalance);
+    }
+    public BalanceDTO updateBalanceFromNewIncome(Long userId, BigDecimal incomeAmount){
+        Balance balance = balanceRepository.findByUserId(userId).orElseGet(() -> createInitialBalance(userId));
+
+        BigDecimal originalBalance = balance.getTotalBalance();
+        BigDecimal newBalance = originalBalance.add(incomeAmount);
+
+        balance.setTotalBalance(newBalance);
+        balance.setModifiedBy("SYSTEM");
+        balance.setUpdatedAt(LocalDateTime.now());
+        Balance savedBalance = balanceRepository.save(balance);
+        return convertToDTO(savedBalance);
     }
 
     @Scheduled(cron = "0 0 0,12 * * ?") //Sec 0, min 0, hour 0 and hour 12. 2 times at day (00:00 and 12:00)

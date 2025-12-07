@@ -20,6 +20,8 @@ public class IncomeService {
     private IncomeRepository incomeRepository;
     @Autowired
     private IncomeMapper incomeMapper;
+    @Autowired
+    private BalanceService balanceService;
 
     public List<IncomeResponseDTO> getAllIncomes(Long userId) {
         List<Income> incomes = incomeRepository.findByUserId(userId);
@@ -38,6 +40,11 @@ public class IncomeService {
     public IncomeResponseDTO createIncome(IncomeDTO incomeDTO, Long userId) {
         Income income = incomeMapper.toEntity(incomeDTO);
         income.setUserId(userId);
+        LocalDate today = LocalDate.now();
+        if(!income.getDate().isAfter(today)){
+            balanceService.updateBalanceFromNewIncome(userId, income.getAmount());
+            income.setApplicated(true);
+        }
         Income savedIncome = incomeRepository.save(income);
         return incomeMapper.toResponseDTO(savedIncome);
     }

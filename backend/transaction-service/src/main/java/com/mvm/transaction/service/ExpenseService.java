@@ -21,6 +21,8 @@ public class ExpenseService {
     private ExpenseRepository expenseRepository;
     @Autowired
     private ExpenseMapper expenseMapper;
+    @Autowired
+    private BalanceService balanceService;
 
     public List<ExpenseResponseDTO> getAllExpenses(Long userId){
         List<Expense> expenses = expenseRepository.findByUserId(userId);
@@ -41,6 +43,11 @@ public class ExpenseService {
     public ExpenseResponseDTO createExpense(ExpenseDTO expenseDTO, Long userId) {
         Expense expense = expenseMapper.toEntity(expenseDTO);
         expense.setUserId(userId);
+        LocalDate today = LocalDate.now();
+        if(!expense.getDate().isAfter(today)){
+            balanceService.updateBalanceFromNewExpense(userId, expense.getAmount());
+            expense.setApplicated(true);
+        }
         Expense savedExpense = expenseRepository.save(expense);
         return expenseMapper.toResponseDTO(savedExpense);
     }
