@@ -33,6 +33,7 @@ export const NavBar = () => {
         authService.logout()
         setIsLogged(false)
         navigate('/')
+        window.location.reload()
     }
 
     return (
