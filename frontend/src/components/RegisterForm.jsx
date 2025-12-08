@@ -32,15 +32,15 @@ export function RegisterForm({onSubmit, onSwitchToLogin}) {
             const result = await authService.register(formData)
             console.log('Resultado del registro:', result)
             if(result.id && result.email && result.userName){
-                setFormData({username:'',email:'', password: ''})
+                setFormData({userName:'',email:'', password: ''})
                 setErrors({success: 'Account created. Redirecting to login'})
-                
+
+                setTimeout(() => {
                 if(onSubmit){
                     onSubmit(result)
                 }
-                setTimeout(() => {
-                    onSwitchToLogin()
-                }, 1500)
+                },2500)
+
             }else{
                 setErrors(result)
             }
