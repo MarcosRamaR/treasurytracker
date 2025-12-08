@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { authService } from '../services/authService'
 import '../styles/RegisterLoginStyle.css'
 
@@ -12,8 +12,6 @@ export function RegisterForm({onSubmit, onSwitchToLogin}) {
     const [errors, setErrors] = useState({})
     const [isLoading, setIsLoading] = useState(false)
 
-    useEffect(() => {
-    }, [])
 
     const handleChange = (e) => {
         const { name, value } = e.target
@@ -55,7 +53,7 @@ export function RegisterForm({onSubmit, onSwitchToLogin}) {
         <div className='register-form'>
             <div>
                 <h5 className='title-h5'>Create Account</h5>
-                <form onSubmit={handleSubmit} >
+                <form onSubmit={handleSubmit}>
                     <div className="mb-3">
                         <label htmlFor="username" className='label-text'>Username</label>
                         <input
@@ -65,6 +63,8 @@ export function RegisterForm({onSubmit, onSwitchToLogin}) {
                             name="userName"
                             value={formData.userName}
                             onChange={handleChange}
+                            readOnly 
+                            onFocus={(e) => e.target.removeAttribute('readonly')}
                             required
                         />
                     </div>
@@ -78,6 +78,8 @@ export function RegisterForm({onSubmit, onSwitchToLogin}) {
                             name="email"
                             value={formData.email}
                             onChange={handleChange}
+                            readOnly 
+                            onFocus={(e) => e.target.removeAttribute('readonly')}
                             required
                         />
                     </div>
@@ -91,6 +93,8 @@ export function RegisterForm({onSubmit, onSwitchToLogin}) {
                             name="password"
                             value={formData.password}
                             onChange={handleChange}
+                            readOnly 
+                            onFocus={(e) => e.target.removeAttribute('readonly')}
                             required
                         />
                     </div>
