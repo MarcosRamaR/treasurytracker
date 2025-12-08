@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { authService } from '../services/authService'
 import '../styles/RegisterLoginStyle.css'
 
-export function RegisterForm({onSubmit,editUser, onSwitchToLogin}) {
+export function RegisterForm({onSubmit, onSwitchToLogin}) {
     const [formData, setFormData] = useState({
         userName: '',
         email: '',
@@ -13,14 +13,7 @@ export function RegisterForm({onSubmit,editUser, onSwitchToLogin}) {
     const [isLoading, setIsLoading] = useState(false)
 
     useEffect(() => {
-        if (editUser) {
-        setFormData({
-            username: editUser.username,
-            email: editUser.email,
-            password: ''
-        })
-        }
-    }, [editUser])
+    }, [])
 
     const handleChange = (e) => {
         const { name, value } = e.target
@@ -37,13 +30,17 @@ export function RegisterForm({onSubmit,editUser, onSwitchToLogin}) {
 
         try{
             const result = await authService.register(formData)
-
-            if(result.token){
-                authService.saveData(result.token, {email: result.email, username: result.userName})
+            console.log('Resultado del registro:', result)
+            if(result.id && result.email && result.userName){
                 setFormData({username:'',email:'', password: ''})
+                setErrors({success: 'Account created. Redirecting to login'})
+                
                 if(onSubmit){
                     onSubmit(result)
                 }
+                setTimeout(() => {
+                    onSwitchToLogin()
+                }, 1500)
             }else{
                 setErrors(result)
             }
@@ -58,7 +55,7 @@ export function RegisterForm({onSubmit,editUser, onSwitchToLogin}) {
         <div className='register-form'>
             <div>
                 <h5 className='title-h5'>Create Account</h5>
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit} >
                     <div className="mb-3">
                         <label htmlFor="username" className='label-text'>Username</label>
                         <input
@@ -97,10 +94,12 @@ export function RegisterForm({onSubmit,editUser, onSwitchToLogin}) {
                             required
                         />
                     </div>
+                    {errors.success && (
+                        <div className="alert alert-success">{errors.success}</div>)}
                     {errors.error && (
                         <div className="alert alert-danger">{errors.error}</div>
                     )}
-                    <button type="submit" className='register-login-button' disabled={isLoading}>Register</button>
+                    <button type="submit" className='register-login-button' disabled={isLoading}>{isLoading ? 'Registering...' : 'Register'}</button>
                 </form>
                 
                 <div className="text-center mt-3">
