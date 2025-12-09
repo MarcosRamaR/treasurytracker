@@ -35,8 +35,8 @@ public class IncomeControllerTest {
         testIncomeResponseDTO = new IncomeResponseDTO();
         testIncomeResponseDTO.setId(1L);
         testIncomeResponseDTO.setAmount(new BigDecimal("2000.00"));
-        testIncomeResponseDTO.setDescription("Salary");
-        testIncomeResponseDTO.setCategory("Employment");
+        testIncomeResponseDTO.setDescription("January salary");
+        testIncomeResponseDTO.setCategory("Salary");
         testIncomeResponseDTO.setDate(LocalDate.now());
         testIncomeResponseDTO.setUserId(123L);
 
@@ -75,7 +75,7 @@ public class IncomeControllerTest {
     void createIncome_ShouldCreateAndReturnIncome() {
         IncomeDTO incomeDTO = new IncomeDTO();
         incomeDTO.setAmount(new BigDecimal("2000.00"));
-        incomeDTO.setDescription("Salary");
+        incomeDTO.setDescription("January salary");
         when(incomeService.createIncome(incomeDTO, 123L)).thenReturn(testIncomeResponseDTO);
 
         ResponseEntity<IncomeResponseDTO> response = incomeController.createIncome(incomeDTO, request);
@@ -111,22 +111,23 @@ public class IncomeControllerTest {
 
     @Test
     void filterIncomes_ShouldReturnFilteredIncomes() {
-        String category = "Employment";
+        String category = "Salary";
+        String description = "January salary";
         LocalDate startDate = LocalDate.now().minusDays(30);
         LocalDate endDate = LocalDate.now();
         BigDecimal minAmount = new BigDecimal("1000");
         BigDecimal maxAmount = new BigDecimal("5000");
         List<IncomeResponseDTO> incomes = Arrays.asList(testIncomeResponseDTO);
         when(incomeService.filterIncomes(
-                eq(123L), eq(category), eq(startDate), eq(endDate),
+                eq(123L),eq(description), eq(category), eq(startDate), eq(endDate),
                 eq(minAmount), eq(maxAmount))).thenReturn(incomes);
 
-        ResponseEntity<List<IncomeResponseDTO>> response = incomeController.filterIncomes(
+        ResponseEntity<List<IncomeResponseDTO>> response = incomeController.filterIncomes(description,
                 category, startDate, endDate, minAmount, maxAmount, request);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals(1, response.getBody().size());
-        verify(incomeService).filterIncomes(123L, category, startDate, endDate, minAmount, maxAmount);
+        verify(incomeService).filterIncomes(123L,description, category, startDate, endDate, minAmount, maxAmount);
     }
 }

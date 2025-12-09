@@ -15,16 +15,18 @@ import java.util.List;
 public interface IncomeRepository extends JpaRepository<Income, Long> {
     List<Income> findByUserId(Long userId);
 
-    @Query(value = "SELECT * FROM incomes e WHERE e.user_id = :userId " +
-            "AND (:category IS NULL OR e.category = :category) " +
-            "AND (CAST(:startDate AS DATE) IS NULL OR e.date >= CAST(:startDate AS DATE)) " +
-            "AND (CAST(:endDate AS DATE) IS NULL OR e.date <= CAST(:endDate AS DATE)) " +
-            "AND (CAST(:minAmount AS DECIMAL) IS NULL OR e.amount >= CAST(:minAmount AS DECIMAL)) " +
-            "AND (CAST(:maxAmount AS DECIMAL) IS NULL OR e.amount <= CAST(:maxAmount AS DECIMAL)) " +
-            "ORDER BY e.date DESC",
+    @Query(value = "SELECT * FROM incomes i WHERE i.user_id = :userId " +
+            "AND (:description IS NULL OR LOWER(i.description) LIKE LOWER(CONCAT('%', :description,'%'))) " +
+            "AND (:category IS NULL OR i.category = :category) " +
+            "AND (CAST(:startDate AS DATE) IS NULL OR i.date >= CAST(:startDate AS DATE)) " +
+            "AND (CAST(:endDate AS DATE) IS NULL OR i.date <= CAST(:endDate AS DATE)) " +
+            "AND (CAST(:minAmount AS DECIMAL) IS NULL OR i.amount >= CAST(:minAmount AS DECIMAL)) " +
+            "AND (CAST(:maxAmount AS DECIMAL) IS NULL OR i.amount <= CAST(:maxAmount AS DECIMAL)) " +
+            "ORDER BY i.date DESC",
             nativeQuery = true)
     List<Income> findByFiltersAndUser(
             @Param("userId") Long userId,
+            @Param("description") String description,
             @Param("category") String category,
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate,

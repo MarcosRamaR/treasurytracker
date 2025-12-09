@@ -80,6 +80,7 @@ public class IncomeController {
 
     @GetMapping("/filters")
     public ResponseEntity<List<IncomeResponseDTO>> filterIncomes(
+            @RequestParam(required = false) String description,
             @RequestParam(required = false) String category,
             @RequestParam(required = false) LocalDate startDate,
             @RequestParam(required = false) LocalDate endDate,
@@ -89,7 +90,7 @@ public class IncomeController {
 
         Long userId = (Long) request.getAttribute("userId");
         List<IncomeResponseDTO> incomes = incomeService.filterIncomes(
-                userId, category, startDate, endDate, minAmount, maxAmount);
+                userId,description, category, startDate, endDate, minAmount, maxAmount);
 
         return ResponseEntity.ok(incomes);
     }

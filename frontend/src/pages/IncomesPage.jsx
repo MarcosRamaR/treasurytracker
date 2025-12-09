@@ -10,6 +10,7 @@ export function IncomesPage() {
         createIncome, updateIncome, deleteIncome,filterIncomes,clearFilters
     } = useIncomes()
     const [editIncome, setEditIncome] = useState(null)
+    const [fieldDescription, setFieldDescription] = useState('')
     const [startDate, setStartDate] = useState('')
     const [endDate, setEndDate] = useState('')
     const [categorySelect, setCategorySelect] = useState('')
@@ -37,6 +38,7 @@ export function IncomesPage() {
     }
     const handleFilters = async () => {
         const filters = {
+            description: fieldDescription,
             category: categorySelect,
             startDate: startDate,
             endDate: endDate,
@@ -60,6 +62,8 @@ export function IncomesPage() {
       <h2>Incomes Page</h2>
       <IncomeForm onSubmit={editIncome ? handleUpdateIncome : handleAddIncome} editIncome={editIncome}/>
       <FilterSection
+        fieldDescription={fieldDescription}
+        setFieldDescription={setFieldDescription}
         startDate={startDate}
         setStartDate={setStartDate}
         endDate={endDate}

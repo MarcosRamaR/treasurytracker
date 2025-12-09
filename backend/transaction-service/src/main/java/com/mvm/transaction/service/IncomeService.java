@@ -71,6 +71,7 @@ public class IncomeService {
 
     public List<IncomeResponseDTO> filterIncomes(
             Long userId,
+            String description,
             String category,
             LocalDate startDate,
             LocalDate endDate,
@@ -78,7 +79,7 @@ public class IncomeService {
             BigDecimal maxAmount) {
 
         List<Income> incomes = incomeRepository.findByFiltersAndUser(
-                userId, category, startDate, endDate, minAmount, maxAmount);
+                userId,description, category, startDate, endDate, minAmount, maxAmount);
         return incomes.stream().map(incomeMapper::toResponseDTO).collect(Collectors.toList());
     }
 }

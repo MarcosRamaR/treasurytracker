@@ -39,22 +39,22 @@ public class IncomeServiceTest {
         testIncome = new Income();
         testIncome.setId(1L);
         testIncome.setAmount(new BigDecimal("2000.00"));
-        testIncome.setDescription("Salary");
-        testIncome.setCategory("Employment");
+        testIncome.setDescription("January salary");
+        testIncome.setCategory("Salary");
         testIncome.setDate(LocalDate.now());
         testIncome.setUserId(123L);
 
         testIncomeDTO = new IncomeDTO();
         testIncomeDTO.setAmount(new BigDecimal("2000.00"));
-        testIncomeDTO.setDescription("Salary");
-        testIncomeDTO.setCategory("Employment");
+        testIncomeDTO.setDescription("January salary");
+        testIncomeDTO.setCategory("Salary");
         testIncomeDTO.setDate(LocalDate.now());
 
         testIncomeResponseDTO = new IncomeResponseDTO();
         testIncomeResponseDTO.setId(1L);
         testIncomeResponseDTO.setAmount(new BigDecimal("2000.00"));
-        testIncomeResponseDTO.setDescription("Salary");
-        testIncomeResponseDTO.setCategory("Employment");
+        testIncomeResponseDTO.setDescription("January salary");
+        testIncomeResponseDTO.setCategory("Salary");
         testIncomeResponseDTO.setDate(LocalDate.now());
         testIncomeResponseDTO.setUserId(123L);
     }
@@ -147,23 +147,24 @@ public class IncomeServiceTest {
     @Test
     void filterIncomes_ShouldReturnFilteredIncomes() {
         Long userId = 123L;
-        String category = "Employment";
+        String category = "Salary";
+        String description = "January salary";
         LocalDate startDate = LocalDate.now().minusDays(30);
         LocalDate endDate = LocalDate.now();
         BigDecimal minAmount = new BigDecimal("1000");
         BigDecimal maxAmount = new BigDecimal("5000");
         List<Income> incomes = Arrays.asList(testIncome);
         when(incomeRepository.findByFiltersAndUser(
-                userId, category, startDate, endDate, minAmount, maxAmount)).thenReturn(incomes);
+                userId,description, category, startDate, endDate, minAmount, maxAmount)).thenReturn(incomes);
         when(incomeMapper.toResponseDTO(testIncome)).thenReturn(testIncomeResponseDTO);
 
         List<IncomeResponseDTO> result = incomeService.filterIncomes(
-                userId, category, startDate, endDate, minAmount, maxAmount);
+                userId,description, category, startDate, endDate, minAmount, maxAmount);
 
         assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals(testIncomeResponseDTO, result.get(0));
-        verify(incomeRepository).findByFiltersAndUser(userId, category, startDate, endDate, minAmount, maxAmount);
+        verify(incomeRepository).findByFiltersAndUser(userId,description, category, startDate, endDate, minAmount, maxAmount);
         verify(incomeMapper).toResponseDTO(testIncome);
     }
 }
