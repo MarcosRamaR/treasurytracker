@@ -50,9 +50,12 @@ export function ExpensesPage() {
     }
     const handleClearFilters = () => {
         clearFilters()
+        setFieldDescription('')
         setCategorySelect('')
         setStartDate('')
         setEndDate('')
+        setMinAmount(0)
+        setMaxAmount(0)
     }
 
 
