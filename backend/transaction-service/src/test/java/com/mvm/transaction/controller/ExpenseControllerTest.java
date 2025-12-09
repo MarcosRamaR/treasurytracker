@@ -115,6 +115,7 @@ public class ExpenseControllerTest {
 
     @Test
     void filterExpenses_ShouldReturnFilteredExpenses() {
+        String description = "Test expense";
         String category = "Food";
         LocalDate startDate = LocalDate.now().minusDays(30);
         LocalDate endDate = LocalDate.now();
@@ -124,16 +125,16 @@ public class ExpenseControllerTest {
 
         //eq() to verify exact params
         when(expenseService.filterExpenses(
-                eq(123L), eq(category), eq(startDate), eq(endDate),
+                eq(123L),eq(description), eq(category), eq(startDate), eq(endDate),
                 eq(minAmount), eq(maxAmount))).thenReturn(expenses);
 
         ResponseEntity<List<ExpenseResponseDTO>> response =
-                expenseController.filterExpenses(category, startDate, endDate, minAmount, maxAmount, request);
+                expenseController.filterExpenses(category,description, startDate, endDate, minAmount, maxAmount, request);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals(1, response.getBody().size());
-        verify(expenseService).filterExpenses(123L, category, startDate, endDate, minAmount, maxAmount);
+        verify(expenseService).filterExpenses(123L,description, category, startDate, endDate, minAmount, maxAmount);
     }
 }
 

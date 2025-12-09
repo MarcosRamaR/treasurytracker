@@ -1,6 +1,8 @@
 import '../styles/ExpensesStyle.css'
 
 export function FilterSection({
+    fieldDescription,
+    setFieldDescription,
     startDate,
     setStartDate,
     endDate,
@@ -21,6 +23,14 @@ export function FilterSection({
     <div className="filter-section">
         <h3>Filters</h3>
         <div className="filter-controls">
+            <label>
+                Description:
+                <input 
+                type="text"
+                value ={fieldDescription}
+                onChange={(e) => setFieldDescription(e.target.value)}
+                />
+            </label>
             <label>
                 Start Date:
                 <input 

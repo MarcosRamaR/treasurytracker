@@ -80,6 +80,7 @@ public class ExpenseController {
 
     @GetMapping("/filters")
     public ResponseEntity<List<ExpenseResponseDTO>> filterExpenses(
+            @RequestParam(required = false) String description,
             @RequestParam(required = false) String category,
             @RequestParam(required = false) LocalDate startDate,
             @RequestParam(required = false) LocalDate endDate,
@@ -89,7 +90,7 @@ public class ExpenseController {
 
         Long userId = (Long) request.getAttribute("userId");
         List<ExpenseResponseDTO> expenses = expenseService.filterExpenses(
-                userId, category, startDate, endDate, minAmount, maxAmount);
+                userId,description, category, startDate, endDate, minAmount, maxAmount);
 
         return ResponseEntity.ok(expenses);
     }

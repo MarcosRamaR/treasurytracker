@@ -124,8 +124,9 @@ export const apiService = {
         return true
     },
     filterExpenses: async (filters,type) => {
-        const {category, startDate, endDate, minAmount, maxAmount} = filters
+        const {description,category, startDate, endDate, minAmount, maxAmount} = filters
         const queryParams = [
+            description ? `description=${encodeURIComponent(description)}` : '',
             category ? `category=${category}` : '',
             startDate ? `startDate=${startDate}` : '',
             endDate ? `endDate=${endDate}` : '',

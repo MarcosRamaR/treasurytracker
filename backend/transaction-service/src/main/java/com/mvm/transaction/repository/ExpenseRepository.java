@@ -15,6 +15,10 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     List<Expense> findByUserId(Long userId);
 
     @Query(value = "SELECT * FROM expenses e WHERE e.user_id = :userId " +
+            /*LOWER(e.description) convert description on DB to lower case,
+            LIKE look for partial matches
+            LOWER(CONCAT('%', :description, '%')) convert the search param on lower case and % to search any description contains that*/
+            "AND (:description IS NULL OR LOWER(e.description) LIKE LOWER(CONCAT('%', :description,'%'))) " +
             "AND (:category IS NULL OR e.category = :category) " +
             "AND (CAST(:startDate AS DATE) IS NULL OR e.date >= CAST(:startDate AS DATE)) " +
             "AND (CAST(:endDate AS DATE) IS NULL OR e.date <= CAST(:endDate AS DATE)) " +
@@ -24,6 +28,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
             nativeQuery = true)
     List<Expense> findByFiltersAndUser(
             @Param("userId") Long userId,
+            @Param("description") String description,
             @Param("category") String category,
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate,

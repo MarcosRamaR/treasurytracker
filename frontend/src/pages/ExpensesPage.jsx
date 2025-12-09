@@ -10,6 +10,7 @@ export function ExpensesPage() {
         createExpense, updateExpense, deleteExpense,filterExpenses,clearFilters
     } = useExpenses()
     const [editExpense, setEditExpense] = useState(null)
+    const [fieldDescription, setFieldDescription] = useState('')
     const [startDate, setStartDate] = useState('')
     const [endDate, setEndDate] = useState('')
     const [categorySelect, setCategorySelect] = useState('')
@@ -38,6 +39,7 @@ export function ExpensesPage() {
     }
     const handleFilters = async () => {
         const filters = {
+            description: fieldDescription,
             category: categorySelect,
             startDate: startDate,
             endDate: endDate,
@@ -63,6 +65,8 @@ export function ExpensesPage() {
     <h2>Expenses Page</h2>
     <ExpenseForm onSubmit={editExpense ? handleUpdateExpense : handleAddExpense} editExpense={editExpense}/>
     <FilterSection
+        fieldDescription={fieldDescription}
+        setFieldDescription={setFieldDescription}
         startDate={startDate}
         setStartDate={setStartDate}
         endDate={endDate}

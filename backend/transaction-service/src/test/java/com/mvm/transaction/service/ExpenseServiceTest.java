@@ -156,6 +156,7 @@ public class ExpenseServiceTest {
     @Test
     void filterExpenses_ShouldReturnFilteredExpenses() {
         Long userId = 123L;
+        String description = "Test expense";
         String category = "Food";
         LocalDate startDate = LocalDate.now().minusDays(30);
         LocalDate endDate = LocalDate.now();
@@ -165,16 +166,16 @@ public class ExpenseServiceTest {
 
         //Set the mock with specific params
         when(expenseRepository.findByFiltersAndUser(
-                userId, category, startDate, endDate, minAmount, maxAmount)).thenReturn(expenses);
+                userId, description, category, startDate, endDate, minAmount, maxAmount)).thenReturn(expenses);
         when(expenseMapper.toResponseDTO(testExpense)).thenReturn(testExpenseResponseDTO);
 
         List<ExpenseResponseDTO> result = expenseService.filterExpenses(
-                userId, category, startDate, endDate, minAmount, maxAmount);
+                userId,description, category, startDate, endDate, minAmount, maxAmount);
 
         assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals(testExpenseResponseDTO, result.get(0));
-        verify(expenseRepository).findByFiltersAndUser(userId, category, startDate, endDate, minAmount, maxAmount);
+        verify(expenseRepository).findByFiltersAndUser(userId,description, category, startDate, endDate, minAmount, maxAmount);
         verify(expenseMapper).toResponseDTO(testExpense);
     }
 }

@@ -71,12 +71,13 @@ public class ExpenseService {
     }
     public List<ExpenseResponseDTO> filterExpenses(
             Long userId,
+            String description,
             String category,
             LocalDate startDate,
             LocalDate endDate,
             BigDecimal minAmount,
             BigDecimal maxAmount) {
-        List<Expense> expenses = expenseRepository.findByFiltersAndUser(userId, category, startDate, endDate, minAmount, maxAmount);
+        List<Expense> expenses = expenseRepository.findByFiltersAndUser(userId,description, category, startDate, endDate, minAmount, maxAmount);
         return expenses.stream().map(expenseMapper::toResponseDTO).collect(Collectors.toList());
     }
 }
