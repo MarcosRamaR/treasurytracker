@@ -114,7 +114,7 @@ public class ExportService {
         lineBuilder.append(TYPE_EXPENSE).append(CSV_SEPARATOR);
         lineBuilder.append(escapeCsv(income.getDescription())).append(CSV_SEPARATOR);
         lineBuilder.append(escapeCsv(income.getCategory())).append(CSV_SEPARATOR);
-        lineBuilder.append('-').append(income.getAmount().toString()).append('\n');
+        lineBuilder.append(income.getAmount().toString()).append('\n');
         return lineBuilder.toString();
     }
 

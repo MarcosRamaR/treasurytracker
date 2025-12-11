@@ -25,7 +25,7 @@ public class ExportController {
         Long userId = (Long) request.getAttribute("userId"); //Get the userId
         byte[] csvData = exportService.exportExpensesToCsv(userId); //Call the service
         //Dynamic name, depends on the date
-        String fileName = String.format("expenses_filtered_%s.csv", LocalDate.now());
+        String fileName = String.format("expenses_%s.csv", LocalDate.now());
         //Build our response
         return ResponseEntity.ok() // Status 200 OK
                 //Header indicates that is an attachment named "expenses.csv"
@@ -63,7 +63,7 @@ public class ExportController {
     public ResponseEntity<byte[]> exportIncomesToCsv(HttpServletRequest request){
         Long userId = (Long) request.getAttribute("userId");
         byte[] csvData = exportService.exportIncomesToCsv(userId);
-        String fileName = String.format("incomes_filtered_%s.csv", LocalDate.now());
+        String fileName = String.format("incomes_%s.csv", LocalDate.now());
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+fileName)
                 .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
