@@ -59,5 +59,36 @@ public class ExportController {
                 .body(csvData);
     }
 
+    @GetMapping("/incomes/csv")
+    public ResponseEntity<byte[]> exportIncomesToCsv(HttpServletRequest request){
+        Long userId = (Long) request.getAttribute("userId");
+        byte[] csvData = exportService.exportIncomesToCsv(userId);
+        String fileName = String.format("incomes_filtered_%s.csv", LocalDate.now());
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+fileName)
+                .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
+                .body(csvData);
+    }
+
+    @GetMapping("/incomes/filtered/csv")
+    public ResponseEntity<byte[]> exportFilteredIncomesToCsv(
+            @RequestParam(required = false) String description,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate,
+            @RequestParam(required = false) BigDecimal minAmount,
+            @RequestParam(required = false) BigDecimal maxAmount,
+            HttpServletRequest request) {
+
+        Long userId = (Long) request.getAttribute("userId");
+        byte[] csvData = exportService.exportFilteredIncomesToCsv(
+                userId, description, category, startDate, endDate, minAmount, maxAmount);
+        String fileName = String.format("incomes_filtered_%s.csv", LocalDate.now());
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName)
+                .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
+                .body(csvData);
+    }
+
 
 }

@@ -1,6 +1,7 @@
 package com.mvm.transaction.service;
 
 import com.mvm.transaction.dto.ExpenseResponseDTO;
+import com.mvm.transaction.dto.IncomeResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,8 @@ import java.util.List;
 public class ExportService {
     @Autowired
     private ExpenseService expenseService;
+    @Autowired
+    private IncomeService incomeService;
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final String CSV_HEADER = "ID;Date;Type;Description;Category;Amount\n";
@@ -36,11 +39,23 @@ public class ExportService {
                 userId, description, category, startDate, endDate, minAmount, maxAmount);
         return generateExpensesCsv(expenses);
     }
+    public byte[] exportIncomesToCsv(Long userId) {
+        List<IncomeResponseDTO> incomes = incomeService.getAllIncomes(userId);
+        return generateIncomesCsv(incomes);
+    }
+
+    public byte[] exportFilteredIncomesToCsv(Long userId, String description, String category,
+                                              LocalDate startDate, LocalDate endDate,
+                                              BigDecimal minAmount, BigDecimal maxAmount) {
+        List<IncomeResponseDTO> incomes = incomeService.filterIncomes(
+                userId, description, category, startDate, endDate, minAmount, maxAmount);
+        return generateIncomesCsv(incomes);
+    }
+
 
     private byte[] generateExpensesCsv(List<ExpenseResponseDTO> expenses) {
         //Storages bytes on memory
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-
         /*
         The structure try-with-resources grants the resources as OutputStreamWriter close automatically after exit the try
         StandardCharsets.UTF_8 configures the PrintWriter to use UTF-8
@@ -48,20 +63,33 @@ public class ExportService {
         try (OutputStreamWriter osw = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
              PrintWriter writer = new PrintWriter(osw)) {
             writer.write(CSV_HEADER);
-
             for (ExpenseResponseDTO expense : expenses) {
                 //For each expense we build and write a line
                 String csvLine = buildExpenseCsvLine(expense);
                 writer.write(csvLine);
             }
-
             //Make sure all data are write on stream
             writer.flush();
-
         } catch (Exception e) {
             throw new RuntimeException("Error generating CSV file", e);
         }
         //Convert the stream to an array
+        return outputStream.toByteArray();
+    }
+
+    private byte[] generateIncomesCsv(List<IncomeResponseDTO> incomes) {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try (OutputStreamWriter osw = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
+             PrintWriter writer = new PrintWriter(osw)) {
+            writer.write(CSV_HEADER);
+            for (IncomeResponseDTO income : incomes) {
+                String csvLine = buildIncomeCsvLine(income);
+                writer.write(csvLine);
+            }
+            writer.flush();
+        } catch (Exception e) {
+            throw new RuntimeException("Error generating CSV file", e);
+        }
         return outputStream.toByteArray();
     }
 
@@ -76,6 +104,17 @@ public class ExportService {
         lineBuilder.append(escapeCsv(expense.getCategory())).append(CSV_SEPARATOR);
         lineBuilder.append('-').append(expense.getAmount().toString()).append('\n');//Add - due to we want expense look as negative
 
+        return lineBuilder.toString();
+    }
+
+    private String buildIncomeCsvLine(IncomeResponseDTO income) {
+        StringBuilder lineBuilder = new StringBuilder();
+        lineBuilder.append(income.getId()).append(CSV_SEPARATOR);
+        lineBuilder.append(income.getDate().format(DATE_FORMATTER)).append(CSV_SEPARATOR);
+        lineBuilder.append(TYPE_EXPENSE).append(CSV_SEPARATOR);
+        lineBuilder.append(escapeCsv(income.getDescription())).append(CSV_SEPARATOR);
+        lineBuilder.append(escapeCsv(income.getCategory())).append(CSV_SEPARATOR);
+        lineBuilder.append('-').append(income.getAmount().toString()).append('\n');
         return lineBuilder.toString();
     }
 
