@@ -21,6 +21,7 @@ public class ExportService {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final String CSV_HEADER = "ID,Date,Type,Description,Category,Amount\n";
+    private static final char CSV_SEPARATOR = ',';
     private static final String TYPE_EXPENSE = "EXPENSE";
 
     public byte[] exportExpensesToCsv(Long userId) {
@@ -68,11 +69,11 @@ public class ExportService {
         //Use StringBuilder to build the line, more efficient than use + to concat
         StringBuilder lineBuilder = new StringBuilder();
 
-        lineBuilder.append(expense.getId()).append(','); //ID
-        lineBuilder.append(expense.getDate().format(DATE_FORMATTER)).append(','); //Formated date
-        lineBuilder.append(TYPE_EXPENSE).append(','); //Transaction type
-        lineBuilder.append(escapeCsv(expense.getDescription())).append(',');//Escape especial characters if necessary
-        lineBuilder.append(escapeCsv(expense.getCategory())).append(',');
+        lineBuilder.append(expense.getId()).append(CSV_SEPARATOR); //ID
+        lineBuilder.append(expense.getDate().format(DATE_FORMATTER)).append(CSV_SEPARATOR); //Formated date
+        lineBuilder.append(TYPE_EXPENSE).append(CSV_SEPARATOR); //Transaction type
+        lineBuilder.append(escapeCsv(expense.getDescription())).append(CSV_SEPARATOR);//Escape especial characters if necessary
+        lineBuilder.append(escapeCsv(expense.getCategory())).append(CSV_SEPARATOR);
         lineBuilder.append('-').append(expense.getAmount().toString()).append('\n');//Add - due to we want expense look as negative
 
         return lineBuilder.toString();
@@ -88,7 +89,7 @@ public class ExportService {
         for (int i = 0; i < value.length(); i++) {
             char c = value.charAt(i);
             //This chars broke CSV format
-            if (c == ',' || c == '"' || c == '\n' || c == '\r') {
+            if (c == CSV_SEPARATOR || c == '"' || c == '\n' || c == '\r') {
                 needsEscape = true;
                 break;
             }
