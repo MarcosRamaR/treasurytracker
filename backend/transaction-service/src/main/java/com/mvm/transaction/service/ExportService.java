@@ -20,8 +20,8 @@ public class ExportService {
     private ExpenseService expenseService;
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    private static final String CSV_HEADER = "ID,Date,Type,Description,Category,Amount\n";
-    private static final char CSV_SEPARATOR = ',';
+    private static final String CSV_HEADER = "ID;Date;Type;Description;Category;Amount\n";
+    private static final char CSV_SEPARATOR = ';';
     private static final String TYPE_EXPENSE = "EXPENSE";
 
     public byte[] exportExpensesToCsv(Long userId) {
