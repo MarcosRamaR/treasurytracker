@@ -1,8 +1,10 @@
 package com.mvm.transaction.service;
 
+import com.mvm.transaction.dto.AllTransactionsDTO;
 import com.mvm.transaction.dto.ExpenseResponseDTO;
 import com.mvm.transaction.dto.IncomeResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
@@ -21,11 +23,14 @@ public class ExportService {
     private ExpenseService expenseService;
     @Autowired
     private IncomeService incomeService;
+    @Autowired
+    private TransactionService transactionService;
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    private static final String CSV_HEADER = "ID;Date;Type;Description;Category;Amount\n";
+    private static final String CSV_HEADER = "Date;Type;Description;Category;Amount\n";
     private static final char CSV_SEPARATOR = ';';
     private static final String TYPE_EXPENSE = "EXPENSE";
+    private static final String TYPE_INCOME = "INCOME";
 
     public byte[] exportExpensesToCsv(Long userId) {
         List<ExpenseResponseDTO> expenses = expenseService.getAllExpenses(userId);
@@ -51,6 +56,18 @@ public class ExportService {
                 userId, description, category, startDate, endDate, minAmount, maxAmount);
         return generateIncomesCsv(incomes);
     }
+    public byte[] exportAllTransactionsToCsv(Long userId) {
+        List<AllTransactionsDTO> transactions = transactionService.getAllTransactions(userId);
+        return generateTransactionsCsv(transactions);
+    }
+
+    public byte[] exportFilteredTransactionsToCsv(Long userId, String description, String category,
+                                                  LocalDate startDate, LocalDate endDate,
+                                                  BigDecimal minAmount, BigDecimal maxAmount) {
+        List<AllTransactionsDTO> transactions = transactionService.getFilteredTransactions(
+                userId, description, category, startDate, endDate, minAmount, maxAmount);
+        return generateTransactionsCsv(transactions);
+    }
 
 
     private byte[] generateExpensesCsv(List<ExpenseResponseDTO> expenses) {
@@ -71,7 +88,7 @@ public class ExportService {
             //Make sure all data are write on stream
             writer.flush();
         } catch (Exception e) {
-            throw new RuntimeException("Error generating CSV file", e);
+            throw new RuntimeException("Error generating expenses CSV file", e);
         }
         //Convert the stream to an array
         return outputStream.toByteArray();
@@ -79,6 +96,7 @@ public class ExportService {
 
     private byte[] generateIncomesCsv(List<IncomeResponseDTO> incomes) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
         try (OutputStreamWriter osw = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
              PrintWriter writer = new PrintWriter(osw)) {
             writer.write(CSV_HEADER);
@@ -88,7 +106,24 @@ public class ExportService {
             }
             writer.flush();
         } catch (Exception e) {
-            throw new RuntimeException("Error generating CSV file", e);
+            throw new RuntimeException("Error generating imcomes CSV file", e);
+        }
+        return outputStream.toByteArray();
+    }
+
+    private byte[] generateTransactionsCsv(List<AllTransactionsDTO> transactions){
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+        try(OutputStreamWriter osw = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
+        PrintWriter writer = new PrintWriter(osw)){
+            writer.write(CSV_HEADER);
+            for(AllTransactionsDTO transaction: transactions){
+                String csvLine = buildTransactionCsvLine(transaction);
+                writer.write(csvLine);
+            }
+            writer.flush();
+        }catch(Exception e){
+            throw new RuntimeException("Error generating transactions CSV file");
         }
         return outputStream.toByteArray();
     }
@@ -97,7 +132,6 @@ public class ExportService {
         //Use StringBuilder to build the line, more efficient than use + to concat
         StringBuilder lineBuilder = new StringBuilder();
 
-        lineBuilder.append(expense.getId()).append(CSV_SEPARATOR); //ID
         lineBuilder.append(expense.getDate().format(DATE_FORMATTER)).append(CSV_SEPARATOR); //Formated date
         lineBuilder.append(TYPE_EXPENSE).append(CSV_SEPARATOR); //Transaction type
         lineBuilder.append(escapeCsv(expense.getDescription())).append(CSV_SEPARATOR);//Escape especial characters if necessary
@@ -109,12 +143,23 @@ public class ExportService {
 
     private String buildIncomeCsvLine(IncomeResponseDTO income) {
         StringBuilder lineBuilder = new StringBuilder();
-        lineBuilder.append(income.getId()).append(CSV_SEPARATOR);
         lineBuilder.append(income.getDate().format(DATE_FORMATTER)).append(CSV_SEPARATOR);
-        lineBuilder.append(TYPE_EXPENSE).append(CSV_SEPARATOR);
+        lineBuilder.append(TYPE_INCOME).append(CSV_SEPARATOR);
         lineBuilder.append(escapeCsv(income.getDescription())).append(CSV_SEPARATOR);
         lineBuilder.append(escapeCsv(income.getCategory())).append(CSV_SEPARATOR);
         lineBuilder.append(income.getAmount().toString()).append('\n');
+        return lineBuilder.toString();
+    }
+
+    private String buildTransactionCsvLine(AllTransactionsDTO transaction) {
+        StringBuilder lineBuilder = new StringBuilder();
+
+        lineBuilder.append(transaction.getDate().format(DATE_FORMATTER)).append(';');
+        lineBuilder.append(transaction.getType()).append(';');
+        lineBuilder.append(escapeCsv(transaction.getDescription())).append(';');
+        lineBuilder.append(escapeCsv(transaction.getCategory())).append(';');
+        lineBuilder.append(transaction.getAmount()).append('\n');
+
         return lineBuilder.toString();
     }
 

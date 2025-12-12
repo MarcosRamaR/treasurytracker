@@ -83,7 +83,43 @@ public class ExportController {
         Long userId = (Long) request.getAttribute("userId");
         byte[] csvData = exportService.exportFilteredIncomesToCsv(
                 userId, description, category, startDate, endDate, minAmount, maxAmount);
+
         String fileName = String.format("incomes_filtered_%s.csv", LocalDate.now());
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName)
+                .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
+                .body(csvData);
+    }
+
+    @GetMapping("/all/transactions/csv")
+    public ResponseEntity<byte[]> exportAllTransactionsToCsv(HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute("userId");
+        byte[] csvData = exportService.exportAllTransactionsToCsv(userId);
+
+        String fileName = String.format("all_transactions_%s.csv", LocalDate.now());
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName)
+                .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
+                .body(csvData);
+    }
+
+    @GetMapping("/all/transactions/filtered/csv")
+    public ResponseEntity<byte[]> exportFilteredTransactionsToCsv(
+            @RequestParam(required = false) String description,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate,
+            @RequestParam(required = false) BigDecimal minAmount,
+            @RequestParam(required = false) BigDecimal maxAmount,
+            HttpServletRequest request) {
+
+        Long userId = (Long) request.getAttribute("userId");
+
+        byte[] csvData = exportService.exportFilteredTransactionsToCsv(
+                userId, description, category, startDate, endDate, minAmount, maxAmount);
+
+        String fileName = String.format("filtered_transactions_%s.csv", LocalDate.now());
+
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName)
                 .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
