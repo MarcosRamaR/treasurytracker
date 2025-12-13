@@ -1,6 +1,7 @@
 const API_EXPENSE_BASE = '/api/expenses'
 const API_INCOMES_BASE = '/api/incomes'
 const API_BALANCE_BASE = '/api/balance'
+const API_EXPORT_BASE = '/api/export'
 import { authService } from './authService.js'
 
 const getAuthHeaders = () => {
@@ -172,6 +173,20 @@ export const apiService = {
             headers: getAuthHeaders(),
         })
         return handleResponse(response)
+    },
+    exportAllExpensesToCsv: async () => {
+        const response = await fetch(`${API_EXPORT_BASE}/expenses/csv`, {
+            headers: getAuthHeaders()
+        })
+        if (!response.ok) {
+            if (response.status === 401) {
+                authService.logout()
+                window.location.reload()
+            }
+        throw new Error(`HTTP error! status: ${response.status}`)
+        }
+        //Blob response for file download, json will not work here
+        return await response.blob()
     }
 
 }

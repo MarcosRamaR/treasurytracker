@@ -1,11 +1,49 @@
 import '../styles/ExpensesStyle.css';
+import { useExport } from '../hooks/useExport';
+import { useState } from 'react';
 
 export function ExpenseList({expenses, onDelete, onEdit}) {
+    const { exportAllExpensesToCsv, exporting} = useExport();
+    const [selectedExportOption, setSelectedExportOption] = useState('All Expenses');
+    const exportOptions = ['All Expenses','Filtered Expenses'];
+    
+    const handleExport = async () => {
+        if (!selectedExportOption) {
+            alert('Please select an export option');
+            return;
+        }
+        try {
+            switch(selectedExportOption) {
+                case 'All Expenses':
+                    await exportAllExpensesToCsv();
+                    break;
+                case 'Filtered Expenses':
+                    console.log('Exporting filtered expenses - functionality to be implemented');
+                    break;
+                default:
+                    alert('Invalid export option');
+            }
+        } catch (err) {
+            console.error('Export failed:', err);
+        }
+    };
 
   return (
     <>
         <div>
-            <h3 className='expense-title'>Expense List</h3>
+            <div>
+                <h3 className='expense-title'>Expense List</h3>
+                <div>
+                    <select value="" onChange={(e) => setSelectedExportOption(e.target.value)}>
+                        <option value="">Export Options</option>
+                        {exportOptions.map(option => (
+                            <option key={option} value={option}>{option}</option>
+                        ))}
+                    </select>
+                    <button type = "button" onClick={handleExport}>{exporting ? 'Exporting' : 'Export'}</button>
+                </div>
+            </div>
+            
             {!expenses ? (
                 <p>No filter applied.</p>
             ):expenses.length === 0 ? (
