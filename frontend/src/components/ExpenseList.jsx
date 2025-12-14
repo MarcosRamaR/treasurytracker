@@ -35,14 +35,15 @@ export function ExpenseList({expenses, onDelete, onEdit,currentFilters}) {
         <div>
             <div>
                 <h3 className='expense-title'>Expense List</h3>
-                <div>
-                    <select value="" onChange={(e) => setSelectedExportOption(e.target.value)}>
+                <div className='filter-controls'>
+                    <select className="form-input" 
+                    onChange={(e) => setSelectedExportOption(e.target.value)}>
                         <option value="">Export Options</option>
                         {exportOptions.map(option => (
                             <option key={option} value={option}>{option}</option>
                         ))}
                     </select>
-                    <button type = "button" onClick={handleExport}>{exporting ? 'Exporting' : 'Export'}</button>
+                    <button className='filter-button' type = "button" onClick={handleExport}>{exporting ? 'Exporting' : 'Export'}</button>
                 </div>
             </div>
             
