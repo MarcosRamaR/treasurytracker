@@ -187,6 +187,35 @@ export const apiService = {
         }
         //Blob response for file download, json will not work here
         return await response.blob()
+    },
+        exportFilteredExpensesToCsv: async (filters,type) => {
+        const {description,category, startDate, endDate, minAmount, maxAmount} = filters
+        const queryParams = [
+            description ? `description=${encodeURIComponent(description)}` : '',
+            category ? `category=${category}` : '',
+            startDate ? `startDate=${startDate}` : '',
+            endDate ? `endDate=${endDate}` : '',
+            minAmount ? `minAmount=${minAmount}` : '',
+            maxAmount ? `maxAmount=${maxAmount}` : '',
+        ]
+        console.log('Filters for exportFilteredExpensesToCsv on api.js:', filters)
+        const noNullParams = queryParams.filter(param => param !== '') 
+        const queryStringParams = noNullParams.join('&') 
+        
+        let transactionUrl = ''
+        if(type === 'expense'){
+            transactionUrl = 'expenses'
+        }else if(type === 'income'){
+            transactionUrl = 'income'
+        }else{
+            throw new Error('Invalid type for filtering expenses')
+        }
+        const urlFiltered = queryStringParams ? `${API_EXPORT_BASE}/${transactionUrl}/filtered/csv?${queryStringParams}` : `${API_EXPORT_BASE}/${transactionUrl}/filtered/csv`
+        console.log('Constructed URL for exportFilteredExpensesToCsv on api.js:', urlFiltered)
+        const response = await fetch(urlFiltered, {
+            headers: getAuthHeaders()
+        })
+        return await response.blob()
     }
 
 }

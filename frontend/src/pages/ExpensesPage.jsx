@@ -16,6 +16,8 @@ export function ExpensesPage() {
     const [categorySelect, setCategorySelect] = useState('')
     const [minAmount, setMinAmount] = useState('')
     const [maxAmount, setMaxAmount] = useState('')
+    const [currentFilters, setCurrentFilters] = useState({})
+
     const categories = ['Food', 'Transport', 'Entertainment', 'Others']
 
     const handleAddExpense = async (expense) => {
@@ -46,6 +48,7 @@ export function ExpensesPage() {
             minAmount: minAmount ? parseFloat(minAmount) : null,
             maxAmount: maxAmount ? parseFloat(maxAmount) : null
         }
+        setCurrentFilters(filters)
         await filterExpenses(filters)
     }
     const handleClearFilters = () => {
@@ -85,7 +88,7 @@ export function ExpensesPage() {
         onClearFilters={handleClearFilters}
         isFiltered={isFiltered}
         />
-    <ExpenseList expenses={expenses} onDelete={handleDeleteExpense} onEdit={handleEditExpense}/> 
+    <ExpenseList expenses={expenses} onDelete={handleDeleteExpense} onEdit={handleEditExpense} currentFilters={currentFilters}/> 
     </>
     
   )

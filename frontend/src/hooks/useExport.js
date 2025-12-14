@@ -32,7 +32,7 @@ const exportAllExpensesToCsv = async () => {
         }
         // Call the API to get the CSV blob
         const blob = await apiService.exportAllExpensesToCsv()
-        
+
         const filename = `expenses_${new Date().toISOString().split('T')[0]}.csv`
         downloadBlob(blob, filename)
     } catch (err) {
@@ -43,8 +43,31 @@ const exportAllExpensesToCsv = async () => {
         setExporting(false)
     }
 }
+
+const exportFilteredExpensesToCsv = async (filters) => {
+    try {
+        setExporting(true)
+        setError('')
+        if (!authService.isAuthenticated()) {
+            setError('User not authenticated. Please log in.')
+            return
+        }
+        const blob = await apiService.exportFilteredExpensesToCsv(filters,'expense')
+        console.log('Recived filtered expenses blob:', filters )
+        const filename = `expenses_filtered_${new Date().toISOString().split('T')[0]}.csv`
+        downloadBlob(blob, filename)
+
+    } catch (err) {
+        console.error('Error exporting filtered expenses to CSV:', err)
+        setError('Failed to export filtered expenses: ' + err.message)
+        throw err
+    }finally{
+        setExporting(false)
+    }
+}
 return{
     exportAllExpensesToCsv,
+    exportFilteredExpensesToCsv,
     exporting,
     error
 }

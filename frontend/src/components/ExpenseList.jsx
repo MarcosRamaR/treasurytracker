@@ -2,11 +2,11 @@ import '../styles/ExpensesStyle.css';
 import { useExport } from '../hooks/useExport';
 import { useState } from 'react';
 
-export function ExpenseList({expenses, onDelete, onEdit}) {
-    const { exportAllExpensesToCsv, exporting} = useExport();
+export function ExpenseList({expenses, onDelete, onEdit,currentFilters}) {
+    const { exportAllExpensesToCsv,exportFilteredExpensesToCsv, exporting} = useExport();
     const [selectedExportOption, setSelectedExportOption] = useState('All Expenses');
     const exportOptions = ['All Expenses','Filtered Expenses'];
-    
+
     const handleExport = async () => {
         if (!selectedExportOption) {
             alert('Please select an export option');
@@ -18,7 +18,7 @@ export function ExpenseList({expenses, onDelete, onEdit}) {
                     await exportAllExpensesToCsv();
                     break;
                 case 'Filtered Expenses':
-                    console.log('Exporting filtered expenses - functionality to be implemented');
+                    await exportFilteredExpensesToCsv(currentFilters);
                     break;
                 default:
                     alert('Invalid export option');
@@ -26,6 +26,8 @@ export function ExpenseList({expenses, onDelete, onEdit}) {
         } catch (err) {
             console.error('Export failed:', err);
         }
+        console.log('Exported:', selectedExportOption);
+        console.log('With filters:', currentFilters);
     };
 
   return (
