@@ -174,8 +174,14 @@ export const apiService = {
         })
         return handleResponse(response)
     },
-    exportAllExpensesToCsv: async () => {
-        const response = await fetch(`${API_EXPORT_BASE}/expenses/csv`, {
+    exportAllTransactionsOneTypeToCsv: async (type) => {
+        let transactionType = ''
+        if(type === 'expense'){
+            transactionType = 'expenses'
+        }else if(type === 'income'){
+            transactionType = 'incomes'
+        }
+        const response = await fetch(`${API_EXPORT_BASE}/${transactionType}/csv`, {
             headers: getAuthHeaders()
         })
         if (!response.ok) {
@@ -188,7 +194,7 @@ export const apiService = {
         //Blob response for file download, json will not work here
         return await response.blob()
     },
-        exportFilteredExpensesToCsv: async (filters,type) => {
+        exportFilteredTransactionsToCsv: async (filters,type) => {
         const {description,category, startDate, endDate, minAmount, maxAmount} = filters
         const queryParams = [
             description ? `description=${encodeURIComponent(description)}` : '',

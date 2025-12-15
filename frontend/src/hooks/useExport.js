@@ -22,7 +22,7 @@ const downloadBlob = (blob, filename) => {
     document.body.removeChild(a)
 }
 
-const exportAllExpensesToCsv = async () => {
+const exportAllTransactionsOneTypeToCsv = async (type) => {
     try {
         setExporting(true)
         setError('')
@@ -31,7 +31,7 @@ const exportAllExpensesToCsv = async () => {
             return
         }
         // Call the API to get the CSV blob
-        const blob = await apiService.exportAllExpensesToCsv()
+        const blob = await apiService.exportAllTransactionsOneTypeToCsv(type)
 
         const filename = `expenses_${new Date().toISOString().split('T')[0]}.csv`
         downloadBlob(blob, filename)
@@ -44,7 +44,7 @@ const exportAllExpensesToCsv = async () => {
     }
 }
 
-const exportFilteredExpensesToCsv = async (filters) => {
+const exportFilteredTransactionsToCsv = async (filters,type) => {
     try {
         setExporting(true)
         setError('')
@@ -52,7 +52,7 @@ const exportFilteredExpensesToCsv = async (filters) => {
             setError('User not authenticated. Please log in.')
             return
         }
-        const blob = await apiService.exportFilteredExpensesToCsv(filters,'expense')
+        const blob = await apiService.exportFilteredTransactionsToCsv(filters,type)
         console.log('Recived filtered expenses blob:', filters )
         const filename = `expenses_filtered_${new Date().toISOString().split('T')[0]}.csv`
         downloadBlob(blob, filename)
@@ -66,8 +66,8 @@ const exportFilteredExpensesToCsv = async (filters) => {
     }
 }
 return{
-    exportAllExpensesToCsv,
-    exportFilteredExpensesToCsv,
+    exportAllTransactionsOneTypeToCsv,
+    exportFilteredTransactionsToCsv,
     exporting,
     error
 }

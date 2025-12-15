@@ -3,7 +3,7 @@ import { useExport } from '../hooks/useExport';
 import { useState } from 'react';
 
 export function ExpenseList({expenses, onDelete, onEdit,currentFilters}) {
-    const { exportAllExpensesToCsv,exportFilteredExpensesToCsv, exporting} = useExport();
+    const { exportAllTransactionsOneTypeToCsv,exportFilteredTransactionsToCsv, exporting} = useExport();
     const [selectedExportOption, setSelectedExportOption] = useState('All Expenses');
     const exportOptions = ['All Expenses','Filtered Expenses'];
 
@@ -15,10 +15,10 @@ export function ExpenseList({expenses, onDelete, onEdit,currentFilters}) {
         try {
             switch(selectedExportOption) {
                 case 'All Expenses':
-                    await exportAllExpensesToCsv();
+                    await exportAllTransactionsOneTypeToCsv('expense');
                     break;
                 case 'Filtered Expenses':
-                    await exportFilteredExpensesToCsv(currentFilters);
+                    await exportFilteredTransactionsToCsv(currentFilters,'expense');
                     break;
                 default:
                     alert('Invalid export option');
@@ -30,7 +30,7 @@ export function ExpenseList({expenses, onDelete, onEdit,currentFilters}) {
         console.log('With filters:', currentFilters);
     };
 
-  return (
+    return (
     <>
         <div>
             <div>
@@ -80,5 +80,5 @@ export function ExpenseList({expenses, onDelete, onEdit,currentFilters}) {
             )}
         </div>
     </>
-  )
+    )
 }
