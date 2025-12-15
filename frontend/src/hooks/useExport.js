@@ -33,7 +33,7 @@ const exportAllTransactionsOneTypeToCsv = async (type) => {
         // Call the API to get the CSV blob
         const blob = await apiService.exportAllTransactionsOneTypeToCsv(type)
 
-        const filename = `expenses_${new Date().toISOString().split('T')[0]}.csv`
+        const filename = `${type}_${new Date().toISOString().split('T')[0]}.csv`
         downloadBlob(blob, filename)
     } catch (err) {
         console.error('Error exporting expenses to CSV:', err)
@@ -54,7 +54,7 @@ const exportFilteredTransactionsToCsv = async (filters,type) => {
         }
         const blob = await apiService.exportFilteredTransactionsToCsv(filters,type)
         console.log('Recived filtered expenses blob:', filters )
-        const filename = `expenses_filtered_${new Date().toISOString().split('T')[0]}.csv`
+        const filename = `${type}_filtered_${new Date().toISOString().split('T')[0]}.csv`
         downloadBlob(blob, filename)
 
     } catch (err) {
