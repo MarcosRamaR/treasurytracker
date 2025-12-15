@@ -1,11 +1,48 @@
 import '../styles/ExpensesStyle.css'
+import { useExport } from '../hooks/useExport';
+import { useState } from 'react';
 
-export function IncomeList({incomes, onDelete, onEdit}) {
+export function IncomeList({incomes, onDelete, onEdit,currentFilters}) {
+        const { exportAllTransactionsOneTypeToCsv,exportFilteredTransactionsToCsv, exporting} = useExport();
+        const [selectedExportOption, setSelectedExportOption] = useState('All Expenses');
+        const exportOptions = ['All Incomes','Filtered Incomes'];
 
+        const handleExport = async () => {
+            if (!selectedExportOption) {
+                alert('Please select an export option');
+                return;
+            }
+            try{
+                switch(selectedExportOption) {
+                    case 'All Incomes':
+                        await exportAllTransactionsOneTypeToCsv('income');
+                        break;
+                    case 'Filtered Incomes':
+                        await exportFilteredTransactionsToCsv(currentFilters,'income');
+                        break;
+                    default:
+                        alert('Invalid export option');
+                }
+            }catch(err){
+                console.error('Export failed:', err);
+            }
+        }
   return (
     <>
         <div>
-            <h3 className='expense-title'>Income List</h3>
+            <div>
+                <h3 className='expense-title'>Income List</h3>
+                <div className='filter-controls'>
+                    <select className="form-input" 
+                    onChange={(e) => setSelectedExportOption(e.target.value)}>
+                        <option value="">Export Options</option>
+                        {exportOptions.map(option => (
+                            <option key={option} value={option}>{option}</option>
+                        ))}
+                    </select>
+                    <button className='filter-button' type = "button" onClick={handleExport}>{exporting ? 'Exporting' : 'Export'}</button>
+                </div>
+            </div>
             {!incomes ? (
                 <p>No filter applied.</p>
             ):incomes.length === 0 ? (

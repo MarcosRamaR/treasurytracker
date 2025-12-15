@@ -212,7 +212,7 @@ export const apiService = {
         if(type === 'expense'){
             transactionUrl = 'expenses'
         }else if(type === 'income'){
-            transactionUrl = 'income'
+            transactionUrl = 'incomes'
         }else{
             throw new Error('Invalid type for filtering expenses')
         }

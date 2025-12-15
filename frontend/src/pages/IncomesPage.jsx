@@ -16,6 +16,8 @@ export function IncomesPage() {
     const [categorySelect, setCategorySelect] = useState('')
     const [minAmount, setMinAmount] = useState('')
     const [maxAmount, setMaxAmount] = useState('')
+        const [currentFilters, setCurrentFilters] = useState({})
+
     const categories = ['Salary', 'Investiments', 'Others']
 
     const handleAddIncome = async (income) => {
@@ -45,6 +47,7 @@ export function IncomesPage() {
             minAmount: minAmount ? parseFloat(minAmount) : null,
             maxAmount: maxAmount ? parseFloat(maxAmount) : null
         }
+        setCurrentFilters(filters)
         await filterIncomes(filters)
     }
     const handleClearFilters = () => {
@@ -82,7 +85,7 @@ export function IncomesPage() {
         onClearFilters={handleClearFilters}
         isFiltered={isFiltered}
         />
-      <IncomeList incomes={incomes} onDelete={handleDeleteIncome} onEdit={handleEditIncome}/> 
+      <IncomeList incomes={incomes} onDelete={handleDeleteIncome} onEdit={handleEditIncome} currentFilters={currentFilters}/> 
     </>
     
   )
