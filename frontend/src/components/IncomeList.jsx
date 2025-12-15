@@ -41,7 +41,7 @@ export function IncomeList({incomes, onDelete, onEdit,currentFilters}) {
                 <div className='filter-controls'>
                     <select className="form-input" 
                     onChange={(e) => setSelectedExportOption(e.target.value)}>
-                        <option value="">Export Options</option>
+                        <option value="" hidden>Export Options</option>
                         {exportOptions.map(option => (
                             <option key={option} value={option}>{option}</option>
                         ))}
