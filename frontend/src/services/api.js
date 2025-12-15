@@ -235,6 +235,28 @@ export const apiService = {
         throw new Error(`HTTP error! status: ${response.status}`)
         }
         return await response.blob()
+    },
+        exportAllFilteredTransactionsToCsv: async (filters) => {
+        const {description,category, startDate, endDate, minAmount, maxAmount} = filters
+        const queryParams = [
+            description ? `description=${encodeURIComponent(description)}` : '',
+            category ? `category=${category}` : '',
+            startDate ? `startDate=${startDate}` : '',
+            endDate ? `endDate=${endDate}` : '',
+            minAmount ? `minAmount=${minAmount}` : '',
+            maxAmount ? `maxAmount=${maxAmount}` : '',
+        ]
+        console.log('Filters for exportFilteredExpensesToCsv on api.js:', filters)
+        const noNullParams = queryParams.filter(param => param !== '') 
+        const queryStringParams = noNullParams.join('&') 
+        
+
+        const urlFiltered = queryStringParams ? `${API_EXPORT_BASE}/all/transactions/filtered/csv?${queryStringParams}` : `${API_EXPORT_BASE}/all/transactions/filtered/csv`
+        console.log('Constructed URL for exportFilteredExpensesToCsv on api.js:', urlFiltered)
+        const response = await fetch(urlFiltered, {
+            headers: getAuthHeaders()
+        })
+        return await response.blob()
     }
 
 }
