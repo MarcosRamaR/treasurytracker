@@ -3,9 +3,9 @@ import { useExport } from '../hooks/useExport';
 import { useState } from 'react';
 
 export function IncomeList({incomes, onDelete, onEdit,currentFilters}) {
-        const { exportAllTransactionsOneTypeToCsv,exportFilteredTransactionsToCsv, exporting} = useExport();
+        const { exportAllTransactionsOneTypeToCsv,exportFilteredTransactionsToCsv,exportAllTransactionsToCsv, exporting} = useExport();
         const [selectedExportOption, setSelectedExportOption] = useState('All Expenses');
-        const exportOptions = ['All Incomes','Filtered Incomes'];
+        const exportOptions = ['All Incomes','Filtered Incomes','All Transactions'];
 
         const handleExport = async () => {
             if (!selectedExportOption) {
@@ -19,6 +19,9 @@ export function IncomeList({incomes, onDelete, onEdit,currentFilters}) {
                         break;
                     case 'Filtered Incomes':
                         await exportFilteredTransactionsToCsv(currentFilters,'income');
+                        break;
+                    case 'All Transactions':
+                        await exportAllTransactionsToCsv();
                         break;
                     default:
                         alert('Invalid export option');

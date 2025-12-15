@@ -65,9 +65,30 @@ const exportFilteredTransactionsToCsv = async (filters,type) => {
         setExporting(false)
     }
 }
+
+const exportAllTransactionsToCsv = async () => {
+    try {
+        setExporting(true)
+        setError('')
+        if (!authService.isAuthenticated()) {
+            setError('User not authenticated. Please log in.')
+            return
+        }
+        const blob = await apiService.exportAllTransactionsToCsv()
+        const filename = `all_transactions_${new Date().toISOString().split('T')[0]}.csv`
+        downloadBlob(blob, filename)
+    } catch (err) {
+        console.error('Error exporting expenses to CSV:', err)
+        setError('Failed to export expenses: ' + err.message)
+        throw err
+    }finally{
+        setExporting(false)
+    }
+}
 return{
     exportAllTransactionsOneTypeToCsv,
     exportFilteredTransactionsToCsv,
+    exportAllTransactionsToCsv,
     exporting,
     error
 }

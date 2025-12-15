@@ -222,6 +222,19 @@ export const apiService = {
             headers: getAuthHeaders()
         })
         return await response.blob()
+    },
+    exportAllTransactionsToCsv: async () => {
+        const response = await fetch(`${API_EXPORT_BASE}/all/transactions/csv`, {
+            headers: getAuthHeaders()
+        })
+        if (!response.ok) {
+            if (response.status === 401) {
+                authService.logout()
+                window.location.reload()
+            }
+        throw new Error(`HTTP error! status: ${response.status}`)
+        }
+        return await response.blob()
     }
 
 }
