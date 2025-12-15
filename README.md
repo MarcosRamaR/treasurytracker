@@ -20,6 +20,7 @@ A web application for personal finance management and cash flow tracking. Develo
 - `Advanced Filtering`: Multi-criteria filtering (Dates, Category and Imports).
 - `Real-time Summary`: Displays your current bank balance, projected balance in 30 days, and year-end balance. Alerts you if your balance is expected to go negative within the next 7 days.
 - `Advanced Analytics`: Charts and graphs for financial insights.
+- `Export`: Export expenses and incomes separately or together into a single CSV file. Includes the option to export filtered results.
 
 
 ## Access to the project
