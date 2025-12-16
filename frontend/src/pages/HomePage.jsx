@@ -4,6 +4,7 @@ import { LoginForm } from '../components/LoginForm'
 import { RegisterForm } from '../components/RegisterForm'
 import { UserProfile } from '../components/UserProfile'
 import '../styles/RegisterLoginStyle.css'
+import { AccountBalance, Savings, PieChart, AttachMoney } from '@mui/icons-material';
 
 export function HomePage()  {
   const [isLogged, setIsLogged] = useState(false)
@@ -38,15 +39,45 @@ export function HomePage()  {
   const handleSwitchToLogin = () => {
     setShowRegister(false)
   }
-  return (
+
+
+    return (
     <div className="container-register-login">
+      <div className="app-header">
+        <div className="app-logo">
+          <AttachMoney sx={{ fontSize: 48, color: '#ffd700' }} />
+          <h1>Treasury Tracker</h1>
+        </div>
+      </div>
+      
       <div className="row justify-content-center">
         <div className="col-md-6">
-          {isLogged ? <h1 className="text-center mb-4">Welcome to Treasury Tracker, <b>{user.username}</b></h1> : <h1 className="text-center mb-4">Welcome to Treasury Tracker</h1>}
+          <div className="welcome-section">
+            {isLogged ? (
+              <h1 className="welcome-title">Welcome to<span className="brand-highlight">Treasury Tracker</span>, <b className="username-highlight">{user.username}</b></h1>
+            ) : (
+              <h1 className="welcome-title">
+                Control your Treasury <span className="animated-text">Intelligently</span>
+              </h1>
+            )}
+            {!isLogged && (
+              <p className="welcome-subtitle">
+                Visualize expenses, income, and forecasts with interactive charts
+              </p>
+            )}
+          </div>
+          
           {isLogged ? (
             <>
+              <div className="login-success-animation">
+                <div className="success-checkmark">
+                  <div className="check-icon"></div>
+                </div>
+                <p className="login-success-message">Session started successfully</p>
+              </div>
               <UserProfile onLogout={handleLogout}/>
-            </>):(
+            </>
+          ) : (
             <>
               {showRegister ? (
                 <RegisterForm 
@@ -59,10 +90,19 @@ export function HomePage()  {
                   onLoginSuccess={handleLoginSuccess}
                 />
               )}
+              
             </>
           )}
         </div>
       </div>
+      
+      {!isLogged && (
+        <div className="app-footer">
+          <p className="footer-text">
+            Join <span className="footer-highlight">now</span> to control your finances in the best way
+          </p>
+        </div>
+      )}
     </div>
   )
 }

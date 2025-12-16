@@ -52,7 +52,7 @@ export function LoginForm({onSwitchToRegister, onLoginSuccess}){
             <label htmlFor="loginPassword" className="form-label">Password</label>
             <input type="password" className="form-control" id="loginPassword" name="password"  value={formData.password} onChange={handleChange} required/>
             </div>
-
+            
             {errors.error && (
             <div className="alert alert-danger">{errors.error}</div>)}
 

@@ -1,50 +1,367 @@
 
+/*Main container*/
+.container-register-login {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border-radius: 16px;
+    padding: 40px 30px;
+    background: linear-gradient(135deg, #16213e 0%, #1a2c5b 100%);
+    max-width: 1200px;
+    width: auto;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid rgba(184, 141, 0, 0.452);
+    position: relative;  /*To position child elements*/
+    overflow: hidden;
+}
+
+/*Upper line decorative*/
+.container-register-login::before {
+    content: '';/*Necessary for pseudoelements*/
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #b88d00 0%, #ffd700 100%);
+}
+
+/*App header*/
+.app-header {
+    text-align: center;
+    margin-bottom: 40px;
+    animation: fadeInDown 0.8s ease-out; 
+}
+
+.app-logo {
+    display: flex; /* Use flexbox */
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.logo-icon {
+    font-size: 48px;
+    animation: pulse 3s infinite;
+}
+
+.app-header h1 {
+    font-size: 3rem;
+    font-weight: bold;
+    margin: 0;
+    background: linear-gradient(135deg, #b88d00 0%, #ffd700 100%);
+    -webkit-background-clip: text; /*Only show background where we have text*/
+    -webkit-text-fill-color: transparent; /*Text will be transparent*/
+    background-clip: text;
+}
+
+/*Wlcome section*/
+.welcome-section {
+    text-align: center;
+    margin-bottom: 40px;
+    animation: fadeIn 2s ease-out;
+}
+
+.welcome-title {
+    color: #ffffff;
+    font-size: 2.2rem;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: 15px;
+}
+
+.brand-highlight {
+    color: #ffd700;
+    font-weight: bold;
+}
+
+.animated-text {
+    background: linear-gradient(90deg, #b88d00, #ffd700, #b88d00);
+    background-size: 50% auto;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradient 2.5s linear infinite; /*Animation to move the gradient*/
+}
+
+        /*Set how the gradient animation is*/
+@keyframes gradient {
+    0% { background-position: 0% center; } /*Start at left*/
+    100% { background-position: 200% center; } /*End at right*/
+}
+
+.username-highlight {
+    color: #ffd700;
+    text-shadow: 0 0 10px rgba(184, 141, 0, 0.3);
+}
+
+.welcome-subtitle {
+    color: #b8c1cc;
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/*Success login animation*/
+.login-success-animation {
+    text-align: center;
+    margin: 30px 0;
+    animation: bounceIn 1s ease-out;
+}
+
+.success-checkmark {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 20px;
+    position: relative;
+}
+
+/*Check icon created with css*/
+.check-icon {
+    width: 100%;
+    height: 100%; 
+    border-radius: 50%; /*Circle*/
+    background: #10b981;
+    position: relative;
+    animation: scaleIn 0.3s ease-out;
+}
+
+.check-icon::before, /*Pseudo-element for the first line of the check*/
+.check-icon::after { /*Pseudo-element for the second line of the check*/
+    content: '';
+    position: absolute; /*Postion over the circle*/
+    background: white;
+    border-radius: 2px;
+}
+
+.check-icon::before {
+    width: 30px;
+    height: 6px;
+    transform: rotate(45deg);
+    top: 42px; 
+    left: 16px; 
+}
+
+.check-icon::after {
+    width: 50px;
+    height: 6px;
+    transform: rotate(-45deg);
+    top: 36px;
+    left: 23px;
+}
+
+.login-success-message {
+    color: #10b981;
+    font-size: 1.2rem; 
+    font-weight: 600;
+}
+
+/*Login and register form*/
 .register-form {
     position: relative;
     display: flex;
-    flex-direction: column;
+    flex-direction: column; 
     min-width: 0;
-    word-wrap: break-word;
-    background-color: #16213e;               
-    background-clip: border-box;
-    border: 2px solid #b88d00; 
-    border-radius: 0.375rem;       
-    padding: 10px       
+    word-wrap: break-word; /*Avoid long word break desing*/
+    background: rgba(22, 33, 62, 0.9);
+    border: 1px solid rgba(184, 141, 0, 0.2);
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    animation: slideInUp 0.5s ease-out;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.register-form:hover {
+    transform: translateY(-5px); 
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+
+.title-h5 {
+    color: #ffffff;
+    font-size: 1.8rem;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 30px;
+    letter-spacing: 0.5px;
+}
+
+.label-text {
+    color: #ffffff;
+    font-size: 0.95rem;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.form-control {
+    background: rgba(255, 255, 255, 0.05); 
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: #ffffff;
+    padding: 12px 16px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    margin-bottom: 20px;
+}
+
+.form-control:focus {
+    background: rgba(255, 255, 255, 0.08); /* Fondo un poco más opaco */
+    color:#ffffff;
+    border-color: #b88d00;
+    box-shadow: 0 0 0 3px rgba(184, 141, 0, 0.2); 
+    outline: none;
 }
 
 .register-login-button {
     margin-top: 20px;
-    padding: 8px 16px;
-    background-color: #b88d00;
-    color: rgb(0, 0, 0);
-    border-radius: 4px;
+    padding: 14px 28px;
+    background: linear-gradient(135deg, #b88d00 0%, #ffd700 100%); 
+    color: #090d1a;
+    border: none;
+    border-radius: 8px;
     cursor: pointer;
-    font-size: 14px;
-    font-weight: bold;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    width: 100%;
+    position: relative; 
+    overflow: hidden; 
 }
 
-.title-h5{
-    color: white;
-    font-size: 25px;
-    font-weight: bold;
-    text-align: center;
+
+.register-login-button:hover:not(:disabled) { /*Appy this only the button isnt disabled*/
+    transform: translateY(-2px);  
+    box-shadow: 0 6px 20px rgba(184, 141, 0, 0.2); 
 }
 
-.label-text{
-    color: white;
-    font-size: 17px;
+.register-login-button:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.register-login-button:disabled {
+    opacity: 0.6;  
+    cursor: not-allowed; 
+}
+
+/*Alert messages*/
+.alert {
+    border-radius: 8px;
+    padding: 15px 20px; 
+    margin: 20px 0; 
+    border: none; 
     font-weight: 500;
-    line-height: 1.9;
 }
 
-.container-register-login{
-    margin-top: 20px;
-    margin-bottom: 20px;
-    border-radius: 4px;
-    padding: 20px;
-    background-color: #16213e;
-    max-width: 1600px;
-    width: auto;
-    margin-left:auto;
-    margin-right:auto;
+.alert-success {
+    background: rgba(16, 185, 129, 0.1); 
+    color: #10b981;
+    border-left: 4px solid #10b981;
+}
+
+.alert-danger {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444; 
+    border-left: 4px solid #ef4444;
+}
+
+.app-footer {
+    text-align: center;
+    margin-top: 40px;
+    padding-top: 20px; 
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    animation: fadeIn 0.8s ease-out 0.5s both;
+}
+
+.footer-text {
+    color: #a0aec0;
+    font-size: 0.95rem; 
+}
+
+.footer-highlight {
+    color: #ffd700;
+    font-weight: 600;
+}
+
+@keyframes fadeIn { 
+    from { opacity: 0; } 
+    to { opacity: 1; } 
+}
+
+@keyframes fadeInDown {  /*Animation to enter from up*/
+    from {
+    opacity: 0;
+    transform: translateY(-20px); 
+    }
+    to {
+    opacity: 1;     
+    transform: translateY(0);   
+    }
+}
+
+@keyframes slideInUp {  /*Animation enter from down*/
+    from {
+    opacity: 0; 
+    transform: translateY(30px); 
+    }
+    to {
+    opacity: 1;    
+    transform: translateY(0); 
+    }
+}
+
+@keyframes bounceIn { 
+    0% {
+    opacity: 0;  
+    transform: scale(0.3);   /*Start small*/
+    }
+    50% {
+    opacity: 1;    
+    transform: scale(1.05);  /*Grown up*/
+    }
+    70% {
+    transform: scale(0.9); /*Small*/
+    }
+    100% {
+    transform: scale(1); /*Normal sice*/
+    }
+}
+
+@keyframes scaleIn {  
+    from {
+    transform: scale(0);  
+    }
+    to {
+    transform: scale(1);  
+    }
+}
+
+@keyframes pulse { 
+    0%, 100% {
+    transform: scale(1);
+    }
+    50% {
+    transform: scale(1.1);
+    }
+}
+
+
+@media (max-width: 768px) { 
+    .container-register-login {
+    padding: 25px 20px;
+    margin: 10px; 
+    }
+
+    .app-header h1 {
+    font-size: 2rem;    
+    }
+
+    .welcome-title {
+    font-size: 1.8rem;  
+    }
+
+    .register-form {
+    padding: 20px;  
+    }
 }
