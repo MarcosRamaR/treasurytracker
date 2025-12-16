@@ -42,7 +42,7 @@ export function HomePage()  {
     <div className="container-register-login">
       <div className="row justify-content-center">
         <div className="col-md-6">
-          {isLogged ? <h1 className="text-center mb-4">Welcome to Treasury Tracker, <b>{user.userName}</b></h1> : <h1 className="text-center mb-4">Welcome to Treasury Tracker</h1>}
+          {isLogged ? <h1 className="text-center mb-4">Welcome to Treasury Tracker, <b>{user.username}</b></h1> : <h1 className="text-center mb-4">Welcome to Treasury Tracker</h1>}
           {isLogged ? (
             <>
               <UserProfile onLogout={handleLogout}/>
