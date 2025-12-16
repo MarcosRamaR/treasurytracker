@@ -7,7 +7,7 @@ import '../styles/ExpensesStyle.css'
 
 export function ExpensesPage() {
     const {expenses, loading, error,isFiltered, 
-        createExpense, updateExpense, deleteExpense,filterExpenses,clearFilters
+        loadExpenses,createExpense, updateExpense, deleteExpense,filterExpenses,clearFilters
     } = useExpenses()
     const [editExpense, setEditExpense] = useState(null)
     const [fieldDescription, setFieldDescription] = useState('')
@@ -25,6 +25,7 @@ export function ExpensesPage() {
     }
     const handleDeleteExpense = async(id) => {
     await deleteExpense(id)
+    await loadExpenses()
     }
 
     const handleEditExpense = (expense) => {

@@ -7,7 +7,7 @@ import '../styles/ExpensesStyle.css'
 
 export function IncomesPage() {
     const {incomes, loading, error,isFiltered, 
-        createIncome, updateIncome, deleteIncome,filterIncomes,clearFilters
+        loadIncomes,createIncome, updateIncome, deleteIncome,filterIncomes,clearFilters
     } = useIncomes()
     const [editIncome, setEditIncome] = useState(null)
     const [fieldDescription, setFieldDescription] = useState('')
@@ -25,6 +25,7 @@ export function IncomesPage() {
     }
     const handleDeleteIncome = async(id) => {
     await deleteIncome(id)
+    await loadIncomes()
     }
 
     const handleEditIncome = (income) => {
