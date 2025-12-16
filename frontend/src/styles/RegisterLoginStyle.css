@@ -5,14 +5,15 @@
     margin-bottom: 20px;
     border-radius: 16px;
     padding: 40px 30px;
-    background: linear-gradient(135deg, #16213e 0%, #1a2c5b 100%);
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
     max-width: 1200px;
     width: auto;
     margin-left: auto;
     margin-right: auto;
-    border: 1px solid rgba(184, 141, 0, 0.452);
+    border: 1px solid #334155;
     position: relative;  /*To position child elements*/
     overflow: hidden;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.3);
 }
 
 /*Upper line decorative*/
@@ -23,7 +24,7 @@
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, #b88d00 0%, #ffd700 100%);
+    background: linear-gradient(90deg, #059669 0%, #10b981 100%);
 }
 
 /*App header*/
@@ -50,7 +51,7 @@
     font-size: 3rem;
     font-weight: bold;
     margin: 0;
-    background: linear-gradient(135deg, #b88d00 0%, #ffd700 100%);
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
     -webkit-background-clip: text; /*Only show background where we have text*/
     -webkit-text-fill-color: transparent; /*Text will be transparent*/
     background-clip: text;
@@ -72,12 +73,12 @@
 }
 
 .brand-highlight {
-    color: #ffd700;
+    color: #10b981;
     font-weight: bold;
 }
 
 .animated-text {
-    background: linear-gradient(90deg, #b88d00, #ffd700, #b88d00);
+    background: linear-gradient(90deg, #059669, #10b981, #059669);
     background-size: 50% auto;
     background-clip: text;
     -webkit-background-clip: text;
@@ -92,12 +93,12 @@
 }
 
 .username-highlight {
-    color: #ffd700;
+    color: #e6b325;
     text-shadow: 0 0 10px rgba(184, 141, 0, 0.3);
 }
 
 .welcome-subtitle {
-    color: #b8c1cc;
+    color: #e2e8f0;
     font-size: 1.1rem;
     max-width: 600px;
     margin: 0 auto;
@@ -122,7 +123,7 @@
     width: 100%;
     height: 100%; 
     border-radius: 50%; /*Circle*/
-    background: #10b981;
+    background: #059669;
     position: relative;
     animation: scaleIn 0.3s ease-out;
 }
@@ -164,8 +165,8 @@
     flex-direction: column; 
     min-width: 0;
     word-wrap: break-word; /*Avoid long word break desing*/
-    background: rgba(22, 33, 62, 0.9);
-    border: 1px solid rgba(184, 141, 0, 0.2);
+    background: rgba(30, 41, 59, 0.9);
+    border: 1px solid #334155;
     border-radius: 12px;
     padding: 30px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
@@ -176,6 +177,7 @@
 .register-form:hover {
     transform: translateY(-5px); 
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+    border-color: #475569;
 }
 
 .title-h5 {
@@ -188,7 +190,7 @@
 }
 
 .label-text {
-    color: #ffffff;
+    color: #e2e8f0;
     font-size: 0.95rem;
     font-weight: 500;
     margin-bottom: 8px;
@@ -196,7 +198,7 @@
 
 .form-control {
     background: rgba(255, 255, 255, 0.05); 
-    border: 2px solid rgba(255, 255, 255, 0.1);
+    border: 2px solid #475569;
     border-radius: 8px;
     color: #ffffff;
     padding: 12px 16px;
@@ -208,7 +210,7 @@
 .form-control:focus {
     background: rgba(255, 255, 255, 0.08); /* Fondo un poco más opaco */
     color:#ffffff;
-    border-color: #b88d00;
+    border-color: #059669;
     box-shadow: 0 0 0 3px rgba(184, 141, 0, 0.2); 
     outline: none;
 }
@@ -216,8 +218,8 @@
 .register-login-button {
     margin-top: 20px;
     padding: 14px 28px;
-    background: linear-gradient(135deg, #b88d00 0%, #ffd700 100%); 
-    color: #090d1a;
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    color: #ffffff;
     border: none;
     border-radius: 8px;
     cursor: pointer;
@@ -233,7 +235,8 @@
 
 .register-login-button:hover:not(:disabled) { /*Appy this only the button isnt disabled*/
     transform: translateY(-2px);  
-    box-shadow: 0 6px 20px rgba(184, 141, 0, 0.2); 
+    box-shadow: 0 6px 20px rgba(184, 141, 0, 0.2);
+    background: linear-gradient(135deg, #047857 0%, #0da57e 100%); 
 }
 
 .register-login-button:active:not(:disabled) {
@@ -242,7 +245,8 @@
 
 .register-login-button:disabled {
     opacity: 0.6;  
-    cursor: not-allowed; 
+    cursor: not-allowed;
+    background: linear-gradient(135deg, #64748b 0%, #94a3b8 100%); 
 }
 
 /*Alert messages*/
@@ -255,15 +259,15 @@
 }
 
 .alert-success {
-    background: rgba(16, 185, 129, 0.1); 
+    background: rgba(5, 150, 105, 0.15);
     color: #10b981;
-    border-left: 4px solid #10b981;
+    border-left: 4px solid #059669;
 }
 
 .alert-danger {
-    background: rgba(239, 68, 68, 0.1);
+    background: rgba(220, 38, 38, 0.15);
     color: #ef4444; 
-    border-left: 4px solid #ef4444;
+    border-left: 4px solid #dc2626;
 }
 
 .app-footer {
@@ -280,7 +284,7 @@
 }
 
 .footer-highlight {
-    color: #ffd700;
+    color: #059669;
     font-weight: 600;
 }
 

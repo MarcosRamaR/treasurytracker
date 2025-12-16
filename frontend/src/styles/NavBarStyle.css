@@ -1,14 +1,14 @@
 
 .navbar {
-  background: linear-gradient(90deg, #1a1a2e, #16213e); 
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
   padding: 12px 0px;
-  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3); 
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.3);
   position: fixed;
   top: 0;
   left: 0;
   z-index: 1000;
   width: 100%;
-  border-bottom: 2px solid #0f3460; 
+  border-bottom: 2px solid #0d2b50; 
   margin: 0;
 }
 .navbar-brand {
@@ -20,7 +20,7 @@
   
 }
 .navbar-brand.active{
-  color: #e6b325;
+  color: #10b981;
 }
 .navbar .container-fluid {
   padding: 0 20px; 
@@ -28,7 +28,7 @@
 }
 
 .navbar-brand:hover {
-  color: #e6b325; 
+  color: #10b981; 
   transform: translateY(-1px); 
 }
 
@@ -42,7 +42,7 @@
 }
 
 .custom-color-navbar{
-  border-color: #b88d00;
+  border-color: #10b981;
 }
 
 .nav-link:hover {
@@ -52,10 +52,10 @@
 }
 
 .nav-item .nav-link.active {
-  color: #e6b325; 
-  background: rgba(230, 179, 37, 0.1); 
+  color: #10b981; 
+  background: rgba(114, 230, 37, 0.1); 
   font-weight: 600; 
-  border-left: 3px solid #e6b325; 
+  border-left: 3px solid #10b981; 
 }
 
 @media (max-width: 991.98px) { 

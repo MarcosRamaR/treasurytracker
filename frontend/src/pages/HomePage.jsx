@@ -4,7 +4,7 @@ import { LoginForm } from '../components/LoginForm'
 import { RegisterForm } from '../components/RegisterForm'
 import { UserProfile } from '../components/UserProfile'
 import '../styles/RegisterLoginStyle.css'
-import { AccountBalance, Savings, PieChart, AttachMoney } from '@mui/icons-material';
+import { AccountBalance, PieChart, AttachMoney } from '@mui/icons-material';
 
 export function HomePage()  {
   const [isLogged, setIsLogged] = useState(false)
@@ -45,7 +45,7 @@ export function HomePage()  {
     <div className="container-register-login">
       <div className="app-header">
         <div className="app-logo">
-          <AttachMoney sx={{ fontSize: 48, color: '#ffd700' }} />
+          <AttachMoney sx={{ fontSize: 48, color: '#059669' }} />
           <h1>Treasury Tracker</h1>
         </div>
       </div>
