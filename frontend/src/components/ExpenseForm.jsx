@@ -46,7 +46,7 @@ export function ExpenseForm({onSubmit,editExpense}) {
     const categories = ['Food', 'Transport', 'Entertainment ', 'Others']
 
   return (
-    <div>
+    <div className="filter-section">
         <h3 className="expense-title">{editExpense ? 'Edit Expense' : 'Add Expense'}</h3>
         <form onSubmit={handleSubmit} className="filter-controls">
             <input type="text" 
@@ -76,7 +76,7 @@ export function ExpenseForm({onSubmit,editExpense}) {
                 ))}
             </select>
             {/*Button that change on "create mode" or "edit mode"*/}
-            <button type="submit">
+            <button type="submit" className="filter-button">
                 {editExpense ? 'Edit' : 'Add'} 
             </button>
             {/*Allow cancel edit mode with a new button*/}

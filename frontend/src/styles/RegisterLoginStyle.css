@@ -219,7 +219,7 @@
     margin-top: 20px;
     padding: 14px 28px;
     background: linear-gradient(135deg, #059669 0%, #10b981 100%);
-    color: #ffffff;
+    color: #0f172a;
     border: none;
     border-radius: 8px;
     cursor: pointer;
@@ -235,6 +235,7 @@
 
 .register-login-button:hover:not(:disabled) { /*Appy this only the button isnt disabled*/
     transform: translateY(-2px);  
+    color: rgb(255, 255, 255);
     box-shadow: 0 6px 20px rgba(184, 141, 0, 0.2);
     background: linear-gradient(135deg, #047857 0%, #0da57e 100%); 
 }
