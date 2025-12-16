@@ -42,7 +42,7 @@ export function IncomeForm({onSubmit,editIncome}) {
     const categories = ['Salary', 'Investiments', 'Others']
 
     return (
-    <div>
+    <div className="filter-section">
         <h3 className="expense-title">{editIncome ? 'Edit Income' : 'Add Income'}</h3>
         <form onSubmit={handleSubmit} className="filter-controls">
             <input type="text" 
@@ -72,7 +72,7 @@ export function IncomeForm({onSubmit,editIncome}) {
                 ))}
             </select>
             {/*Button that change on "create mode" or "edit mode"*/}
-            <button type="submit">
+            <button type="submit" className="filter-button">
                 {editIncome ? 'Edit' : 'Add'} 
             </button>
             {/*Allow cancel edit mode with a new button*/}

@@ -1,6 +1,7 @@
 import '../styles/ExpensesStyle.css'
 import { useExport } from '../hooks/useExport';
 import { useState } from 'react';
+import {DeleteOutlined,EditOutlined}from '@mui/icons-material'
 
 export function IncomeList({incomes, onDelete, onEdit,currentFilters}) {
         const { exportAllTransactionsOneTypeToCsv,exportFilteredTransactionsToCsv,exportAllTransactionsToCsv,exportAllFilteredTransactionsToCsv, exporting} = useExport();
@@ -35,7 +36,7 @@ export function IncomeList({incomes, onDelete, onEdit,currentFilters}) {
         }
   return (
     <>
-        <div>
+        <div className="filter-section">
             <div>
                 <h3 className='expense-title'>Income List</h3>
                 <div className='filter-controls'>
@@ -72,8 +73,8 @@ export function IncomeList({incomes, onDelete, onEdit,currentFilters}) {
                             <td>{incomes.date}</td>
                             <td>{incomes.category}</td>
                             <td>
-                                <button onClick={() => onEdit(incomes)}>Edit</button>
-                                <button onClick={() => onDelete(incomes.id)}>Delete</button>
+                                <button className='button-edit' onClick={() => onEdit(incomes)}><EditOutlined sx={{ fontSize: 25, color: '#a7f3d0' }} /></button>
+                                <button className='button-delete' onClick={() => onDelete(incomes.id)}><DeleteOutlined sx={{ fontSize: 25, color: '#fca5a5' }} /></button>
                             </td>
                         </tr>
                     ))}
