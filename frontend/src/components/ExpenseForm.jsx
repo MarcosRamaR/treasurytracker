@@ -81,7 +81,7 @@ export function ExpenseForm({onSubmit,editExpense}) {
             </button>
             {/*Allow cancel edit mode with a new button*/}
             {editExpense && (
-                <button type="button" onClick={() => onSubmit(null)} >Cancel</button>
+                <button className="filter-button" type="button" onClick={() => onSubmit(null)} >Cancel</button>
             )}
         </form>
     </div>

@@ -77,7 +77,7 @@ export function IncomeForm({onSubmit,editIncome}) {
             </button>
             {/*Allow cancel edit mode with a new button*/}
             {editIncome && (
-                <button type="button" onClick={() => onSubmit(null)} >Cancel</button>
+                <button className="filter-button" type="button" onClick={() => onSubmit(null)} >Cancel</button>
             )}
         </form>
     </div>
