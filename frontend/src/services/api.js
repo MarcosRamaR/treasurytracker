@@ -1,4 +1,4 @@
-const API_TRANSACTION_BASE = import.meta.env.VITE_API_TRANSACTION_URL || 'http://localhost:8082';
+const API_TRANSACTION_BASE = import.meta.env.VITE_API_TRANSACTION_BASE || 'http://localhost:8082';
 
 const API_EXPENSE_BASE = `${API_TRANSACTION_BASE}/api/expenses`;
 const API_INCOMES_BASE = `${API_TRANSACTION_BASE}/api/incomes`;
