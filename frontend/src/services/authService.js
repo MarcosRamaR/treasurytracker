@@ -1,5 +1,5 @@
-const API_BASE_URL = import.meta.env.VITE_API_AUTH_BASE 
-    ? `${import.meta.env.VITE_API_AUTH_BASE}/api/auth` 
+const API_BASE_URL = import.meta.env.VITE_API_AUTH_URL
+    ? `${import.meta.env.VITE_API_AUTH_URL}/api/auth` 
     : 'http://localhost:8081/api/auth';
 
 export const authService = {
