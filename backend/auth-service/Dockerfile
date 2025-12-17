@@ -11,6 +11,7 @@ WORKDIR /app
 #Copy the JAR builded by Maven
 COPY --from=build /app/target/*.jar app.jar
 #Expose the port of Spring Boot
-EXPOSE 8080
+ENV PORT 8080
+EXPOSE ${PORT}
 #Command to run the app
 ENTRYPOINT ["java", "-jar", "app.jar"]
