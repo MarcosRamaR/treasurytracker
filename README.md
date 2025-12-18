@@ -1,13 +1,20 @@
 
-## Index
 
+## Index
+* [Project Status](#project-status)
 * [Description](#description)
 * [Funcionalities](#functionalities)
 * [Acceso al proyecto](#access-to-the-project)
 * [Used Technologies](#used-technologies)
-* [API Endpoints](#api-endpoints)
+* [Deployment](#deployment)
 * [Developers](#developers)
 
+## Project Status
+<p align="center">
+  <img src="https://img.shields.io/badge/Estado-En%20desarrollo-yellow" alt="Estado">
+</p>
+
+<p align="center">This project is under active development. New features and improvements are expected.</p>
 
 ## Description
 A web application for personal finance management and cash flow tracking. Developed with a React frontend and the backend is structured into two Spring Boot services: an authentication-service and a transaction-service. Although they currently share a database, they are organized as independent modules. It allows users to monitor expenses, filter transactions, and gain insights into their finances.The backend is tested with unit tests using JUnit and Mockito, ensuring that core functionalities such as creating, updating, retrieving, and deleting correctly.
@@ -24,7 +31,16 @@ A web application for personal finance management and cash flow tracking. Develo
 
 
 ## Access to the project
+The web application is currently available for testing in a **beta version**.
+Although the project is still under active development, the main features are functional and can be used as intended.
 
+<p align="center"><b>
+👉 Live demo: </b> </p>
+<p align="center">https://treasurytracker-front.onrender.com/
+</p>
+
+Please note that the application is deployed using free-tier cloud services.  
+As a result, initial requests may take a few seconds to respond, especially after periods of inactivity.
 
 ## Used Technologies
   * Java</br>
@@ -44,6 +60,15 @@ A web application for personal finance management and cash flow tracking. Develo
 ## React and Vite
 This application uses **React** together with **Vite** for bundling and Hot Module Replacement (HMR).
 
+## Deployment
+
+The application is deployed using cloud services with free-tier plans:
+
+- **Frontend:** Render
+- **Backend services:** Render
+- **Database:** Neon Tech (PostgreSQL)
+
+Free-tier deployments may introduce limitations such as cold starts or delayed responses when the application has been inactive for some time.
 
 
 ## Developers
