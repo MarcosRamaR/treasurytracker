@@ -17,6 +17,7 @@ export function ExpensesPage() {
     const [minAmount, setMinAmount] = useState('')
     const [maxAmount, setMaxAmount] = useState('')
     const [currentFilters, setCurrentFilters] = useState({})
+    const [filterLoading, setFilterLoading] = useState(false)
 
     const categories = ['Food', 'Transport', 'Entertainment', 'Others']
 
@@ -50,7 +51,12 @@ export function ExpensesPage() {
             maxAmount: maxAmount ? parseFloat(maxAmount) : null
         }
         setCurrentFilters(filters)
+        setFilterLoading(true)
+        try{
         await filterExpenses(filters)
+        } finally {
+        setFilterLoading(false)
+    }
     }
     const handleClearFilters = () => {
         clearFilters()
@@ -60,11 +66,12 @@ export function ExpensesPage() {
         setEndDate('')
         setMinAmount(0)
         setMaxAmount(0)
+        setFilterLoading(false)
     }
 
 
-    if (loading) return <div>Loading expenses...</div>
-    if (error) return <div>Error: {error}</div>
+    if (loading && expenses.length === 0) return <div>Loading expenses...</div>
+    if (error && expenses.length === 0) return <div>Error: {error}</div>
     //For edit button (ExpenseList) call handleEditExpense, passing the expense to edit and set it in state (editExpense)
     // after that pass it to ExpenseForm as prop (editingExpense) and handleUpdateExpense as onSubmit 
     return (
@@ -89,7 +96,14 @@ export function ExpensesPage() {
         onClearFilters={handleClearFilters}
         isFiltered={isFiltered}
         />
-    <ExpenseList expenses={expenses} onDelete={handleDeleteExpense} onEdit={handleEditExpense} currentFilters={currentFilters}/> 
+
+        {filterLoading ? (
+            <div style={{ padding: '20px', textAlign: 'center' }}>Applying filters...</div>) : (
+            <ExpenseList 
+                expenses={expenses} 
+                onDelete={handleDeleteExpense} 
+                onEdit={handleEditExpense} 
+                currentFilters={currentFilters}/>)} 
     </>
     
   )
