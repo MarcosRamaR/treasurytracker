@@ -77,7 +77,6 @@ export const useIncomes = () => {
 
     const filterIncomes = async (filters) => {
         try{
-            setLoading(true)
             if (!authService.isAuthenticated()) {
                 setError('User not authenticated. Please log in.')
                 return
@@ -89,8 +88,6 @@ export const useIncomes = () => {
         }catch(err){
             setError('Error filtering incomes: ' + err.message)
             throw err
-        }finally{
-            setLoading(false)
         }
     }
     const clearFilters = () => {

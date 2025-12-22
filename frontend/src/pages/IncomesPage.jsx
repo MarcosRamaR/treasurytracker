@@ -16,7 +16,8 @@ export function IncomesPage() {
     const [categorySelect, setCategorySelect] = useState('')
     const [minAmount, setMinAmount] = useState('')
     const [maxAmount, setMaxAmount] = useState('')
-        const [currentFilters, setCurrentFilters] = useState({})
+    const [currentFilters, setCurrentFilters] = useState({})
+    const [filterLoading, setFilterLoading] = useState(false)
 
     const categories = ['Salary', 'Investiments', 'Others']
 
@@ -49,7 +50,13 @@ export function IncomesPage() {
             maxAmount: maxAmount ? parseFloat(maxAmount) : null
         }
         setCurrentFilters(filters)
+        setFilterLoading(true)
+        try{
         await filterIncomes(filters)
+        } finally {
+        setFilterLoading(false)
+    }
+        
     }
     const handleClearFilters = () => {
         clearFilters()
@@ -66,9 +73,9 @@ export function IncomesPage() {
     if (error) return <div>Error: {error}</div>
     return (
     <>
-      <h2>Incomes Page</h2>
-      <IncomeForm onSubmit={editIncome ? handleUpdateIncome : handleAddIncome} editIncome={editIncome}/>
-      <FilterSection
+        <h2>Incomes Page</h2>
+        <IncomeForm onSubmit={editIncome ? handleUpdateIncome : handleAddIncome} editIncome={editIncome}/>
+        <FilterSection
         fieldDescription={fieldDescription}
         setFieldDescription={setFieldDescription}
         startDate={startDate}
@@ -86,7 +93,9 @@ export function IncomesPage() {
         onClearFilters={handleClearFilters}
         isFiltered={isFiltered}
         />
-      <IncomeList incomes={incomes} onDelete={handleDeleteIncome} onEdit={handleEditIncome} currentFilters={currentFilters}/> 
+        {filterLoading ? (
+            <div style={{ padding: '20px', textAlign: 'center' }}>Applying filters...</div>) : (
+            <IncomeList incomes={incomes} onDelete={handleDeleteIncome} onEdit={handleEditIncome} currentFilters={currentFilters}/>)}
     </>
     
   )
