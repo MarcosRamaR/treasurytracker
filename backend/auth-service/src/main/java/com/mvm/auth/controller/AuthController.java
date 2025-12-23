@@ -29,6 +29,13 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<UserResponseDTO> register(@RequestBody RegisterRequestDTO request) {
+        //Compare both password
+        if (!request.getPassword().equals(request.getPassword2())) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(null);
+        }
+
         //Creates user object from DTO
         User user = new User();
         user.setEmail(request.getEmail());
