@@ -48,7 +48,7 @@ export function FilterSection({
                 />
             </label>
             <label>
-                Lower Amount:
+                Lower Amount (€):
                 <input 
                 type="number" 
                 value={minAmount}
@@ -56,7 +56,7 @@ export function FilterSection({
                 />
             </label>
             <label>
-                High Amount:
+                High Amount (€):
                 <input 
                 type="number" 
                 value={maxAmount}

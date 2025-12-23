@@ -57,7 +57,7 @@ export function ExpenseForm({onSubmit,editExpense}) {
 
             <input type="number" 
             className="form-input"
-            placeholder="Amount" 
+            placeholder="Amount (€)" 
             value={formData.amount} 
             onChange={(e) => setFormData({...formData, amount: e.target.value})} />
 
