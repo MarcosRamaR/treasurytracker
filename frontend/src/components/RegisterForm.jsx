@@ -6,11 +6,13 @@ export function RegisterForm({onSubmit, onSwitchToLogin}) {
     const [formData, setFormData] = useState({
         userName: '',
         email: '',
-        password: ''
+        password: '',
+        password2: ''
     })
     
     const [errors, setErrors] = useState({})
     const [isLoading, setIsLoading] = useState(false)
+
 
 
     const handleChange = (e) => {
@@ -27,11 +29,16 @@ export function RegisterForm({onSubmit, onSwitchToLogin}) {
         setErrors({})
 
         try{
+            if (formData.password !== formData.password2) {
+            setErrors({ error: 'Passwords do not match' })
+            setIsLoading(false)
+            return
+            }
             const result = await authService.register(formData)
             console.log('Resultado del registro:', result)
             if(result.id && result.email && result.userName){
                 setFormData({userName:'',email:'', password: ''})
-                setErrors({success: 'Account created. Redirecting to login'})
+                setErrors({success: 'Account created.'})
 
                 setTimeout(() => {
                 if(onSubmit){
@@ -40,6 +47,11 @@ export function RegisterForm({onSubmit, onSwitchToLogin}) {
                 },2500)
 
             }else{
+                if(formData.password2 !== formData.password){
+                    setErrors({error: 'Passwords do not match'})
+                    setIsLoading(false)
+                    return
+                }
                 setErrors(result)
             }
         }catch(error){
@@ -92,6 +104,18 @@ export function RegisterForm({onSubmit, onSwitchToLogin}) {
                             id="password"
                             name="password"
                             value={formData.password}
+                            onChange={handleChange}
+                            readOnly 
+                            onFocus={(e) => e.target.removeAttribute('readonly')}
+                            required
+                        />
+                        <label htmlFor="password2" className='label-text'>Repeat Password</label>
+                        <input
+                            type="password"
+                            className="form-control"
+                            id="password2"
+                            name="password2"
+                            value={formData.password2}
                             onChange={handleChange}
                             readOnly 
                             onFocus={(e) => e.target.removeAttribute('readonly')}
