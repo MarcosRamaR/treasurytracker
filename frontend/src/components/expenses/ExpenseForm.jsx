@@ -1,7 +1,9 @@
-import { useState, useEffect } from "react"
-import '../styles/ExpensesStyle.css'
+//Form to add or edit an expense
 
-export function IncomeForm({onSubmit,editIncome}) {
+import { useState, useEffect } from "react"
+import '../../styles/ExpensesStyle.css';
+
+export function ExpenseForm({onSubmit,editExpense}) {
 
     const [formData, setFormData] = useState({
         description: '',
@@ -11,39 +13,41 @@ export function IncomeForm({onSubmit,editIncome}) {
     })
 
     useEffect(() => {
-        if (editIncome) {
+        if (editExpense) {
         setFormData({
-            description: editIncome.description,
-            amount: editIncome.amount.toString(),
-            category: editIncome.category,
-            date: editIncome.date
+            description: editExpense.description,
+            amount: editExpense.amount.toString(),
+            category: editExpense.category,
+            date: editExpense.date
         })
         }
-    }, [editIncome])
+    }, [editExpense])
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    if (!formData.description.trim() || !formData.amount || !formData.category) return
-    onSubmit({
-        description: formData.description,
-        amount: parseFloat(formData.amount),
-        category: formData.category,
-        date: formData.date
-    })
-    if (!editIncome) {
-        setFormData({
-            description: '',
-            amount: '',
-            date: new Date().toISOString().split('T')[0],
-            category: 'Others'
+    const handleSubmit = (e) => {
+        e.preventDefault()
+        if (!formData.description.trim() || !formData.amount || !formData.category) return
+        // Call the onSubmit prop with the form data
+        onSubmit({
+            description: formData.description,
+            amount: parseFloat(formData.amount),
+            category: formData.category,
+            date: formData.date
         })
-    }
+        // Clear form only if not editing
+        if (!editExpense) {
+            setFormData({
+                description: '',
+                amount: '',
+                date: new Date().toISOString().split('T')[0],
+                category: 'Others'
+            })
+        }
 }
-    const categories = ['Salary', 'Investiments', 'Others']
+    const categories = ['Food', 'Transport', 'Entertainment ', 'Others']
 
-    return (
+  return (
     <div className="filter-section">
-        <h3 className="expense-title">{editIncome ? 'Edit Income' : 'Add Income'}</h3>
+        <h3 className="expense-title">{editExpense ? 'Edit Expense' : 'Add Expense'}</h3>
         <form onSubmit={handleSubmit} className="filter-controls">
             <input type="text" 
             className="form-input"
@@ -73,10 +77,10 @@ export function IncomeForm({onSubmit,editIncome}) {
             </select>
             {/*Button that change on "create mode" or "edit mode"*/}
             <button type="submit" className="filter-button">
-                {editIncome ? 'Edit' : 'Add'} 
+                {editExpense ? 'Edit' : 'Add'} 
             </button>
             {/*Allow cancel edit mode with a new button*/}
-            {editIncome && (
+            {editExpense && (
                 <button className="filter-button" type="button" onClick={() => onSubmit(null)} >Cancel</button>
             )}
         </form>

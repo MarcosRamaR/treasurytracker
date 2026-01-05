@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { authService } from '../services/authService'
-import '../styles/RegisterLoginStyle.css'
+import { authService } from '../../services/authService'
+import '../../styles/RegisterLoginStyle.css'
 
 export function RegisterForm({onSubmit, onSwitchToLogin}) {
     const [formData, setFormData] = useState({

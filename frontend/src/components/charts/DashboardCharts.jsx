@@ -2,7 +2,7 @@ import { MonthlyChart } from './MonthlyChart';
 import { ExpenseCategoryChart } from './ExpensesCategoryChart';
 import { IncomeCategoryChart } from './IncomeCategoryExpenses';
 import { MonthlyExpenses } from './MonthlyExpenses';
-import '../styles/GraphsStyle.css'
+import '../../styles/GraphsStyle.css'
 
 export function DashboardCharts({ expenses, incomes }) {
     return (

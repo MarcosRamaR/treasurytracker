@@ -1,8 +1,8 @@
 import {useState, useEffect} from 'react'
 import { authService } from '../services/authService'
-import { LoginForm } from '../components/LoginForm'
-import { RegisterForm } from '../components/RegisterForm'
-import { UserProfile } from '../components/UserProfile'
+import { LoginForm } from '../components/auth/LoginForm'
+import { RegisterForm } from '../components/auth/RegisterForm'
+import { UserProfile } from '../components/auth/UserProfile'
 import '../styles/RegisterLoginStyle.css'
 import { AccountBalance, PieChart, AttachMoney } from '@mui/icons-material';
 

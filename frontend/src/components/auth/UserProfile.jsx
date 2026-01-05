@@ -1,5 +1,5 @@
-import { authService } from "../services/authService"
-import '../styles/RegisterLoginStyle.css'
+import { authService } from "../../services/authService"
+import '../../styles/RegisterLoginStyle.css'
 
 export function UserProfile({onLogout}) {
     const user = authService.getUser()

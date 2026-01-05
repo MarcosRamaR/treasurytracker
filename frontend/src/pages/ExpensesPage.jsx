@@ -1,5 +1,5 @@
-import { ExpenseForm } from "../components/ExpenseForm"
-import { ExpenseList } from "../components/ExpenseList"
+import { ExpenseForm } from "../components/expenses/ExpenseForm"
+import { ExpenseList } from "../components/expenses/ExpenseList"
 import { FilterSection } from "../components/FilterSection"
 import { useExpenses } from "../hooks/useExpenses"
 import { useState } from "react"

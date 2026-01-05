@@ -1,5 +1,5 @@
-import { IncomeForm } from "../components/IncomeForm"
-import { IncomeList } from "../components/IncomeList"
+import { IncomeForm } from "../components/incomes/IncomeForm"
+import { IncomeList } from "../components/incomes/IncomeList"
 import { FilterSection } from "../components/FilterSection"
 import { useIncomes } from "../hooks/useIncomes"
 import { useState } from "react"
