@@ -19,7 +19,8 @@ public class CacheConfig {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager();
         //Caffeine configuration
         cacheManager.setCaffeine(Caffeine.newBuilder()
-                .expireAfterWrite(5, TimeUnit.MINUTES)//Cache will have 5 min
+                .expireAfterWrite(5, TimeUnit.MINUTES)//Cache will have 5 min since creation
+                .expireAfterAccess(10, TimeUnit.MINUTES) //Cache will have 10 min since last access
                 .maximumSize(100)                       //Max size of users cached
                 .recordStats()                          //To see statistics
         );
