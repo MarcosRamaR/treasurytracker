@@ -85,7 +85,7 @@ public class ExpenseService {
         }
         expenseRepository.delete(expense);
     }
-    
+
     public List<ExpenseResponseDTO> filterExpenses(
             Long userId,
             String description,
