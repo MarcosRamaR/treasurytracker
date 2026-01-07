@@ -1,7 +1,6 @@
 //Form to add or edit an expense
-
 import { useState} from "react"
-import '../../styles/ExpensesStyle.css';
+import '../../styles/ExpensesStyle.css'
 
 export function ExpenseForm({onSubmit}) {
 

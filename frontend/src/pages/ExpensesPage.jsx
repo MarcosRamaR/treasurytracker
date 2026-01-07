@@ -6,6 +6,7 @@ import { useState } from "react"
 import { ExpenseEdit } from "../components/expenses/ExpenseEdit"
 import '../styles/ExpensesStyle.css'
 
+
 export function ExpensesPage() {
     const {expenses, loading, error,isFiltered, 
         loadExpenses,createExpense, updateExpense, deleteExpense,filterExpenses,clearFilters

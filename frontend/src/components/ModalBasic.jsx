@@ -1,4 +1,4 @@
-
+import '../styles/ModalStyle.css'
 
 //Modal recives props from parent component
 export function Modal({ isOpen, onClose, children, title }) {

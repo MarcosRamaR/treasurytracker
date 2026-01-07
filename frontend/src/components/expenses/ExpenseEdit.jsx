@@ -65,7 +65,7 @@ export function ExpenseEdit({expense,isOpen,onClose,onSubmit}) {
                 <div>
                     <label>Category</label>
                     <select 
-                    className="form-input"
+                    className="selectEdit"
                     value={formData.category}
                     onChange={(e) => setFormData({...formData, category: e.target.value})}>
                         {categories.map((cat) => (
@@ -74,8 +74,8 @@ export function ExpenseEdit({expense,isOpen,onClose,onSubmit}) {
                     </select>
                 </div>
                 <div className="modal-buttons">
-                    <button type="submit" className="btn btn-primary">Save</button>
-                    <button type="button" className="btn btn-secondary" onClick={onClose}>Cancel</button>
+                    <button type="submit" className="btn-primary">Save</button>
+                    <button type="button" className="btn-secondary" onClick={onClose}>Cancel</button>
                 </div>
             </form>
         </Modal>
