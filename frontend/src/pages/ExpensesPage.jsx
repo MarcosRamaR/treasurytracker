@@ -3,6 +3,7 @@ import { ExpenseList } from "../components/expenses/ExpenseList"
 import { FilterSection } from "../components/FilterSection"
 import { useExpenses } from "../hooks/useExpenses"
 import { useState } from "react"
+import { ExpenseEdit } from "../components/expenses/ExpenseEdit"
 import '../styles/ExpensesStyle.css'
 
 export function ExpensesPage() {
@@ -10,6 +11,7 @@ export function ExpensesPage() {
         loadExpenses,createExpense, updateExpense, deleteExpense,filterExpenses,clearFilters
     } = useExpenses()
     const [editExpense, setEditExpense] = useState(null)
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false)
     const [fieldDescription, setFieldDescription] = useState('')
     const [startDate, setStartDate] = useState('')
     const [endDate, setEndDate] = useState('')
@@ -31,14 +33,18 @@ export function ExpensesPage() {
 
     const handleEditExpense = (expense) => {
     setEditExpense(expense)
+    setIsEditModalOpen(true) //Open modal when editing
     }
     const handleUpdateExpense = async (expense) => {
     // Get the id of the expense being edited
-        if (!expense) {
-        setEditExpense(null)
-        return
-        }
+        if (!expense || !editExpense) return
+        
         await updateExpense(editExpense.id, expense)
+        setIsEditModalOpen(false) //Close modal after update
+        setEditExpense(null)
+    }
+    const handleCloseModal = () => {
+        setIsEditModalOpen(false)
         setEditExpense(null)
     }
     const handleFilters = async () => {
@@ -77,7 +83,12 @@ export function ExpensesPage() {
     return (
     <>
     <h2>Expenses Page</h2>
-    <ExpenseForm onSubmit={editExpense ? handleUpdateExpense : handleAddExpense} editExpense={editExpense}/>
+    <ExpenseForm onSubmit={handleAddExpense}/>
+    <ExpenseEdit
+        expense={editExpense} //Pass the expense
+        isOpen={isEditModalOpen} //Control modal visibility
+        onClose={handleCloseModal}
+        onSubmit={handleUpdateExpense}/>
     <FilterSection
         fieldDescription={fieldDescription}
         setFieldDescription={setFieldDescription}
@@ -94,8 +105,7 @@ export function ExpensesPage() {
         categories={categories}
         onFilter={handleFilters}
         onClearFilters={handleClearFilters}
-        isFiltered={isFiltered}
-        />
+        isFiltered={isFiltered}/>
 
         {filterLoading ? (
             <div style={{ padding: '20px', textAlign: 'center' }}>Applying filters...</div>) : (
