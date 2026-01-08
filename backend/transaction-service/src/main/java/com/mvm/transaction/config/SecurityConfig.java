@@ -55,7 +55,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         //Allow frontend since Vite
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173","https://treasurytracker-front.onrender.com"));
         //Allow the http methods
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE","PATCH", "OPTIONS"));
 
@@ -106,8 +106,6 @@ public class SecurityConfig {
                 String authHeader = request.getHeader("Authorization"); //Get this header
 
                 if(authHeader == null || !authHeader.startsWith("Bearer ")){
-                    response.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
-                    response.setHeader("Access-Control-Allow-Credentials", "true");
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     return;
                 }
@@ -143,10 +141,8 @@ public class SecurityConfig {
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 } catch (Exception e) {
                     //Token invalid
-                    response.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
-                    response.setHeader("Access-Control-Allow-Credentials", "true");
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    response.getWriter().write("Token inválido: " + e.getMessage());
+                    response.getWriter().write("Invalid token: " + e.getMessage());
                     return;
                 }
                 //Token valid, continue
