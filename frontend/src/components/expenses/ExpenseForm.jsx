@@ -63,7 +63,7 @@ export function ExpenseForm({onSubmit}) {
                     <option key={cat} value={cat}>{cat}</option>
                 ))}
             </select>
-            <button type="submit" className="filter-button">'Add</button>
+            <button type="submit" className="filter-button">Add</button>
         </form>
     </div>
   )
