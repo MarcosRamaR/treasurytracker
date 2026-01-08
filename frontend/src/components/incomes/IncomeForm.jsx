@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react"
+import { useState} from "react"
 import '../../styles/ExpensesStyle.css'
 
-export function IncomeForm({onSubmit,editIncome}) {
+export function IncomeForm({onSubmit}) {
 
     const [formData, setFormData] = useState({
         description: '',
@@ -10,16 +10,6 @@ export function IncomeForm({onSubmit,editIncome}) {
         category: 'Others'
     })
 
-    useEffect(() => {
-        if (editIncome) {
-        setFormData({
-            description: editIncome.description,
-            amount: editIncome.amount.toString(),
-            category: editIncome.category,
-            date: editIncome.date
-        })
-        }
-    }, [editIncome])
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -30,20 +20,20 @@ export function IncomeForm({onSubmit,editIncome}) {
         category: formData.category,
         date: formData.date
     })
-    if (!editIncome) {
-        setFormData({
-            description: '',
-            amount: '',
-            date: new Date().toISOString().split('T')[0],
-            category: 'Others'
-        })
-    }
+
+    setFormData({
+        description: '',
+        amount: '',
+        date: new Date().toISOString().split('T')[0],
+        category: 'Others'
+    })
+    
 }
     const categories = ['Salary', 'Investiments', 'Others']
 
     return (
     <div className="filter-section">
-        <h3 className="expense-title">{editIncome ? 'Edit Income' : 'Add Income'}</h3>
+        <h3 className="expense-title">Add Income</h3>
         <form onSubmit={handleSubmit} className="filter-controls">
             <input type="text" 
             className="form-input"
@@ -71,14 +61,7 @@ export function IncomeForm({onSubmit,editIncome}) {
                     <option key={cat} value={cat}>{cat}</option>
                 ))}
             </select>
-            {/*Button that change on "create mode" or "edit mode"*/}
-            <button type="submit" className="filter-button">
-                {editIncome ? 'Edit' : 'Add'} 
-            </button>
-            {/*Allow cancel edit mode with a new button*/}
-            {editIncome && (
-                <button className="filter-button" type="button" onClick={() => onSubmit(null)} >Cancel</button>
-            )}
+            <button type="submit" className="filter-button">Add</button>
         </form>
     </div>
   )

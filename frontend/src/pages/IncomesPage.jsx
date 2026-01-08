@@ -3,6 +3,7 @@ import { IncomeList } from "../components/incomes/IncomeList"
 import { FilterSection } from "../components/FilterSection"
 import { useIncomes } from "../hooks/useIncomes"
 import { useState } from "react"
+import { IncomeEdit } from "../components/incomes/IncomeEdit"
 import '../styles/ExpensesStyle.css'
 
 export function IncomesPage() {
@@ -10,6 +11,7 @@ export function IncomesPage() {
         loadIncomes,createIncome, updateIncome, deleteIncome,filterIncomes,clearFilters
     } = useIncomes()
     const [editIncome, setEditIncome] = useState(null)
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false)
     const [fieldDescription, setFieldDescription] = useState('')
     const [startDate, setStartDate] = useState('')
     const [endDate, setEndDate] = useState('')
@@ -31,15 +33,20 @@ export function IncomesPage() {
 
     const handleEditIncome = (income) => {
     setEditIncome(income)
+    setIsEditModalOpen(true)
     }
     const handleUpdateIncome = async (income) => {
-        if (!income) {
-        setEditIncome(null)
-        return
-        }
+        if (!income || !editIncome) return
+        
         await updateIncome(editIncome.id, income)
+        setIsEditModalOpen(false)
         setEditIncome(null)
     }
+    const handleCloseModal = () => {
+        setIsEditModalOpen(false)
+        setEditIncome(null)
+    }
+
     const handleFilters = async () => {
         const filters = {
             description: fieldDescription,
@@ -74,7 +81,12 @@ export function IncomesPage() {
     return (
     <>
         <h2>Incomes Page</h2>
-        <IncomeForm onSubmit={editIncome ? handleUpdateIncome : handleAddIncome} editIncome={editIncome}/>
+        <IncomeForm onSubmit={handleAddIncome}/>
+        <IncomeEdit
+        income={editIncome} //Pass the income
+        isOpen={isEditModalOpen} //Control modal visibility
+        onClose={handleCloseModal}
+        onSubmit={handleUpdateIncome}/>
         <FilterSection
         fieldDescription={fieldDescription}
         setFieldDescription={setFieldDescription}
