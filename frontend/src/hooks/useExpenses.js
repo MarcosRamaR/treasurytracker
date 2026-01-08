@@ -82,7 +82,6 @@ export const useExpenses = () => {
                 setError('User not authenticated. Please log in.')
                 return
             }
-            setLoading(true)
             const filtered = await apiService.filterExpenses(filters,type)
             setFilteredExpenses(filtered)
             setIsFiltered(true)
@@ -90,8 +89,6 @@ export const useExpenses = () => {
         }catch(err){
             setError('Error filtering expenses: ' + err.message)
             throw err
-        }finally{
-            setLoading(false)
         }
     }
 

@@ -56,7 +56,7 @@ public class AuthControllerTest {
     void register_WithValidData_ShouldReturnJwtTokenAndUserInfo() throws Exception {
         //---Arrange---
         //Create valid register data
-        RegisterRequestDTO request = new RegisterRequestDTO("test@test.com", "password123", "newUser");
+        RegisterRequestDTO request = new RegisterRequestDTO("test@test.com", "password123", "newUser", "password123");
 
         //Creates a User (entity), like the return of userService.registerUser()
         User fakeUser = new User();

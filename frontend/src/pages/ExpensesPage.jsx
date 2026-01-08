@@ -1,15 +1,18 @@
-import { ExpenseForm } from "../components/ExpenseForm"
-import { ExpenseList } from "../components/ExpenseList"
+import { ExpenseForm } from "../components/expenses/ExpenseForm"
+import { ExpenseList } from "../components/expenses/ExpenseList"
 import { FilterSection } from "../components/FilterSection"
 import { useExpenses } from "../hooks/useExpenses"
 import { useState } from "react"
+import { ExpenseEdit } from "../components/expenses/ExpenseEdit"
 import '../styles/ExpensesStyle.css'
+
 
 export function ExpensesPage() {
     const {expenses, loading, error,isFiltered, 
         loadExpenses,createExpense, updateExpense, deleteExpense,filterExpenses,clearFilters
     } = useExpenses()
     const [editExpense, setEditExpense] = useState(null)
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false)
     const [fieldDescription, setFieldDescription] = useState('')
     const [startDate, setStartDate] = useState('')
     const [endDate, setEndDate] = useState('')
@@ -17,6 +20,7 @@ export function ExpensesPage() {
     const [minAmount, setMinAmount] = useState('')
     const [maxAmount, setMaxAmount] = useState('')
     const [currentFilters, setCurrentFilters] = useState({})
+    const [filterLoading, setFilterLoading] = useState(false)
 
     const categories = ['Food', 'Transport', 'Entertainment', 'Others']
 
@@ -30,14 +34,18 @@ export function ExpensesPage() {
 
     const handleEditExpense = (expense) => {
     setEditExpense(expense)
+    setIsEditModalOpen(true) //Open modal when editing
     }
     const handleUpdateExpense = async (expense) => {
     // Get the id of the expense being edited
-        if (!expense) {
-        setEditExpense(null)
-        return
-        }
+        if (!expense || !editExpense) return
+        
         await updateExpense(editExpense.id, expense)
+        setIsEditModalOpen(false) //Close modal after update
+        setEditExpense(null)
+    }
+    const handleCloseModal = () => {
+        setIsEditModalOpen(false)
         setEditExpense(null)
     }
     const handleFilters = async () => {
@@ -50,7 +58,12 @@ export function ExpensesPage() {
             maxAmount: maxAmount ? parseFloat(maxAmount) : null
         }
         setCurrentFilters(filters)
+        setFilterLoading(true)
+        try{
         await filterExpenses(filters)
+        } finally {
+        setFilterLoading(false)
+    }
     }
     const handleClearFilters = () => {
         clearFilters()
@@ -60,17 +73,23 @@ export function ExpensesPage() {
         setEndDate('')
         setMinAmount(0)
         setMaxAmount(0)
+        setFilterLoading(false)
     }
 
 
-    if (loading) return <div>Loading expenses...</div>
-    if (error) return <div>Error: {error}</div>
+    if (loading && expenses.length === 0) return <div>Loading expenses...</div>
+    if (error && expenses.length === 0) return <div>Error: {error}</div>
     //For edit button (ExpenseList) call handleEditExpense, passing the expense to edit and set it in state (editExpense)
     // after that pass it to ExpenseForm as prop (editingExpense) and handleUpdateExpense as onSubmit 
     return (
     <>
     <h2>Expenses Page</h2>
-    <ExpenseForm onSubmit={editExpense ? handleUpdateExpense : handleAddExpense} editExpense={editExpense}/>
+    <ExpenseForm onSubmit={handleAddExpense}/>
+    <ExpenseEdit
+        expense={editExpense} //Pass the expense
+        isOpen={isEditModalOpen} //Control modal visibility
+        onClose={handleCloseModal}
+        onSubmit={handleUpdateExpense}/>
     <FilterSection
         fieldDescription={fieldDescription}
         setFieldDescription={setFieldDescription}
@@ -87,9 +106,15 @@ export function ExpensesPage() {
         categories={categories}
         onFilter={handleFilters}
         onClearFilters={handleClearFilters}
-        isFiltered={isFiltered}
-        />
-    <ExpenseList expenses={expenses} onDelete={handleDeleteExpense} onEdit={handleEditExpense} currentFilters={currentFilters}/> 
+        isFiltered={isFiltered}/>
+
+        {filterLoading ? (
+            <div style={{ padding: '20px', textAlign: 'center' }}>Applying filters...</div>) : (
+            <ExpenseList 
+                expenses={expenses} 
+                onDelete={handleDeleteExpense} 
+                onEdit={handleEditExpense} 
+                currentFilters={currentFilters}/>)} 
     </>
     
   )

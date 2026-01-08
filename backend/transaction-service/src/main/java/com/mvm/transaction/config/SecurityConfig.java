@@ -142,7 +142,7 @@ public class SecurityConfig {
                 } catch (Exception e) {
                     //Token invalid
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    response.getWriter().write("Token inválido: " + e.getMessage());
+                    response.getWriter().write("Invalid token: " + e.getMessage());
                     return;
                 }
                 //Token valid, continue

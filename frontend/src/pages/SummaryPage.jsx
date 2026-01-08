@@ -1,4 +1,4 @@
-import { DashboardCharts } from "../components/DashboardCharts"
+import { DashboardCharts } from "../components/charts/DashboardCharts"
 import { useExpenses } from "../hooks/useExpenses"
 import { useIncomes } from "../hooks/useIncomes"
 import { BalanceSummary } from "../components/BalanceSummary"
