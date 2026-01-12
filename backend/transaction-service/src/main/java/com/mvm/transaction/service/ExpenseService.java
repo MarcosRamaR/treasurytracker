@@ -98,6 +98,7 @@ public class ExpenseService {
         return expenses.stream().map(expenseMapper::toResponseDTO).collect(Collectors.toList());
     }
 
+    @CacheEvict(value = EXPENSES_CACHE, key = "#userId")
     public int deleteFilteredExpenses(
             Long userId,
             String description,
