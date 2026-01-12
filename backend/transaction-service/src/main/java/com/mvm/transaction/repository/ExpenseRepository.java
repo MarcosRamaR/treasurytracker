@@ -49,8 +49,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
             "AND (CAST(:startDate AS DATE) IS NULL OR e.date >= CAST(:startDate AS DATE)) " +
             "AND (CAST(:endDate AS DATE) IS NULL OR e.date <= CAST(:endDate AS DATE)) " +
             "AND (CAST(:minAmount AS DECIMAL) IS NULL OR e.amount >= CAST(:minAmount AS DECIMAL)) " +
-            "AND (CAST(:maxAmount AS DECIMAL) IS NULL OR e.amount <= CAST(:maxAmount AS DECIMAL)) " +
-            "ORDER BY e.date DESC",
+            "AND (CAST(:maxAmount AS DECIMAL) IS NULL OR e.amount <= CAST(:maxAmount AS DECIMAL)) ",
             nativeQuery = true)
     int deleteByFiltersAndUser(
             @Param("userId") Long userId,
