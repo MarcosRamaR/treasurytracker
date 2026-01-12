@@ -43,7 +43,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     List<Expense> findPendingByUserIdAndDate(@Param("userId") Long userId, @Param("today") LocalDate today);
 
     @Modifying //Indicates that this query modify data, without this Spring assume is a select
-    @Query(value = "DELETE * FROM expenses e WHERE e.user_id = :userId " +
+    @Query(value = "DELETE FROM expenses e WHERE e.user_id = :userId " +
             "AND (:description IS NULL OR LOWER(e.description) LIKE LOWER(CONCAT('%', :description,'%'))) " +
             "AND (:category IS NULL OR e.category = :category) " +
             "AND (CAST(:startDate AS DATE) IS NULL OR e.date >= CAST(:startDate AS DATE)) " +
