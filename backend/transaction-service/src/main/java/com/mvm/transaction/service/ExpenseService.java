@@ -97,4 +97,21 @@ public class ExpenseService {
         List<Expense> expenses = expenseRepository.findByFiltersAndUser(userId,description, category, startDate, endDate, minAmount, maxAmount);
         return expenses.stream().map(expenseMapper::toResponseDTO).collect(Collectors.toList());
     }
+
+    public int deleteFilteredExpenses(
+            Long userId,
+            String description,
+            String category,
+            LocalDate startDate,
+            LocalDate endDate,
+            BigDecimal minAmount,
+            BigDecimal maxAmount) {
+        int deletedCount = expenseRepository.deleteByFiltersAndUser(userId,description, category, startDate, endDate, minAmount, maxAmount);
+
+        System.out.println("Deleted " + deletedCount + " expenses for user " + userId);
+        return deletedCount;
+    }
+
+
+
 }
