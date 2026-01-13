@@ -106,20 +106,29 @@ public class ExpenseController {
             HttpServletRequest request) {
 
         Long userId = (Long) request.getAttribute("userId");
-
-        try {
-            int deletedCount = expenseService.deleteFilteredExpenses(
-                    userId, description, category, startDate, endDate, minAmount, maxAmount);
-            if (deletedCount > 0) {
-                return ResponseEntity.ok("Deleted " + deletedCount + " expenses");
-            } else {
-                return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        boolean haveOneFilter = (description != null && !description.trim().isEmpty())
+                || (category != null && !category.trim().isEmpty())
+                || (startDate != null)
+                || (endDate != null)
+                || (minAmount != null)
+                || (maxAmount != null);
+        if (haveOneFilter) {
+            try {
+                int deletedCount = expenseService.deleteFilteredExpenses(
+                        userId, description, category, startDate, endDate, minAmount, maxAmount);
+                if (deletedCount > 0) {
+                    return ResponseEntity.ok("Deleted " + deletedCount + " expenses");
+                } else {
+                    return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+                }
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        } else {
+            return ResponseEntity.badRequest()
+                    .body("ERROR_NO_FILTERS: At least one filter must be provided");
         }
     }
-
 }
 
 

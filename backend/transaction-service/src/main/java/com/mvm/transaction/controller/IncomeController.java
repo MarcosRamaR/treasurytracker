@@ -106,7 +106,13 @@ public class IncomeController {
             HttpServletRequest request) {
 
         Long userId = (Long) request.getAttribute("userId");
-
+        boolean haveOneFilter = (description != null && !description.trim().isEmpty())
+                || (category != null && !category.trim().isEmpty())
+                || (startDate != null)
+                || (endDate != null)
+                || (minAmount != null)
+                || (maxAmount != null);
+        if (haveOneFilter) {
         try {
             int deletedCount = incomeService.deleteFilteredExpenses(
                     userId, description, category, startDate, endDate, minAmount, maxAmount);
@@ -117,6 +123,10 @@ public class IncomeController {
             }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+        } else {
+            return ResponseEntity.badRequest()
+                    .body("ERROR_NO_FILTERS: At least one filter must be provided");
         }
     }
 

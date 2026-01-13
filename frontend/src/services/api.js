@@ -154,6 +154,38 @@ export const apiService = {
         })
         return handleResponse(response)
     },
+        deletefilteredExpenses: async (filters,type) => {
+        const {description,category, startDate, endDate, minAmount, maxAmount} = filters
+        const haveOneFilter = description || category || startDate || endDate || minAmount || maxAmount
+        if (!haveOneFilter) {
+            throw new Error('At least one filter must be provided for deleting filtered transactions.')
+        }
+
+        const queryParams = [
+            description ? `description=${encodeURIComponent(description)}` : '',
+            category ? `category=${category}` : '',
+            startDate ? `startDate=${startDate}` : '',
+            endDate ? `endDate=${endDate}` : '',
+            minAmount ? `minAmount=${minAmount}` : '',
+            maxAmount ? `maxAmount=${maxAmount}` : '',
+        ]
+        const noNullParams = queryParams.filter(param => param !== '') 
+        const queryStringParams = noNullParams.join('&')
+        
+        let newUrl = ''
+        if(type === 'expense'){
+            newUrl = API_EXPENSE_BASE
+        }else if(type === 'income'){
+            newUrl = API_INCOMES_BASE
+        }else{
+            throw new Error('Invalid type for filtering expenses')
+        }
+        const urlFiltered = `${newUrl}/delete-filtered?${queryStringParams}` 
+        const response = await fetch(urlFiltered, {
+            headers: getAuthHeaders()
+        })
+        return handleResponse(response)
+    },
     getBalance: async () => {
         const response = await fetch(`${API_BALANCE_BASE}`, {
             headers: getAuthHeaders()
