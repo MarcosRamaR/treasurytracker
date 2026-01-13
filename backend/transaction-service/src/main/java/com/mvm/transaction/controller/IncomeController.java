@@ -95,6 +95,34 @@ public class IncomeController {
         return ResponseEntity.ok(incomes);
     }
 
+    @DeleteMapping("/delete-filtered")
+    public ResponseEntity<String> deleteFilteredExpenses(
+            @RequestParam(required = false) String description,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate,
+            @RequestParam(required = false) BigDecimal minAmount,
+            @RequestParam(required = false) BigDecimal maxAmount,
+            HttpServletRequest request) {
+
+        Long userId = (Long) request.getAttribute("userId");
+
+        try {
+            int deletedCount = incomeService.deleteFilteredExpenses(
+                    userId, description, category, startDate, endDate, minAmount, maxAmount);
+            if (deletedCount > 0) {
+                return ResponseEntity.ok("Deleted " + deletedCount + " incomes");
+            } else {
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+
+
+
 }
 
 

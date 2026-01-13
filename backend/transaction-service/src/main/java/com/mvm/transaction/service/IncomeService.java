@@ -92,4 +92,21 @@ public class IncomeService {
                 userId,description, category, startDate, endDate, minAmount, maxAmount);
         return incomes.stream().map(incomeMapper::toResponseDTO).collect(Collectors.toList());
     }
+
+    @Transactional
+    @CacheEvict(value = INCOMES_CACHE, key = "#userId")
+    public int deleteFilteredExpenses(
+            Long userId,
+            String description,
+            String category,
+            LocalDate startDate,
+            LocalDate endDate,
+            BigDecimal minAmount,
+            BigDecimal maxAmount) {
+        int deletedCount = incomeRepository.deleteByFiltersAndUser(userId,description, category, startDate, endDate, minAmount, maxAmount);
+
+        System.out.println("Deleted " + deletedCount + " incomes for user " + userId);
+        return deletedCount;
+    }
+
 }
