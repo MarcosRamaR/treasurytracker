@@ -20,7 +20,7 @@
 }
 
 .filter-section:hover {
-    transform: translateY(-5px); 
+
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3); 
     border-color: #475569; 
 }
