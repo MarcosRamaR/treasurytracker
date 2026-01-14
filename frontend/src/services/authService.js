@@ -43,9 +43,32 @@ export const authService = {
             },
             body: JSON.stringify(credentials) 
         })
-        
+        console.log('Login response status:', response.status)
         const token = response.headers.get('Authorization') //Token now in header
+        if (!response.ok) {
+            let errorMessage = 'Invalid email or password'
+            
+            try {
+                const errorData = await response.json()
+                if (errorData.message || errorData.error) {
+                    errorMessage = errorData.message || errorData.error
+                    console.log('Login error message from server:', errorMessage)
+                    console.log('Full error data from server:', errorData)
+                }
+            } catch {
+                if (response.status === 401 || response.status === 403) {
+                    errorMessage = 'Invalid email or password'
+                    console.log(errorMessage)
+                    console.log('Login failed with status:', response)
+                } else {
+                    errorMessage = `Login failed (${response.status})`
+                }
+            }
+            
+            throw new Error(errorMessage)
+        }
         const data = await response.json()
+        console.log('Login data:', data)
 
         if(!token){
             throw new Error('No token received')

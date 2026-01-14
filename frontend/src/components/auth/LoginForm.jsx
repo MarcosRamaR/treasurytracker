@@ -8,7 +8,7 @@ export function LoginForm({onSwitchToRegister, onLoginSuccess}){
         email: '',
         password: ''
     })
-    const [errors, setErrors] = useState({})
+    const [errorMessage, setErrorMessage] = useState()
     const [isLoading, setIsLoading] = useState(false)
 
     const handleChange = (e) => {
@@ -17,23 +17,26 @@ export function LoginForm({onSwitchToRegister, onLoginSuccess}){
             ...prev,
             [name]: value
         }))
+        if (errorMessage) {
+            setErrorMessage('')
+        }
     }
 
     const handleSubmit = async (e) => {
         e.preventDefault()
         setIsLoading(true)
-        setErrors({})
+        setErrorMessage('')
 
         try{
             //Send form data to try login
             const result = await authService.login(formData)
             setFormData({email: '', password: ''})
-
-        if (onLoginSuccess) {
-        onLoginSuccess(result)
-        }
+            if (onLoginSuccess) {
+            onLoginSuccess(result)
+            }
         }catch(error){
-            setErrors(error)
+            setErrorMessage(error.message || 'Error during login')
+            console.error('Login error:', error)
         }finally{
             setIsLoading(false)
         }
@@ -52,9 +55,8 @@ export function LoginForm({onSwitchToRegister, onLoginSuccess}){
             <label htmlFor="loginPassword" className="form-label">Password</label>
             <input type="password" className="form-control" id="loginPassword" name="password"  value={formData.password} onChange={handleChange} required/>
             </div>
-            
-            {errors.error && (
-            <div className="alert alert-danger">{errors.error}</div>)}
+            {errorMessage && (
+            <div className="alert alert-danger">{errorMessage}</div>)}
 
             <button className="register-login-button" type="submit" disabled={isLoading}>{isLoading ? 'Loggin in...': 'Login'}</button>
             <div className="text-center mt-3">
