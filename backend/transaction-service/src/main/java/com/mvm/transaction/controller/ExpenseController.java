@@ -6,12 +6,15 @@ import com.mvm.transaction.service.ExpenseService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/expenses")
@@ -96,7 +99,7 @@ public class ExpenseController {
     }
 
     @DeleteMapping("/delete-filtered")
-    public ResponseEntity<String> deleteFilteredExpenses(
+    public ResponseEntity<Map<String, Object>> deleteFilteredExpenses(
             @RequestParam(required = false) String description,
             @RequestParam(required = false) String category,
             @RequestParam(required = false) LocalDate startDate,
@@ -117,7 +120,10 @@ public class ExpenseController {
                 int deletedCount = expenseService.deleteFilteredExpenses(
                         userId, description, category, startDate, endDate, minAmount, maxAmount);
                 if (deletedCount > 0) {
-                    return ResponseEntity.ok("Deleted " + deletedCount + " expenses");
+                    Map<String, Object> response = new HashMap<>();
+                    response.put("deletedCount", deletedCount);
+                    response.put("message", "Deleted " + deletedCount + " expenses");
+                    return ResponseEntity.ok(response);
                 } else {
                     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
                 }
@@ -125,8 +131,10 @@ public class ExpenseController {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
         } else {
-            return ResponseEntity.badRequest()
-                    .body("ERROR_NO_FILTERS: At least one filter must be provided");
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "NO_FILTERS");
+            error.put("message", "At least one filter must be provided");
+            return ResponseEntity.badRequest().body(error);
         }
     }
 }

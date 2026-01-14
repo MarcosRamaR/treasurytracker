@@ -21,6 +21,14 @@ const getAuthHeaders = () => {
 }
 
 const handleResponse = async (response) => {
+    if (response.status === 204) {
+        return { 
+            success: true, 
+            message: "Operation completed successfully",
+            status: 204
+        };
+    }
+
     if (!response.ok) {
     if (response.status === 401) {
         authService.logout()
@@ -134,8 +142,8 @@ export const apiService = {
             category ? `category=${category}` : '',
             startDate ? `startDate=${startDate}` : '',
             endDate ? `endDate=${endDate}` : '',
-            minAmount ? `minAmount=${minAmount}` : '',
-            maxAmount ? `maxAmount=${maxAmount}` : '',
+            minAmount !== undefined && minAmount !== null ? `minAmount=${minAmount}` : '',
+            maxAmount !== undefined && maxAmount !== null ? `maxAmount=${maxAmount}` : '',
         ] //Each filter is optional and assigned only if exists
         const noNullParams = queryParams.filter(param => param !== '') //remove empty params
         const queryStringParams = noNullParams.join('&') //join with &
@@ -156,7 +164,7 @@ export const apiService = {
     },
         deleteFilteredTransactions: async (filters,type) => {
         const {description,category, startDate, endDate, minAmount, maxAmount} = filters
-        const haveOneFilter = description || category || startDate || endDate || minAmount || maxAmount
+        const haveOneFilter = description || category || startDate || endDate || minAmount !== undefined|| minAmount !== null || maxAmount !== undefined || maxAmount !== null
         if (!haveOneFilter) {
             throw new Error('At least one filter must be provided for deleting filtered transactions.')
         }

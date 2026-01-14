@@ -57,9 +57,10 @@ export function ExpensesPage() {
             category: categorySelect,
             startDate: startDate,
             endDate: endDate,
-            minAmount: minAmount ? parseFloat(minAmount) : null,
-            maxAmount: maxAmount ? parseFloat(maxAmount) : null
+            minAmount: minAmount ? parseFloat(minAmount) : undefined,
+            maxAmount: maxAmount ? parseFloat(maxAmount) : undefined
         }
+        console.log('Applying filters:', filters)
         setCurrentFilters(filters)
         setFilterLoading(true)
         try{
@@ -74,8 +75,8 @@ export function ExpensesPage() {
             category: categorySelect,
             startDate: startDate,
             endDate: endDate,
-            minAmount: minAmount ? parseFloat(minAmount) : null,
-            maxAmount: maxAmount ? parseFloat(maxAmount) : null
+            minAmount: minAmount ? parseFloat(minAmount) : undefined,
+            maxAmount: maxAmount ? parseFloat(maxAmount) : undefined
         }
         setCurrentFilters(filters)
         setFilterLoading(true)

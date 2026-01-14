@@ -97,12 +97,12 @@ export const useExpenses = () => {
                 setError('User not authenticated. Please log in.')
                 return
             }
-            const filtered = await apiService.deleteFilteredTransactions(filters,type)
-            setFilteredExpenses(filtered)
-            setIsFiltered(true)
+            await apiService.deleteFilteredTransactions(filters,type)
+            await loadExpenses()
+            clearFilters()
             setError('')
         }catch(err){
-            setError('Error filtering expenses: ' + err.message)
+            setError('Error deleting expenses: ' + err.message)
             throw err
         }
     }

@@ -31,7 +31,7 @@ export function ExpenseForm({onSubmit}) {
         })
         
 }
-    const categories = ['Food', 'Transport', 'Entertainment ', 'Others']
+    const categories = ['Food', 'Transport', 'Entertainment', 'Others']
 
   return (
     <div className="filter-section">

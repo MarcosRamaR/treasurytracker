@@ -8,7 +8,7 @@ import '../styles/ExpensesStyle.css'
 
 export function IncomesPage() {
     const {incomes, loading, error,isFiltered, 
-        loadIncomes,createIncome, updateIncome, deleteIncome,filterIncomes,clearFilters
+        loadIncomes,createIncome, updateIncome, deleteIncome,filterIncomes,clearFilters, deleteFilteredIncomes
     } = useIncomes()
     const [editIncome, setEditIncome] = useState(null)
     const [isEditModalOpen, setIsEditModalOpen] = useState(false)
@@ -62,9 +62,27 @@ export function IncomesPage() {
         await filterIncomes(filters)
         } finally {
         setFilterLoading(false)
+        }
     }
-        
+
+        const handleDeleteFilteredIncomes = async () => {
+        const filters = {
+            description: fieldDescription,
+            category: categorySelect,
+            startDate: startDate,
+            endDate: endDate,
+            minAmount: minAmount ? parseFloat(minAmount) : null,
+            maxAmount: maxAmount ? parseFloat(maxAmount) : null
+        }
+        setCurrentFilters(filters)
+        setFilterLoading(true)
+        try{
+        await deleteFilteredIncomes(filters)
+        } finally {
+        setFilterLoading(false)
+        }
     }
+
     const handleClearFilters = () => {
         clearFilters()
         setFieldDescription('')
@@ -103,6 +121,7 @@ export function IncomesPage() {
         categories={categories}
         onFilter={handleFilters}
         onClearFilters={handleClearFilters}
+        onDeleteFilteredTransactions={handleDeleteFilteredIncomes}
         isFiltered={isFiltered}
         />
         {filterLoading ? (

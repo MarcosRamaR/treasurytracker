@@ -90,6 +90,23 @@ export const useIncomes = () => {
             throw err
         }
     }
+
+        const deleteFilteredIncomes = async (filters) => {
+        try{
+            if (!authService.isAuthenticated()) {
+                setError('User not authenticated. Please log in.')
+                return
+            }
+            await apiService.deleteFilteredTransactions(filters,type)
+            await loadIncomes()
+            clearFilters()
+            setError('')
+        }catch(err){
+            setError('Error deleting incomes: ' + err.message)
+            throw err
+        }
+    }
+
     const clearFilters = () => {
         setIsFiltered(false)
         setFilteredIncomes([])
@@ -106,6 +123,7 @@ export const useIncomes = () => {
     updateIncome,
     deleteIncome,
     filterIncomes,
+    deleteFilteredIncomes,
     clearFilters
   }
 }
