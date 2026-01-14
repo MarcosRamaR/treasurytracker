@@ -91,6 +91,21 @@ export const useExpenses = () => {
             throw err
         }
     }
+    const deleteFilteredTransactions = async (filters) => {
+        try{
+            if (!authService.isAuthenticated()) {
+                setError('User not authenticated. Please log in.')
+                return
+            }
+            const filtered = await apiService.deleteFilteredTransactions(filters,type)
+            setFilteredExpenses(filtered)
+            setIsFiltered(true)
+            setError('')
+        }catch(err){
+            setError('Error filtering expenses: ' + err.message)
+            throw err
+        }
+    }
 
     const clearFilters = () => {
         setIsFiltered(false)
@@ -108,6 +123,7 @@ export const useExpenses = () => {
     updateExpense,
     deleteExpense,
     filterExpenses,
+    deleteFilteredTransactions,
     clearFilters
   }
 }

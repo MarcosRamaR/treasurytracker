@@ -154,7 +154,7 @@ export const apiService = {
         })
         return handleResponse(response)
     },
-        deletefilteredExpenses: async (filters,type) => {
+        deleteFilteredTransactions: async (filters,type) => {
         const {description,category, startDate, endDate, minAmount, maxAmount} = filters
         const haveOneFilter = description || category || startDate || endDate || minAmount || maxAmount
         if (!haveOneFilter) {
@@ -182,6 +182,7 @@ export const apiService = {
         }
         const urlFiltered = `${newUrl}/delete-filtered?${queryStringParams}` 
         const response = await fetch(urlFiltered, {
+            method: 'DELETE',
             headers: getAuthHeaders()
         })
         return handleResponse(response)

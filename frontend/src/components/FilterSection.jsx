@@ -16,6 +16,7 @@ export function FilterSection({
     categories,
     onFilter,
     onClearFilters,
+    onDeleteFilteredTransactions,
     isFiltered
 }) {
 
@@ -82,6 +83,9 @@ export function FilterSection({
             </button>
             <button className="filter-button" onClick={onClearFilters}>
                 Reset Filters
+            </button>
+            <button className="filter-button" onClick={onDeleteFilteredTransactions}>
+                Delete
             </button>
         </div>
         {isFiltered && (

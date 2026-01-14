@@ -9,7 +9,7 @@ import '../styles/ExpensesStyle.css'
 
 export function ExpensesPage() {
     const {expenses, loading, error,isFiltered, 
-        loadExpenses,createExpense, updateExpense, deleteExpense,filterExpenses,clearFilters
+        loadExpenses,createExpense, updateExpense, deleteExpense,filterExpenses,clearFilters,deleteFilteredTransactions
     } = useExpenses()
     const [editExpense, setEditExpense] = useState(null)
     const [isEditModalOpen, setIsEditModalOpen] = useState(false)
@@ -36,6 +36,7 @@ export function ExpensesPage() {
     setEditExpense(expense)
     setIsEditModalOpen(true) //Open modal when editing
     }
+
     const handleUpdateExpense = async (expense) => {
     // Get the id of the expense being edited
         if (!expense || !editExpense) return
@@ -44,10 +45,12 @@ export function ExpensesPage() {
         setIsEditModalOpen(false) //Close modal after update
         setEditExpense(null)
     }
+
     const handleCloseModal = () => {
         setIsEditModalOpen(false)
         setEditExpense(null)
     }
+
     const handleFilters = async () => {
         const filters = {
             description: fieldDescription,
@@ -64,7 +67,25 @@ export function ExpensesPage() {
         } finally {
         setFilterLoading(false)
     }
+}
+    const handleDeleteFilteredTransactions = async () => {
+        const filters = {
+            description: fieldDescription,
+            category: categorySelect,
+            startDate: startDate,
+            endDate: endDate,
+            minAmount: minAmount ? parseFloat(minAmount) : null,
+            maxAmount: maxAmount ? parseFloat(maxAmount) : null
+        }
+        setCurrentFilters(filters)
+        setFilterLoading(true)
+        try{
+        await deleteFilteredTransactions(filters)
+        } finally {
+        setFilterLoading(false)
+        }
     }
+
     const handleClearFilters = () => {
         clearFilters()
         setFieldDescription('')
@@ -106,6 +127,7 @@ export function ExpensesPage() {
         categories={categories}
         onFilter={handleFilters}
         onClearFilters={handleClearFilters}
+        onDeleteFilteredTransactions={handleDeleteFilteredTransactions}
         isFiltered={isFiltered}/>
 
         {filterLoading ? (
