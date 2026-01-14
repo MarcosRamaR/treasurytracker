@@ -128,6 +128,10 @@
     color: white;
 }
 
+.btn-modalConfirmDelete{
+    margin-left: 10px;
+}
+
 @keyframes modalFadeIn {
     from { opacity: 0; } /* Starts invisible */
     to { opacity: 1; }   /* Ends visible */

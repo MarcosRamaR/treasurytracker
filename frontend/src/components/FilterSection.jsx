@@ -1,4 +1,6 @@
 import '../styles/ExpensesStyle.css'
+import { useState } from 'react'
+import { ConfirmDeleteModal } from './ModalConfirmDelete.jsx'
 
 export function FilterSection({
     fieldDescription,
@@ -19,6 +21,33 @@ export function FilterSection({
     onDeleteFilteredTransactions,
     isFiltered
 }) {
+    const [showConfirmModal, setShowConfirmModal] = useState(false)
+
+    const getCurrentFilters = () => {
+        return {
+            description: fieldDescription,
+            category: categorySelect,
+            startDate: startDate,
+            endDate: endDate,
+            minAmount: minAmount,
+            maxAmount: maxAmount
+        }
+    }
+
+    const handleDeleteClick = () => {
+        const hasActiveFilters = fieldDescription || categorySelect || startDate || endDate || minAmount || maxAmount
+        if (!hasActiveFilters) {
+            alert('Please apply at least one filter before deleting. To delete all expenses, please remove them individually.')
+            return
+        }
+        setShowConfirmModal(true)
+    }
+
+    const handleConfirmDelete = () => {
+        const filters = getCurrentFilters()
+        onDeleteFilteredTransactions(filters)
+        setShowConfirmModal(false)
+    }
 
     return (
     <div className="filter-section">
@@ -84,10 +113,16 @@ export function FilterSection({
             <button className="filter-button" onClick={onClearFilters}>
                 Reset Filters
             </button>
-            <button className="filter-button" onClick={onDeleteFilteredTransactions}>
+            <button className="filter-button" onClick={handleDeleteClick}>
                 Delete
             </button>
         </div>
+        <ConfirmDeleteModal
+                isOpen={showConfirmModal}
+                onClose={() => setShowConfirmModal(false)}
+                onConfirm={handleConfirmDelete}
+                itemType="filtered expenses"
+            />
         {isFiltered && (
         <div className="filter-info">
             {categorySelect && `Category: ${categorySelect}`}
