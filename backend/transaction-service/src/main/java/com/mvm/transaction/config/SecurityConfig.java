@@ -122,6 +122,7 @@ public class SecurityConfig {
                     String userEmail = claims.getSubject();
 
                     if (userId == null|| userEmail == null) {
+                        log.error("Token valid but without userId or email");
                         throw new RuntimeException("Token valid but without userId or email");
                     }
 

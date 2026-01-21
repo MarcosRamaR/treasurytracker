@@ -7,6 +7,7 @@ import com.mvm.transaction.model.Income;
 import com.mvm.transaction.repository.BalanceRepository;
 import com.mvm.transaction.repository.ExpenseRepository;
 import com.mvm.transaction.repository.IncomeRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class BalanceService {
     @Autowired
@@ -29,8 +31,8 @@ public class BalanceService {
     private IncomeRepository incomeRepository;
 
     public BalanceService() {
-        System.out.println("=== BALANCE SERVICE INSTANCIADO ===");
-        System.out.println("Scheduled task configured");
+        log.info("=== Created balance instance ===");
+        log.info("Scheduled task configured");
     }
 
     public Balance createInitialBalance(Long userId) {
@@ -55,8 +57,8 @@ public class BalanceService {
     }
 
     public BalanceDTO updateBalanceAutomatically(Long userId) {
-        System.out.println("=== UPDATE BALANCE AUTOMATICALLY ===");
-        System.out.println("For user ID: " + userId);
+        log.info("=== Update balance automatically ===");
+        log.info("For user ID: {}", userId);
 
         LocalDate today = LocalDate.now();
 
@@ -81,7 +83,7 @@ public class BalanceService {
             Balance savedBalance = balanceRepository.save(balance);
             return convertToDTO(savedBalance);
         }else{
-            System.out.println("Not pending transactions");
+            log.info("Not pending transactions");
             return convertToDTO(balance);
         }
     }
@@ -113,8 +115,8 @@ public class BalanceService {
     @Scheduled(cron = "0 0 0,12 * * ?") //Sec 0, min 0, hour 0 and hour 12. 2 times at day (00:00 and 12:00)
     @Transactional //if throw an error in middle of processing rollback information
     public void applyAllPendingTransactions() {
-        System.out.println("=== SCHEDULED: APPLYING ALL PENDING TRANSACTIONS ===");
-        System.out.println("Date: " + LocalDate.now());
+        log.info("=== Scheduled: applying all pending transactions ===");
+        log.info("Date {}", LocalDate.now());
         LocalDate today = LocalDate.now();
         //Get user with pending expenses or incomes
         List<Long> userIdsWithPending = getAllUserIdsWithPendingTransactions(today);
@@ -123,10 +125,10 @@ public class BalanceService {
             try {
                 updateBalanceAutomatically(userId);
             } catch (Exception e) {
-                System.err.println("Error for user " + userId + ": " + e.getMessage());
+                log.error("Error for user {}: {}", userId, e.getMessage());
             }
         }
-        System.out.println("=== SCHEDULED TASK COMPLETED ===");
+        log.info("===Scheduled task completed ===");
     }
 
     private List<Long> getAllUserIdsWithPendingTransactions(LocalDate today) {
@@ -141,7 +143,7 @@ public class BalanceService {
     public BalanceDTO updateBalanceManual(Long userId, BigDecimal amount) {
         Balance balance = balanceRepository.findByUserId(userId)
                 .orElseGet(() -> createInitialBalance(userId));
-        System.out.println("Amount on Service: " + amount);
+        log.debug("Amount on Service: {}", amount);
         balance.setTotalBalance(amount);
         balance.setModifiedBy("MANUAL");
         balance.setUpdatedAt(LocalDateTime.now());
@@ -173,7 +175,7 @@ public class BalanceService {
             total = total.add(expense.getAmount());
             expense.setApplicated(true);
             expenseRepository.save(expense);
-            System.out.println("Applied expense ID " + expense.getId() + ": -" + expense.getAmount());
+            log.info("Applied expense ID: {} with amount {}", expense.getId(),expense.getAmount());
         }
         return total;
     }
@@ -185,7 +187,7 @@ public class BalanceService {
             total = total.add(income.getAmount());
             income.setApplicated(true);
             incomeRepository.save(income);
-            System.out.println("Applied income ID " + income.getId() + ": +" + income.getAmount());
+            log.info("Applied expense ID: {} with amount {}", income.getId(),income.getAmount());
         }
         return total;
     }

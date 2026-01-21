@@ -3,13 +3,14 @@ package com.mvm.transaction.controller;
 import com.mvm.transaction.dto.BalanceDTO;
 import com.mvm.transaction.service.BalanceService;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 
-
+@Slf4j
 @RestController
 @RequestMapping("/api/balance")
 public class BalanceController {
@@ -38,8 +39,8 @@ public class BalanceController {
     }
     @PutMapping("/update-manual")
     public ResponseEntity<BalanceDTO> updateBalanceManual(@RequestBody BalanceDTO balanceDTO,HttpServletRequest request) {
-        System.out.println("Resquest: " + request);
-        System.out.println("Amount on controller: "+ balanceDTO.getTotalBalance());
+        log.info("Resquest: {}", request);
+        log.info("Amount on controller: {}", balanceDTO.getTotalBalance());
         Long userId = (Long) request.getAttribute("userId");
         BalanceDTO balance = balanceService.updateBalanceManual(userId,balanceDTO.getTotalBalance());
         return ResponseEntity.ok(balance);
