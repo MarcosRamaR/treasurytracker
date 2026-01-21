@@ -8,6 +8,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,6 +30,7 @@ import java.security.Key;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+@Slf4j
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -88,10 +90,9 @@ public class SecurityConfig {
                 String requestURI = request.getRequestURI();
                 String method = request.getMethod();
 
-                System.out.println("=== JWT FILTER DEBUG ===");
-                System.out.println("Method: " + method);
-                System.out.println("URI: " + requestURI);
-                System.out.println("Origin: " + request.getHeader("Origin"));
+                log.debug("=== JWT FILTER DEBUG ===");
+                log.debug("Method: {}, URI: {}, Origin: {}",
+                        method, requestURI, request.getHeader("Origin"));
 
                 if(requestURI.equals("/api/balance/initial-create")){
                     filterChain.doFilter(request,response);
@@ -99,7 +100,7 @@ public class SecurityConfig {
                 }
 
                 if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
-                    System.out.println("OPTIONS request - skipping JWT validation");
+                    log.debug("OPTIONS request - skipping JWT validation");
                     filterChain.doFilter(request, response);
                     return;
                 }
@@ -141,6 +142,7 @@ public class SecurityConfig {
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 } catch (Exception e) {
                     //Token invalid
+                    log.error("Token validation failed for URI: {}", requestURI, e);
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     response.getWriter().write("Invalid token: " + e.getMessage());
                     return;

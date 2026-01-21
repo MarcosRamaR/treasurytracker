@@ -69,6 +69,7 @@ public class AuthController {
             //Generate token and convert auth to UserDetails
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             String token = jwtService.generateToken(userDetails);
+            System.out.println("userDetails on login: " + userDetails);
 
             UserResponseDTO response = new UserResponseDTO();
             response.setId(user.getId());

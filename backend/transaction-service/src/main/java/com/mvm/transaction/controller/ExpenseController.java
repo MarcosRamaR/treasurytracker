@@ -6,7 +6,6 @@ import com.mvm.transaction.service.ExpenseService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +22,6 @@ public class ExpenseController {
     private ExpenseService expenseService;
 
     //userId now is obtained from JWT
-
     @GetMapping
     public ResponseEntity<List<ExpenseResponseDTO>> getAllExpenses(HttpServletRequest request) {
         Long userId = (Long) request.getAttribute("userId");
