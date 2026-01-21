@@ -6,6 +6,7 @@ import com.mvm.auth.dto.UserResponseDTO;
 import com.mvm.auth.model.User;
 import com.mvm.auth.service.JwtService;
 import com.mvm.auth.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -16,7 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-
+@Slf4j
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -69,7 +70,7 @@ public class AuthController {
             //Generate token and convert auth to UserDetails
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             String token = jwtService.generateToken(userDetails);
-            System.out.println("userDetails on login: " + userDetails);
+            log.info("userDetails on login: {}", userDetails);
 
             UserResponseDTO response = new UserResponseDTO();
             response.setId(user.getId());

@@ -3,6 +3,7 @@ package com.mvm.auth.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mvm.auth.model.User;
 import com.mvm.auth.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -20,6 +21,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @Service
 public class UserService implements UserDetailsService {
     @Autowired
@@ -88,13 +90,12 @@ public class UserService implements UserDetailsService {
                     String.class //Answer type
             );
             if (response.getStatusCode().is2xxSuccessful()) {
-                System.out.println("Initial balance was created for user: " + userId);
+                log.info("Initial balance was created for user: {}", userId);
             } else {
-                System.err.println("Error on initial balance creation for user: " + userId);
+                log.info("Error on initial balance creation for user: {}", userId);
             }
-
         }catch(Exception e){
-            System.err.println("Error on creation of initial balance: " + e.getMessage());
+            log.error("Error on creation of initial balance: {}", e.getMessage());
         }
     }
 }
