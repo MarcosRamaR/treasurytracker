@@ -92,7 +92,7 @@ public class UserService implements UserDetailsService {
             if (response.getStatusCode().is2xxSuccessful()) {
                 log.info("Initial balance was created for user: {}", userId);
             } else {
-                log.info("Error on initial balance creation for user: {}", userId);
+                log.error("Error on initial balance creation for user: {}", userId);
             }
         }catch(Exception e){
             log.error("Error on creation of initial balance: {}", e.getMessage());
