@@ -4,6 +4,7 @@ import { FilterSection } from "../components/FilterSection"
 import { useExpenses } from "../hooks/useExpenses"
 import { useState } from "react"
 import { ExpenseEdit } from "../components/expenses/ExpenseEdit"
+import { Spinner } from "../components/Spinner"
 import '../styles/ExpensesStyle.css'
 
 
@@ -99,7 +100,7 @@ export function ExpensesPage() {
     }
 
 
-    if (loading && expenses.length === 0) return <div>Loading expenses...</div>
+    if (loading && expenses.length === 0) return <div><div><Spinner /></div><div>Loading expenses...</div></div>
     if (error && expenses.length === 0) return <div>Error: {error}</div>
     //For edit button (ExpenseList) call handleEditExpense, passing the expense to edit and set it in state (editExpense)
     // after that pass it to ExpenseForm as prop (editingExpense) and handleUpdateExpense as onSubmit 
