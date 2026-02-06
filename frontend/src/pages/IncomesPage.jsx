@@ -4,6 +4,7 @@ import { FilterSection } from "../components/FilterSection"
 import { useIncomes } from "../hooks/useIncomes"
 import { useState } from "react"
 import { IncomeEdit } from "../components/incomes/IncomeEdit"
+import { Spinner } from "../components/Spinner"
 import '../styles/ExpensesStyle.css'
 
 export function IncomesPage() {
@@ -94,7 +95,7 @@ export function IncomesPage() {
     }
 
 
-    if (loading) return <div>Loading incomes...</div>
+    if (loading && incomes.length === 0) return <div><div><Spinner /></div><div>Loading incomes...</div></div>
     if (error) return <div>Error: {error}</div>
     return (
     <>
