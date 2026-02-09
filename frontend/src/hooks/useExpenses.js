@@ -112,7 +112,6 @@ export const useExpenses = () => {
         setFilteredExpenses([])
         setError('')
     }
-
   return {
     expenses: isFiltered ? filteredExpenses : expenses,
     loading,

@@ -95,7 +95,7 @@ export function IncomesPage() {
     }
 
 
-    if (loading && incomes.length === 0) return <div><div><Spinner /></div><div>Loading incomes...</div></div>
+    if (loading && incomes.length === 0) return <div><Spinner /></div>
     if (error) return <div>Error: {error}</div>
     return (
     <>
