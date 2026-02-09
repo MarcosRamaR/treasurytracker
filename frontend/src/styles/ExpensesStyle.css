@@ -185,6 +185,11 @@
     animation: spin 1s linear infinite;
     margin-bottom: 15px;
 }
+.spinner-text {
+    color: #10b981;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
 
 
 @keyframes spin {
