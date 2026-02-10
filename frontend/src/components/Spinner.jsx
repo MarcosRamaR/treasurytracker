@@ -1,4 +1,4 @@
-import '../styles/ExpensesStyle.css'
+import '../styles/SpinnerStyle.css'
 
 export function Spinner() {
     return (
