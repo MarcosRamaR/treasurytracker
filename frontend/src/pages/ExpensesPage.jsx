@@ -133,7 +133,7 @@ export function ExpensesPage() {
         isFiltered={isFiltered}/>
 
         {filterLoading ? (
-            <div style={{ padding: '20px', textAlign: 'center' }}>Applying filters...</div>) : (
+            <div><Spinner /></div>) : (
             <ExpenseList 
                 expenses={expenses} 
                 onDelete={handleDeleteExpense} 
