@@ -99,11 +99,8 @@ export function ExpensesPage() {
         setFilterLoading(false)
     }
 
-
     if (loading && expenses.length === 0) return <div><Spinner /></div>
     if (error && expenses.length === 0) return <div>Error: {error}</div>
-    //For edit button (ExpenseList) call handleEditExpense, passing the expense to edit and set it in state (editExpense)
-    // after that pass it to ExpenseForm as prop (editingExpense) and handleUpdateExpense as onSubmit 
     return (
     <>
     <h2>Expenses Page</h2>
