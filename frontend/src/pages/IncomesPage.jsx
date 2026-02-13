@@ -126,7 +126,7 @@ export function IncomesPage() {
         isFiltered={isFiltered}
         />
         {filterLoading ? (
-            <div style={{ padding: '20px', textAlign: 'center' }}>Applying filters...</div>) : (
+            <div><Spinner /></div>) : (
             <IncomeList incomes={incomes} onDelete={handleDeleteIncome} onEdit={handleEditIncome} currentFilters={currentFilters}/>)}
     </>
     
