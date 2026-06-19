@@ -1,13 +1,16 @@
 package com.mvm.auth.controller;
 
 import com.mvm.auth.dto.AuthRequestDTO;
+import com.mvm.auth.dto.LoginResponseDTO;
+import com.mvm.auth.dto.RefreshTokenRequestDTO;
 import com.mvm.auth.dto.RegisterRequestDTO;
 import com.mvm.auth.dto.UserResponseDTO;
 import com.mvm.auth.model.User;
 import com.mvm.auth.service.JwtService;
 import com.mvm.auth.service.UserService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,75 +20,122 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @Slf4j
 @RestController
 @RequestMapping("/api/auth")
+@RequiredArgsConstructor
 public class AuthController {
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private JwtService jwtService;
-    @Autowired
-    private AuthenticationManager authenticationManager;
+
+    private final UserService userService;
+    private final JwtService jwtService;
+    private final AuthenticationManager authenticationManager;
 
     @PostMapping("/register")
-    public ResponseEntity<UserResponseDTO> register(@RequestBody RegisterRequestDTO request) {
-        //Compare both password
+    public ResponseEntity<UserResponseDTO> register(@Valid @RequestBody RegisterRequestDTO request) {
         if (!request.getPassword().equals(request.getPassword2())) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
-                    .body(null);
+                    .body(UserResponseDTO.builder()
+                            .error("Passwords do not match")
+                            .build());
         }
 
-        //Creates user object from DTO
         User user = new User();
         user.setEmail(request.getEmail());
         user.setPassword(request.getPassword());
         user.setUserName(request.getUserName());
 
-        //Register user (Service encrypt password and validate email)
         User registeredUser = userService.registerUser(user);
 
-        //Creates response without sensitive information
-        UserResponseDTO response = new UserResponseDTO();
-        response.setId(registeredUser.getId());
-        response.setEmail(registeredUser.getEmail());
-        response.setUserName(registeredUser.getUserName());
-        
+        UserResponseDTO response = UserResponseDTO.builder()
+                .id(registeredUser.getId())
+                .email(registeredUser.getEmail())
+                .userName(registeredUser.getUserName())
+                .build();
+
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UserResponseDTO> login(@RequestBody AuthRequestDTO request) {
-        //Authentication credentials, spring security validates user and password
+    public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody AuthRequestDTO request) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );
 
-        //If success auth
         if (authentication.isAuthenticated()) {
-            //Get all user data from DB
             User user = userService.findByEmail(request.getEmail());
-
-            //Generate token and convert auth to UserDetails
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            String token = jwtService.generateToken(userDetails);
-            log.info("userDetails on login: {}", userDetails);
 
-            UserResponseDTO response = new UserResponseDTO();
-            response.setId(user.getId());
-            response.setEmail(user.getEmail());
-            response.setUserName(user.getUserName());
+            String accessToken = jwtService.generateToken(userDetails);
+            String refreshToken = jwtService.generateRefreshToken(userDetails);
 
-            //Create answer with explicit header
+            LoginResponseDTO response = LoginResponseDTO.builder()
+                    .userId(user.getId())
+                    .email(user.getEmail())
+                    .userName(user.getUserName())
+                    .accessToken(accessToken)
+                    .refreshToken(refreshToken)
+                    .build();
+
             HttpHeaders headers = new HttpHeaders();
-            headers.add("Authorization", "Bearer " + token);
-            headers.add("Access-Control-Expose-Headers", "Authorization");
+            headers.add("Authorization", "Bearer " + accessToken);
+            headers.add("X-Refresh-Token", refreshToken);
+            headers.add("Access-Control-Expose-Headers", "Authorization, X-Refresh-Token");
 
-            //Return answer with token on header
             return new ResponseEntity<>(response, headers, HttpStatus.OK);
-        } else {
-            throw new RuntimeException("Invalid credentials");
         }
+
+        throw new RuntimeException("Invalid credentials");
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<LoginResponseDTO> refresh(@Valid @RequestBody RefreshTokenRequestDTO request) {
+        try {
+            String userEmail = jwtService.extractUsername(request.getRefreshToken());
+            UserDetails userDetails = userService.loadUserByUsername(userEmail);
+
+            if (jwtService.isRefreshTokenValid(request.getRefreshToken(), userDetails)) {
+                String newAccessToken = jwtService.generateToken(userDetails);
+                String newRefreshToken = jwtService.generateRefreshToken(userDetails);
+
+                User user = userService.findByEmail(userEmail);
+
+                LoginResponseDTO response = LoginResponseDTO.builder()
+                        .userId(user.getId())
+                        .email(user.getEmail())
+                        .userName(user.getUserName())
+                        .accessToken(newAccessToken)
+                        .refreshToken(newRefreshToken)
+                        .build();
+
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("Authorization", "Bearer " + newAccessToken);
+                headers.add("Access-Control-Expose-Headers", "Authorization, X-Refresh-Token");
+
+                return ResponseEntity.ok(response);
+            }
+        } catch (Exception e) {
+            log.warn("Invalid refresh token: {}", e.getMessage());
+        }
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(LoginResponseDTO.builder()
+                        .error("Invalid or expired refresh token")
+                        .build());
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<UserResponseDTO> getCurrentUser(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        User user = userService.findByEmail(authentication.getName());
+        return ResponseEntity.ok(UserResponseDTO.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .userName(user.getUserName())
+                .build());
     }
 }

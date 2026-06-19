@@ -1,11 +1,10 @@
 package com.mvm.auth.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mvm.auth.model.User;
 import com.mvm.auth.repository.UserRepository;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -24,25 +23,27 @@ import java.util.Map;
 @Slf4j
 @Service
 public class UserService implements UserDetailsService {
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
-    private RestTemplate restTemplate;
-    @Autowired
-    private ObjectMapper objectMapper; //Jackson
 
-    @Value("${transaction.service.url}")
-    private String transactionServiceUrl;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final RestTemplate restTemplate;
+    private final String transactionServiceUrl;
 
-    //Load user for spring security,which calls this method automatically during the authentication process
+    public UserService(UserRepository userRepository,
+                       PasswordEncoder passwordEncoder,
+                       RestTemplate restTemplate,
+                       @org.springframework.beans.factory.annotation.Value("${transaction.service.url}") String transactionServiceUrl) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.restTemplate = restTemplate;
+        this.transactionServiceUrl = transactionServiceUrl;
+    }
+
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
 
-        //converts our User to UserDetails
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(),
                 user.getPassword(),
@@ -54,11 +55,15 @@ public class UserService implements UserDetailsService {
         if (userRepository.existsByEmail(user.getEmail())) {
             throw new RuntimeException("Email already exists");
         }
-        //Encrypt password before save
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
 
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         User savedUser = userRepository.save(user);
-        createInitialBalanceInTransactionService(savedUser.getId());
+
+        try {
+            createInitialBalanceInTransactionService(savedUser.getId());
+        } catch (Exception e) {
+            log.warn("Initial balance creation queued for user: {}. Will be created on first balance access.", savedUser.getId());
+        }
 
         return savedUser;
     }
@@ -67,35 +72,35 @@ public class UserService implements UserDetailsService {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
     }
-    private void createInitialBalanceInTransactionService(Long userId){
-        try{
-            String url = transactionServiceUrl + "/api/balance/initial-create"; //Full url to endpoint
 
-            //Headers for http request
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("Content-Type", "application/json");
+    @CircuitBreaker(name = "transactionService", fallbackMethod = "initialBalanceFallback")
+    @Retry(name = "transactionService")
+    public void createInitialBalanceInTransactionService(Long userId) {
+        String url = transactionServiceUrl + "/api/balance/initial-create";
 
-            Map<String, Object> requestBody = new HashMap<>();
-            requestBody.put("userId", userId);
-            //Convert the map to JSON
-            String jsonBody = objectMapper.writeValueAsString(requestBody);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
 
-            HttpEntity<String> request = new HttpEntity<>(jsonBody, headers); //Build http entity
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("userId", userId);
 
-            //Send the post to transaction-service microservice, restTemplate allow us to specify method, url, and answer type
-            ResponseEntity<String> response = restTemplate.exchange(
-                    url,
-                    HttpMethod.POST,
-                    request,
-                    String.class //Answer type
-            );
-            if (response.getStatusCode().is2xxSuccessful()) {
-                log.info("Initial balance was created for user: {}", userId);
-            } else {
-                log.error("Error on initial balance creation for user: {}", userId);
-            }
-        }catch(Exception e){
-            log.error("Error on creation of initial balance: {}", e.getMessage());
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                url,
+                HttpMethod.POST,
+                request,
+                String.class
+        );
+
+        if (response.getStatusCode().is2xxSuccessful()) {
+            log.info("Initial balance created for user: {}", userId);
+        } else {
+            log.error("Error creating initial balance for user: {}", userId);
         }
+    }
+
+    private void initialBalanceFallback(Long userId, Throwable t) {
+        log.warn("Fallback: initial balance creation deferred for user: {}. Error: {}", userId, t.getMessage());
     }
 }

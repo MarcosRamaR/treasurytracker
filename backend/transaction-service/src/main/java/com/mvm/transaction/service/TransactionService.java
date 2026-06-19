@@ -1,89 +1,238 @@
 package com.mvm.transaction.service;
 
 import com.mvm.transaction.dto.AllTransactionsDTO;
-import com.mvm.transaction.dto.ExpenseResponseDTO;
-import com.mvm.transaction.dto.IncomeResponseDTO;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.mvm.transaction.dto.TransactionRequestDTO;
+import com.mvm.transaction.dto.TransactionResponseDTO;
+import com.mvm.transaction.exception.AccessDeniedException;
+import com.mvm.transaction.exception.TransactionNotFoundException;
+import com.mvm.transaction.mapper.TransactionMapper;
+import com.mvm.transaction.model.Transaction;
+import com.mvm.transaction.model.TransactionType;
+import com.mvm.transaction.repository.TransactionRepository;
+import com.mvm.transaction.specification.TransactionSpecification;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class TransactionService {
-    @Autowired
-    private ExpenseService expenseService;
-    @Autowired
-    private IncomeService incomeService;
 
-    public List<AllTransactionsDTO> getAllTransactions(Long userId) {
-        List<ExpenseResponseDTO> allExpenses = expenseService.getAllExpenses(userId);
-        List<IncomeResponseDTO> allIncomes = incomeService.getAllIncomes(userId);
-        return combineAndSortTransactions(allExpenses, allIncomes, userId);
+    private static final String TRANSACTIONS_CACHE = "userTransactions";
+
+    private final TransactionRepository transactionRepository;
+    private final TransactionMapper transactionMapper;
+    private final BalanceService balanceService;
+
+    @Cacheable(value = TRANSACTIONS_CACHE, key = "#userId + '_' + #type + '_' + #pageable.pageNumber + '_' + #pageable.pageSize")
+    public Page<TransactionResponseDTO> getAllTransactions(Long userId, TransactionType type, Pageable pageable) {
+        log.debug("Cache miss for user: {} type: {}", userId, type);
+        return transactionRepository.findByUserIdAndType(userId, type, pageable)
+                .map(transactionMapper::toResponseDTO);
     }
 
-    public List<AllTransactionsDTO> getFilteredTransactions(Long userId, String description, String category,
-                                                            LocalDate startDate, LocalDate endDate,
-                                                            BigDecimal minAmount, BigDecimal maxAmount) {
-
-        List<ExpenseResponseDTO> filteredExpenses = expenseService.filterExpenses(
-                userId, description, category, startDate, endDate, minAmount, maxAmount);
-        List<IncomeResponseDTO> filteredIncomes = incomeService.filterIncomes(
-                userId, description, category, startDate, endDate, minAmount, maxAmount);
-
-        return combineAndSortTransactions(filteredExpenses, filteredIncomes, userId);
+    @Cacheable(value = TRANSACTIONS_CACHE, key = "#userId + '_ALL_' + #pageable.pageNumber + '_' + #pageable.pageSize")
+    public Page<TransactionResponseDTO> getAllTransactions(Long userId, Pageable pageable) {
+        log.debug("Cache miss for user: {} (all types)", userId);
+        return transactionRepository.findByUserId(userId, pageable)
+                .map(transactionMapper::toResponseDTO);
     }
 
-    private List<AllTransactionsDTO> combineAndSortTransactions(List<ExpenseResponseDTO> expenses,
-                                                                List<IncomeResponseDTO> incomes,
-                                                                Long userId) {
-        List<AllTransactionsDTO> allTransactions = new ArrayList<>();
+    public TransactionResponseDTO getTransactionById(Long id, Long userId) {
+        Transaction transaction = transactionRepository.findById(id)
+                .orElseThrow(() -> new TransactionNotFoundException(id, userId));
+        validateOwnership(transaction, userId);
+        return transactionMapper.toResponseDTO(transaction);
+    }
 
-        //Convert expenses to AllTransactionsDTO
-        for (ExpenseResponseDTO expense : expenses) {
-            allTransactions.add(convertExpenseToAllTransactionsDTO(expense, userId));
+    @Transactional
+    @CacheEvict(value = TRANSACTIONS_CACHE, allEntries = true)
+    public TransactionResponseDTO createTransaction(TransactionRequestDTO dto, Long userId) {
+        log.info("Creating new {} for user: {}", dto.getType(), userId);
+        Transaction transaction = transactionMapper.toEntity(dto);
+        transaction.setUserId(userId);
+
+        LocalDate today = LocalDate.now();
+        if (!transaction.getDate().isAfter(today)) {
+            applyToBalance(transaction);
+            transaction.setApplicated(true);
         }
-        //Convert incomes to AllTransactionsDTO
-        for (IncomeResponseDTO income : incomes) {
-            allTransactions.add(convertIncomeToAllTransactionsDTO(income, userId));
+
+        Transaction saved = transactionRepository.save(transaction);
+        log.info("Transaction created successfully. ID: {}, Type: {}", saved.getId(), saved.getType());
+        return transactionMapper.toResponseDTO(saved);
+    }
+
+    @Transactional
+    @CacheEvict(value = TRANSACTIONS_CACHE, allEntries = true)
+    public TransactionResponseDTO updateTransaction(Long id, TransactionRequestDTO dto, Long userId) {
+        log.info("Updating transaction {} for user: {}", id, userId);
+        Transaction transaction = transactionRepository.findById(id)
+                .orElseThrow(() -> new TransactionNotFoundException(id, userId));
+        validateOwnership(transaction, userId);
+
+        boolean wasApplicated = transaction.isApplicated();
+        BigDecimal oldAmount = transaction.getAmount();
+        LocalDate oldDate = transaction.getDate();
+
+        transactionMapper.updateEntityFromDTO(dto, transaction);
+
+        handleBalanceOnUpdate(transaction, wasApplicated, oldAmount, oldDate);
+
+        Transaction updated = transactionRepository.save(transaction);
+        log.info("Transaction updated successfully. ID: {}", updated.getId());
+        return transactionMapper.toResponseDTO(updated);
+    }
+
+    @Transactional
+    @CacheEvict(value = TRANSACTIONS_CACHE, allEntries = true)
+    public void deleteTransaction(Long id, Long userId) {
+        log.info("Deleting transaction {} for user: {}", id, userId);
+        Transaction transaction = transactionRepository.findById(id)
+                .orElseThrow(() -> new TransactionNotFoundException(id, userId));
+        validateOwnership(transaction, userId);
+
+        if (transaction.isApplicated()) {
+            revertFromBalance(transaction);
         }
-        //Sort by date and after by type
-        allTransactions.sort((a, b) -> {
-            //Date desc
-            int dateCompare = b.getDate().compareTo(a.getDate());
-            if (dateCompare != 0) {
-                return dateCompare;
+
+        transactionRepository.delete(transaction);
+    }
+
+    public Page<TransactionResponseDTO> filterTransactions(
+            Long userId, TransactionType type,
+            String description, String category,
+            LocalDate startDate, LocalDate endDate,
+            BigDecimal minAmount, BigDecimal maxAmount,
+            Boolean applicated, Pageable pageable) {
+
+        Specification<Transaction> spec = Specification.where(TransactionSpecification.byUserId(userId))
+                .and(TransactionSpecification.byType(type))
+                .and(TransactionSpecification.byDescription(description))
+                .and(TransactionSpecification.byCategory(category))
+                .and(TransactionSpecification.byDateRange(startDate, endDate))
+                .and(TransactionSpecification.byAmountRange(minAmount, maxAmount))
+                .and(TransactionSpecification.byApplicated(applicated));
+
+        return transactionRepository.findAll(spec, pageable)
+                .map(transactionMapper::toResponseDTO);
+    }
+
+    @Transactional
+    @CacheEvict(value = TRANSACTIONS_CACHE, allEntries = true)
+    public int deleteFilteredTransactions(
+            Long userId, TransactionType type,
+            String description, String category,
+            LocalDate startDate, LocalDate endDate,
+            BigDecimal minAmount, BigDecimal maxAmount) {
+
+        List<Transaction> toDelete = transactionRepository.findAll(
+                Specification.where(TransactionSpecification.byUserId(userId))
+                        .and(TransactionSpecification.byType(type))
+                        .and(TransactionSpecification.byDescription(description))
+                        .and(TransactionSpecification.byCategory(category))
+                        .and(TransactionSpecification.byDateRange(startDate, endDate))
+                        .and(TransactionSpecification.byAmountRange(minAmount, maxAmount))
+        );
+
+        for (Transaction t : toDelete) {
+            if (t.isApplicated()) {
+                revertFromBalance(t);
             }
-            //If they have same date, order by income first
-            return a.getType().compareTo(b.getType());
-        });
+        }
 
-        return allTransactions;
-    }
-    private AllTransactionsDTO convertExpenseToAllTransactionsDTO(ExpenseResponseDTO expense, Long userId) {
-        AllTransactionsDTO dto = new AllTransactionsDTO();
-        dto.setId(expense.getId());
-        dto.setAmount(expense.getAmount().negate()); //Negative for expense
-        dto.setDescription(expense.getDescription());
-        dto.setCategory(expense.getCategory());
-        dto.setDate(expense.getDate());
-        dto.setType("EXPENSE");
-        dto.setUserId(userId);
-        return dto;
+        int deletedCount = toDelete.size();
+        if (deletedCount > 0) {
+            transactionRepository.deleteAll(toDelete);
+            log.info("Deleted {} filtered transactions for user: {}", deletedCount, userId);
+        }
+        return deletedCount;
     }
 
-    private AllTransactionsDTO convertIncomeToAllTransactionsDTO(IncomeResponseDTO income, Long userId) {
-        AllTransactionsDTO dto = new AllTransactionsDTO();
-        dto.setId(income.getId());
-        dto.setAmount(income.getAmount());
-        dto.setDescription(income.getDescription());
-        dto.setCategory(income.getCategory());
-        dto.setDate(income.getDate());
-        dto.setType("INCOME");
-        dto.setUserId(userId);
-        return dto;
+    public List<AllTransactionsDTO> getAllTransactionsForExport(Long userId) {
+        return transactionRepository.findAllByUserId(userId).stream()
+                .map(this::toAllTransactionsDTO)
+                .toList();
     }
 
+    public List<AllTransactionsDTO> getFilteredTransactionsForExport(
+            Long userId, TransactionType type,
+            String description, String category,
+            LocalDate startDate, LocalDate endDate,
+            BigDecimal minAmount, BigDecimal maxAmount) {
+
+        Specification<Transaction> spec = Specification.where(TransactionSpecification.byUserId(userId))
+                .and(TransactionSpecification.byType(type))
+                .and(TransactionSpecification.byDescription(description))
+                .and(TransactionSpecification.byCategory(category))
+                .and(TransactionSpecification.byDateRange(startDate, endDate))
+                .and(TransactionSpecification.byAmountRange(minAmount, maxAmount));
+
+        return transactionRepository.findAll(spec).stream()
+                .map(this::toAllTransactionsDTO)
+                .toList();
+    }
+
+    private void validateOwnership(Transaction transaction, Long userId) {
+        if (!transaction.getUserId().equals(userId)) {
+            throw new AccessDeniedException(transaction.getId(), userId, transaction.getType().name());
+        }
+    }
+
+    private void applyToBalance(Transaction transaction) {
+        if (transaction.getType() == TransactionType.EXPENSE) {
+            balanceService.updateBalanceFromNewExpense(transaction.getUserId(), transaction.getAmount());
+        } else {
+            balanceService.updateBalanceFromNewIncome(transaction.getUserId(), transaction.getAmount());
+        }
+    }
+
+    private void revertFromBalance(Transaction transaction) {
+        if (transaction.getType() == TransactionType.EXPENSE) {
+            balanceService.revertExpense(transaction.getUserId(), transaction.getAmount());
+        } else {
+            balanceService.revertIncome(transaction.getUserId(), transaction.getAmount());
+        }
+    }
+
+    private void handleBalanceOnUpdate(Transaction transaction, boolean wasApplicated, BigDecimal oldAmount, LocalDate oldDate) {
+        LocalDate today = LocalDate.now();
+        boolean nowApplicated = !transaction.getDate().isAfter(today);
+
+        if (wasApplicated && nowApplicated) {
+            BigDecimal diff = transaction.getAmount().subtract(oldAmount);
+            if (transaction.getType() == TransactionType.EXPENSE) {
+                balanceService.updateBalanceFromNewExpense(transaction.getUserId(), diff.negate());
+            } else {
+                balanceService.updateBalanceFromNewIncome(transaction.getUserId(), diff);
+            }
+        } else if (wasApplicated && !nowApplicated) {
+            revertFromBalance(transaction);
+        } else if (!wasApplicated && nowApplicated) {
+            applyToBalance(transaction);
+        }
+    }
+
+    private AllTransactionsDTO toAllTransactionsDTO(Transaction t) {
+        return AllTransactionsDTO.builder()
+                .id(t.getId())
+                .type(t.getType())
+                .amount(t.getAmount())
+                .description(t.getDescription())
+                .category(t.getCategory())
+                .date(t.getDate())
+                .userId(t.getUserId())
+                .build();
+    }
 }

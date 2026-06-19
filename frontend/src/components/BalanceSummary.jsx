@@ -1,13 +1,12 @@
 import { useBalance } from "../hooks/useBalance"
-import { useExpenses } from "../hooks/useExpenses"
-import { useIncomes } from "../hooks/useIncomes"
+import { useTransactions } from "../hooks/useTransactions"
 import { useState } from "react"
 import '../styles/GraphsStyle.css'
 
 export function BalanceSummary(){
     const {balance, updateManualBalance} = useBalance()
-    const {expenses} = useExpenses()
-    const {incomes} = useIncomes()
+    const {transactions: expenses} = useTransactions('expense')
+    const {transactions: incomes} = useTransactions('income')
 
 
     const [newBalance, setNewBalance] = useState('')

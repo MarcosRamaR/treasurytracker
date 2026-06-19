@@ -33,8 +33,6 @@ export function ExpenseList({expenses, onDelete, onEdit,currentFilters}) {
         } catch (err) {
             console.error('Export failed:', err);
         }
-        console.log('Exported:', selectedExportOption);
-        console.log('With filters:', currentFilters);
     };
 
     return (

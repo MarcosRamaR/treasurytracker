@@ -1,17 +1,18 @@
 import { ExpenseForm } from "../components/expenses/ExpenseForm"
 import { ExpenseList } from "../components/expenses/ExpenseList"
 import { FilterSection } from "../components/FilterSection"
-import { useExpenses } from "../hooks/useExpenses"
+import { useTransactions } from "../hooks/useTransactions"
 import { useState } from "react"
 import { ExpenseEdit } from "../components/expenses/ExpenseEdit"
 import { Spinner } from "../components/Spinner"
 import '../styles/ExpensesStyle.css'
 
-
 export function ExpensesPage() {
-    const {expenses, loading, error,isFiltered, 
-        loadExpenses,createExpense, updateExpense, deleteExpense,filterExpenses,clearFilters,deleteFilteredTransactions
-    } = useExpenses()
+    const {transactions, loading, error, isFiltered,
+        loadTransactions, createTransaction, updateTransaction, deleteTransaction,
+        filterTransactions, clearFilters, deleteFilteredTransactions
+    } = useTransactions('expense')
+
     const [editExpense, setEditExpense] = useState(null)
     const [isEditModalOpen, setIsEditModalOpen] = useState(false)
     const [fieldDescription, setFieldDescription] = useState('')
@@ -26,24 +27,23 @@ export function ExpensesPage() {
     const categories = ['Food', 'Transport', 'Entertainment', 'Others']
 
     const handleAddExpense = async (expense) => {
-    await createExpense(expense)
+        await createTransaction(expense)
     }
-    const handleDeleteExpense = async(id) => {
-    await deleteExpense(id)
-    await loadExpenses()
+
+    const handleDeleteExpense = async (id) => {
+        await deleteTransaction(id)
+        await loadTransactions()
     }
 
     const handleEditExpense = (expense) => {
-    setEditExpense(expense)
-    setIsEditModalOpen(true) //Open modal when editing
+        setEditExpense(expense)
+        setIsEditModalOpen(true)
     }
 
     const handleUpdateExpense = async (expense) => {
-    // Get the id of the expense being edited
         if (!expense || !editExpense) return
-        
-        await updateExpense(editExpense.id, expense)
-        setIsEditModalOpen(false) //Close modal after update
+        await updateTransaction(editExpense.id, expense)
+        setIsEditModalOpen(false)
         setEditExpense(null)
     }
 
@@ -61,15 +61,15 @@ export function ExpensesPage() {
             minAmount: minAmount ? parseFloat(minAmount) : undefined,
             maxAmount: maxAmount ? parseFloat(maxAmount) : undefined
         }
-        console.log('Applying filters:', filters)
         setCurrentFilters(filters)
         setFilterLoading(true)
-        try{
-        await filterExpenses(filters)
+        try {
+            await filterTransactions(filters)
         } finally {
-        setFilterLoading(false)
+            setFilterLoading(false)
+        }
     }
-}
+
     const handleDeleteFilteredTransactions = async () => {
         const filters = {
             description: fieldDescription,
@@ -81,10 +81,10 @@ export function ExpensesPage() {
         }
         setCurrentFilters(filters)
         setFilterLoading(true)
-        try{
-        await deleteFilteredTransactions(filters)
+        try {
+            await deleteFilteredTransactions(filters)
         } finally {
-        setFilterLoading(false)
+            setFilterLoading(false)
         }
     }
 
@@ -94,49 +94,53 @@ export function ExpensesPage() {
         setCategorySelect('')
         setStartDate('')
         setEndDate('')
-        setMinAmount(0)
-        setMaxAmount(0)
+        setMinAmount('')
+        setMaxAmount('')
         setFilterLoading(false)
     }
 
-    if (loading && expenses.length === 0) return <div><Spinner /></div>
-    if (error && expenses.length === 0) return <div>Error: {error}</div>
-    return (
-    <>
-    <h2>Expenses Page</h2>
-    <ExpenseForm onSubmit={handleAddExpense}/>
-    <ExpenseEdit
-        expense={editExpense} //Pass the expense
-        isOpen={isEditModalOpen} //Control modal visibility
-        onClose={handleCloseModal}
-        onSubmit={handleUpdateExpense}/>
-    <FilterSection
-        fieldDescription={fieldDescription}
-        setFieldDescription={setFieldDescription}
-        startDate={startDate}
-        setStartDate={setStartDate}
-        endDate={endDate}
-        setEndDate={setEndDate}
-        categorySelect={categorySelect}
-        setCategorySelect={setCategorySelect}
-        minAmount={minAmount}
-        setMinAmount={setMinAmount}
-        maxAmount={maxAmount}
-        setMaxAmount={setMaxAmount}
-        categories={categories}
-        onFilter={handleFilters}
-        onClearFilters={handleClearFilters}
-        onDeleteFilteredTransactions={handleDeleteFilteredTransactions}
-        isFiltered={isFiltered}/>
+    if (loading && transactions.length === 0) return <div><Spinner /></div>
+    if (error && transactions.length === 0) return <div>Error: {error}</div>
 
-        {filterLoading ? (
-            <div><Spinner /></div>) : (
-            <ExpenseList 
-                expenses={expenses} 
-                onDelete={handleDeleteExpense} 
-                onEdit={handleEditExpense} 
-                currentFilters={currentFilters}/>)} 
-    </>
-    
-  )
+    return (
+        <>
+            <h2>Expenses Page</h2>
+            <ExpenseForm onSubmit={handleAddExpense} />
+            <ExpenseEdit
+                expense={editExpense}
+                isOpen={isEditModalOpen}
+                onClose={handleCloseModal}
+                onSubmit={handleUpdateExpense}
+            />
+            <FilterSection
+                fieldDescription={fieldDescription}
+                setFieldDescription={setFieldDescription}
+                startDate={startDate}
+                setStartDate={setStartDate}
+                endDate={endDate}
+                setEndDate={setEndDate}
+                categorySelect={categorySelect}
+                setCategorySelect={setCategorySelect}
+                minAmount={minAmount}
+                setMinAmount={setMinAmount}
+                maxAmount={maxAmount}
+                setMaxAmount={setMaxAmount}
+                categories={categories}
+                onFilter={handleFilters}
+                onClearFilters={handleClearFilters}
+                onDeleteFilteredTransactions={handleDeleteFilteredTransactions}
+                isFiltered={isFiltered}
+            />
+            {filterLoading ? (
+                <div><Spinner /></div>
+            ) : (
+                <ExpenseList
+                    expenses={transactions}
+                    onDelete={handleDeleteExpense}
+                    onEdit={handleEditExpense}
+                    currentFilters={currentFilters}
+                />
+            )}
+        </>
+    )
 }

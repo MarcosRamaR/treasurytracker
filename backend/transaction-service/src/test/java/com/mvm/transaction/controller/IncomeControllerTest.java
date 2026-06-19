@@ -1,8 +1,9 @@
 package com.mvm.transaction.controller;
 
-import com.mvm.transaction.dto.IncomeDTO;
-import com.mvm.transaction.dto.IncomeResponseDTO;
-import com.mvm.transaction.service.IncomeService;
+import com.mvm.transaction.dto.TransactionRequestDTO;
+import com.mvm.transaction.dto.TransactionResponseDTO;
+import com.mvm.transaction.model.TransactionType;
+import com.mvm.transaction.service.TransactionService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,124 +11,90 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class IncomeControllerTest {
+class IncomeControllerTest {
+
     @Mock
-    private IncomeService incomeService;
+    private TransactionService transactionService;
     @Mock
     private HttpServletRequest request;
     @InjectMocks
-    private IncomeController incomeController;
-    private IncomeResponseDTO testIncomeResponseDTO;
+    private TransactionController transactionController;
+
+    private TransactionResponseDTO testResponse;
+    private TransactionRequestDTO testRequest;
+    private final Long userId = 123L;
 
     @BeforeEach
     void setUp() {
-        testIncomeResponseDTO = new IncomeResponseDTO();
-        testIncomeResponseDTO.setId(1L);
-        testIncomeResponseDTO.setAmount(new BigDecimal("2000.00"));
-        testIncomeResponseDTO.setDescription("January salary");
-        testIncomeResponseDTO.setCategory("Salary");
-        testIncomeResponseDTO.setDate(LocalDate.now());
-        testIncomeResponseDTO.setUserId(123L);
+        when(request.getAttribute("userId")).thenReturn(userId);
 
-        when(request.getAttribute("userId")).thenReturn(123L);
+        testRequest = TransactionRequestDTO.builder()
+                .type(TransactionType.INCOME)
+                .amount(new BigDecimal("500.00"))
+                .description("Salary")
+                .category("Salary")
+                .date(LocalDate.now())
+                .build();
+
+        testResponse = TransactionResponseDTO.builder()
+                .id(1L)
+                .type(TransactionType.INCOME)
+                .amount(new BigDecimal("500.00"))
+                .description("Salary")
+                .category("Salary")
+                .date(LocalDate.now())
+                .userId(userId)
+                .applicated(true)
+                .build();
     }
 
     @Test
-    void getAllIncomes_ShouldReturnListOfIncomes() {
-        //---Arrange---
-        List<IncomeResponseDTO> incomes = Arrays.asList(testIncomeResponseDTO);
-        when(incomeService.getAllIncomes(123L)).thenReturn(incomes);
+    void getAllIncomes_ShouldReturnPageOfTransactions() {
+        Page<TransactionResponseDTO> page = new PageImpl<>(List.of(testResponse));
+        when(transactionService.getAllTransactions(userId, TransactionType.INCOME, PageRequest.of(0, 20)))
+                .thenReturn(page);
 
-        //---Act---
-        ResponseEntity<List<IncomeResponseDTO>> response = incomeController.getAllIncomes(request);
-
-        //---Assert---
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(1, response.getBody().size());
-        verify(incomeService).getAllIncomes(123L);
-    }
-
-    @Test
-    void getIncomeById_ShouldReturnIncome_WhenExists() {
-        when(incomeService.getIncomeById(1L, 123L)).thenReturn(testIncomeResponseDTO);
-
-        ResponseEntity<IncomeResponseDTO> response = incomeController.getIncomeById(1L, request);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(testIncomeResponseDTO, response.getBody());
-        verify(incomeService).getIncomeById(1L, 123L);
-    }
-
-    @Test
-    void createIncome_ShouldCreateAndReturnIncome() {
-        IncomeDTO incomeDTO = new IncomeDTO();
-        incomeDTO.setAmount(new BigDecimal("2000.00"));
-        incomeDTO.setDescription("January salary");
-        when(incomeService.createIncome(incomeDTO, 123L)).thenReturn(testIncomeResponseDTO);
-
-        ResponseEntity<IncomeResponseDTO> response = incomeController.createIncome(incomeDTO, request);
+        ResponseEntity<Page<TransactionResponseDTO>> response =
+                transactionController.getAllTransactions(TransactionType.INCOME, PageRequest.of(0, 20), request);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals(testIncomeResponseDTO, response.getBody());
-        verify(incomeService).createIncome(incomeDTO, 123L);
+        assertEquals(1, response.getBody().getContent().size());
+        assertEquals(testResponse, response.getBody().getContent().get(0));
     }
 
     @Test
-    void updateIncome_ShouldUpdateAndReturnIncome() {
-        IncomeDTO incomeDTO = new IncomeDTO();
-        incomeDTO.setAmount(new BigDecimal("2500.00"));
-        incomeDTO.setDescription("Updated Salary");
-        when(incomeService.updateIncome(1L, incomeDTO, 123L)).thenReturn(testIncomeResponseDTO);
+    void createIncome_ShouldCreateAndReturnTransaction() {
+        when(transactionService.createTransaction(testRequest, userId)).thenReturn(testResponse);
 
-        ResponseEntity<IncomeResponseDTO> response = incomeController.updateIncome(1L, incomeDTO, request);
+        ResponseEntity<TransactionResponseDTO> response =
+                transactionController.createTransaction(testRequest, request);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals(testIncomeResponseDTO, response.getBody());
-        verify(incomeService).updateIncome(1L, incomeDTO, 123L);
+        assertEquals(testResponse, response.getBody());
+        verify(transactionService).createTransaction(testRequest, userId);
     }
 
     @Test
-    void deleteIncome_ShouldDelete() {
-        ResponseEntity<Void> response = incomeController.deleteIncome(1L, request);
+    void deleteIncome_ShouldReturnNoContent() {
+        ResponseEntity<Void> response = transactionController.deleteTransaction(1L, request);
 
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
-        verify(incomeService).deleteIncome(1L, 123L);
-    }
-
-    @Test
-    void filterIncomes_ShouldReturnFilteredIncomes() {
-        String category = "Salary";
-        String description = "January salary";
-        LocalDate startDate = LocalDate.now().minusDays(30);
-        LocalDate endDate = LocalDate.now();
-        BigDecimal minAmount = new BigDecimal("1000");
-        BigDecimal maxAmount = new BigDecimal("5000");
-        List<IncomeResponseDTO> incomes = Arrays.asList(testIncomeResponseDTO);
-        when(incomeService.filterIncomes(
-                eq(123L),eq(description), eq(category), eq(startDate), eq(endDate),
-                eq(minAmount), eq(maxAmount))).thenReturn(incomes);
-
-        ResponseEntity<List<IncomeResponseDTO>> response = incomeController.filterIncomes(description,
-                category, startDate, endDate, minAmount, maxAmount, request);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(1, response.getBody().size());
-        verify(incomeService).filterIncomes(123L,description, category, startDate, endDate, minAmount, maxAmount);
+        verify(transactionService).deleteTransaction(1L, userId);
     }
 }

@@ -1,8 +1,9 @@
 package com.mvm.transaction.controller;
 
-import com.mvm.transaction.dto.ExpenseDTO;
-import com.mvm.transaction.dto.ExpenseResponseDTO;
-import com.mvm.transaction.service.ExpenseService;
+import com.mvm.transaction.dto.TransactionRequestDTO;
+import com.mvm.transaction.dto.TransactionResponseDTO;
+import com.mvm.transaction.model.TransactionType;
+import com.mvm.transaction.service.TransactionService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,132 +11,90 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class ExpenseControllerTest {
+class ExpenseControllerTest {
+
     @Mock
-    private ExpenseService expenseService;
+    private TransactionService transactionService;
     @Mock
     private HttpServletRequest request;
     @InjectMocks
-    private ExpenseController expenseController;
+    private TransactionController transactionController;
 
-    private ExpenseResponseDTO testExpenseResponseDTO;
+    private TransactionResponseDTO testResponse;
+    private TransactionRequestDTO testRequest;
+    private final Long userId = 123L;
 
     @BeforeEach
     void setUp() {
-        testExpenseResponseDTO = new ExpenseResponseDTO();
-        testExpenseResponseDTO.setId(1L);
-        testExpenseResponseDTO.setAmount(new BigDecimal("100.50"));
-        testExpenseResponseDTO.setDescription("Test expense");
-        testExpenseResponseDTO.setCategory("Food");
-        testExpenseResponseDTO.setDate(LocalDate.now());
-        testExpenseResponseDTO.setUserId(123L);
+        when(request.getAttribute("userId")).thenReturn(userId);
 
-        //We set the userId as attribute for request
-        when(request.getAttribute("userId")).thenReturn(123L);
+        testRequest = TransactionRequestDTO.builder()
+                .type(TransactionType.EXPENSE)
+                .amount(new BigDecimal("100.50"))
+                .description("Test expense")
+                .category("Food")
+                .date(LocalDate.now())
+                .build();
+
+        testResponse = TransactionResponseDTO.builder()
+                .id(1L)
+                .type(TransactionType.EXPENSE)
+                .amount(new BigDecimal("100.50"))
+                .description("Test expense")
+                .category("Food")
+                .date(LocalDate.now())
+                .userId(userId)
+                .applicated(true)
+                .build();
     }
 
     @Test
-    void getAllExpenses_ShouldReturnListOfExpenses() {
-        List<ExpenseResponseDTO> expenses = Arrays.asList(testExpenseResponseDTO);
-        when(expenseService.getAllExpenses(123L)).thenReturn(expenses);
+    void getAllExpenses_ShouldReturnPageOfTransactions() {
+        Page<TransactionResponseDTO> page = new PageImpl<>(List.of(testResponse));
+        when(transactionService.getAllTransactions(userId, TransactionType.EXPENSE, PageRequest.of(0, 20)))
+                .thenReturn(page);
 
-        ResponseEntity<List<ExpenseResponseDTO>> response = expenseController.getAllExpenses(request);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode()); //Should be 200 ok
-        assertNotNull(response.getBody());//Cant be null
-        assertEquals(1, response.getBody().size());
-        assertEquals(testExpenseResponseDTO, response.getBody().get(0));
-        verify(expenseService).getAllExpenses(123L);
-    }
-
-    @Test
-    void getExpenseById_ShouldReturnExpense_WhenExists() {
-        when(expenseService.getExpenseById(1L, 123L)).thenReturn(testExpenseResponseDTO);
-
-        ResponseEntity<ExpenseResponseDTO> response = expenseController.getExpenseById(1L, request);
+        ResponseEntity<Page<TransactionResponseDTO>> response =
+                transactionController.getAllTransactions(TransactionType.EXPENSE, PageRequest.of(0, 20), request);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals(testExpenseResponseDTO, response.getBody());
-        verify(expenseService).getExpenseById(1L, 123L);
+        assertEquals(1, response.getBody().getContent().size());
+        assertEquals(testResponse, response.getBody().getContent().get(0));
     }
 
     @Test
-    void createExpense_ShouldCreateAndReturnExpense() {
-        ExpenseDTO expenseDTO = new ExpenseDTO();
-        expenseDTO.setAmount(new BigDecimal("100.50"));
-        expenseDTO.setDescription("Test expense");
-        expenseDTO.setCategory("Food");
-        expenseDTO.setDate(LocalDate.now());
-        when(expenseService.createExpense(expenseDTO, 123L)).thenReturn(testExpenseResponseDTO);
+    void createExpense_ShouldCreateAndReturnTransaction() {
+        when(transactionService.createTransaction(testRequest, userId)).thenReturn(testResponse);
 
-        ResponseEntity<ExpenseResponseDTO> response = expenseController.createExpense(expenseDTO, request);
+        ResponseEntity<TransactionResponseDTO> response =
+                transactionController.createTransaction(testRequest, request);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals(testExpenseResponseDTO, response.getBody());
-        verify(expenseService).createExpense(expenseDTO, 123L);
+        assertEquals(testResponse, response.getBody());
+        verify(transactionService).createTransaction(testRequest, userId);
     }
 
     @Test
-    void updateExpense_ShouldUpdateAndReturnExpense_WhenAuthorized() {
-        ExpenseDTO expenseDTO = new ExpenseDTO();
-        expenseDTO.setAmount(new BigDecimal("150.00"));
-        expenseDTO.setDescription("Updated expense");
+    void deleteExpense_ShouldReturnNoContent() {
+        ResponseEntity<Void> response = transactionController.deleteTransaction(1L, request);
 
-        when(expenseService.updateExpense(1L, expenseDTO, 123L)).thenReturn(testExpenseResponseDTO);
-
-        ResponseEntity<ExpenseResponseDTO> response = expenseController.updateExpense(1L, expenseDTO, request);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(testExpenseResponseDTO, response.getBody());
-        verify(expenseService).updateExpense(1L, expenseDTO, 123L);
-    }
-
-    @Test
-    void deleteExpense_ShouldDelete_WhenAuthorized() {
-        ResponseEntity<Void> response = expenseController.deleteExpense(1L, request);
-
-        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode()); //Should return 204 no content
-        verify(expenseService).deleteExpense(1L, 123L);
-    }
-
-    @Test
-    void filterExpenses_ShouldReturnFilteredExpenses() {
-        String description = "Test expense";
-        String category = "Food";
-        LocalDate startDate = LocalDate.now().minusDays(30);
-        LocalDate endDate = LocalDate.now();
-        BigDecimal minAmount = new BigDecimal("10");
-        BigDecimal maxAmount = new BigDecimal("1000");
-        List<ExpenseResponseDTO> expenses = Arrays.asList(testExpenseResponseDTO);
-
-        //eq() to verify exact params
-        when(expenseService.filterExpenses(
-                eq(123L),eq(description), eq(category), eq(startDate), eq(endDate),
-                eq(minAmount), eq(maxAmount))).thenReturn(expenses);
-
-        ResponseEntity<List<ExpenseResponseDTO>> response =
-                expenseController.filterExpenses(category,description, startDate, endDate, minAmount, maxAmount, request);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(1, response.getBody().size());
-        verify(expenseService).filterExpenses(123L,description, category, startDate, endDate, minAmount, maxAmount);
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        verify(transactionService).deleteTransaction(1L, userId);
     }
 }
-
-
