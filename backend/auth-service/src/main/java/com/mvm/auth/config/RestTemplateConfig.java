@@ -12,7 +12,7 @@ public class RestTemplateConfig {
     //RestTemplate is a Spring class used to making HTTP requests to other services easier
     @Bean
     public RestTemplate restTemplate(RestTemplateBuilder builder){
-        return builder.connectTimeout(Duration.ofSeconds(5)).readTimeout(Duration.ofSeconds(10)).build();
+        return builder.setConnectTimeout(Duration.ofSeconds(5)).setReadTimeout(Duration.ofSeconds(10)).build();
     }
 
 }

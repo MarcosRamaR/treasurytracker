@@ -24,8 +24,7 @@ public class JwtServiceTest {
     @BeforeEach
     void setUp() {
         //Jwt use @Value to inject properties, on test we use ReflectionTestUtils to emulate that injection
-        jwtService = new JwtService();
-        ReflectionTestUtils.setField(jwtService, "userService", userService);
+        jwtService = new JwtService(userService);
         ReflectionTestUtils.setField(jwtService, "secretKey",
                 "c2VjcmV0S2V5MTIzNDU2Nzg5MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDEyMzQ1Njc4OTA=");
         ReflectionTestUtils.setField(jwtService, "jwtExpiration", 86400000L);
