@@ -2,106 +2,127 @@ const API_BASE_URL = import.meta.env.VITE_API_AUTH_BASE
     ? `${import.meta.env.VITE_API_AUTH_BASE}/api/auth`
     : 'http://localhost:8081/api/auth';
 
+let refreshPromise = null;
+
+const getToken = () => localStorage.getItem('token');
+const getRefreshToken = () => localStorage.getItem('refreshToken');
+const setTokens = (accessToken, refreshToken) => {
+    localStorage.setItem('token', accessToken);
+    if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
+};
+const clearTokens = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('user');
+};
+
+const tryRefreshToken = async () => {
+    const refreshToken = getRefreshToken();
+    if (!refreshToken) return false;
+
+    if (refreshPromise) return refreshPromise;
+
+    refreshPromise = (async () => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/refresh`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ refreshToken })
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setTokens(data.accessToken, data.refreshToken);
+                return true;
+            }
+            return false;
+        } catch {
+            return false;
+        } finally {
+            refreshPromise = null;
+        }
+    })();
+
+    return refreshPromise;
+};
+
 export const authService = {
     async register(userData) {
-        try{
-            //Call to backend API
         const response = await fetch(`${API_BASE_URL}/register`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(userData) //Object to JSON
-        })
-        const contentType = response.headers.get('content-type') //Verify response have content
-        let data
-
-        if(contentType && contentType.includes('application/json')) {
-            data = await response.json()
-        } else {
-            //If response void or not JSON, create custom error message
-            data = {
-                error: response.status === 403 
-                    ? 'User already exists' 
-                    : `Registration failed (${response.status})`
-            }
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(userData)
+        });
+        if (!response.ok) {
+            const error = await response.json().catch(() => ({}));
+            throw new Error(error.message || `Registration failed (${response.status})`);
         }
-        console.log('Register data:', data)
-        return data
-        
-    }catch (error) {
-            console.error('Error during registration:', error)
-            throw error
-        }
+        return response.json();
     },
+
     async login(credentials) {
-        try{
         const response = await fetch(`${API_BASE_URL}/login`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(credentials) 
-        })
-        console.log('Login response status:', response.status)
-        const token = response.headers.get('Authorization') //Token now in header
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(credentials)
+        });
+
         if (!response.ok) {
-            let errorMessage = 'Invalid email or password'
-            
-            try {
-                const errorData = await response.json()
-                if (errorData.message || errorData.error) {
-                    errorMessage = errorData.message || errorData.error
-                    console.log('Login error message from server:', errorMessage)
-                    console.log('Full error data from server:', errorData)
-                }
-            } catch {
-                if (response.status === 401 || response.status === 403) {
-                    errorMessage = 'Invalid email or password'
-                    console.log(errorMessage)
-                    console.log('Login failed with status:', response)
-                } else {
-                    errorMessage = `Login failed (${response.status})`
-                }
+            const error = await response.json().catch(() => ({}));
+            throw new Error(error.message || 'Invalid email or password');
+        }
+
+        const data = await response.json();
+        setTokens(data.accessToken, data.refreshToken);
+
+        this.saveUserData({
+            email: data.email,
+            username: data.userName,
+            id: data.userId
+        });
+
+        return data;
+    },
+
+    saveUserData(userData) {
+        localStorage.setItem('user', JSON.stringify(userData));
+    },
+
+    logout() {
+        clearTokens();
+    },
+
+    getAuthHeaders() {
+        const token = getToken();
+        return token ? { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' } : { 'Content-Type': 'application/json' };
+    },
+
+    isAuthenticated() {
+        return !!getToken();
+    },
+
+    getToken,
+    getRefreshToken,
+
+    async fetchWithAuth(url, options = {}) {
+        const headers = { ...this.getAuthHeaders(), ...options.headers };
+        let response = await fetch(url, { ...options, headers });
+
+        if (response.status === 401 && getRefreshToken()) {
+            const refreshed = await tryRefreshToken();
+            if (refreshed) {
+                const retryHeaders = { ...this.getAuthHeaders(), ...options.headers };
+                response = await fetch(url, { ...options, headers: retryHeaders });
+            } else {
+                this.logout();
+                window.location.reload();
             }
-            
-            throw new Error(errorMessage)
         }
-        const data = await response.json()
-        console.log('Login data:', data)
 
-        if(!token){
-            throw new Error('No token received')
-        }
-        this.saveData(token,  {
-        email: data.email,
-        username: data.userName,
-        id: data.id
-      }) //Save token and user data
+        return response;
+    },
 
-        return { token, ...data}
-    }catch (error) {
-            console.error('Error during login:', error)
-            throw error
-        }
-    },
-    //Save token WITH "Bearer" and user data in local storage
-    saveData(token, userData){
-        localStorage.setItem('token', token)
-        localStorage.setItem('user', JSON.stringify(userData))
-    },
-    logout(){
-        localStorage.removeItem('token')
-        localStorage.removeItem('user')
-    }, //Check if user is logged in
-    isAuthenticated(){
-        return !!localStorage.getItem('token')
-    },
-    getToken(){
-        return localStorage.getItem('token')
-    },
-    getUser(){
-        const user = localStorage.getItem('user')
-        return user ? JSON.parse(user) : null
+    getUser() {
+        const user = localStorage.getItem('user');
+        return user ? JSON.parse(user) : null;
     }
-}
+};

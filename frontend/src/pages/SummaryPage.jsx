@@ -1,11 +1,10 @@
 import { DashboardCharts } from "../components/charts/DashboardCharts"
-import { useExpenses } from "../hooks/useExpenses"
-import { useIncomes } from "../hooks/useIncomes"
+import { useTransactions } from "../hooks/useTransactions"
 import { BalanceSummary } from "../components/BalanceSummary"
 
 export function SummaryPage () {
-    const {expenses} = useExpenses()
-    const {incomes} = useIncomes()
+    const {transactions: expenses} = useTransactions('expense')
+    const {transactions: incomes} = useTransactions('income')
 
 
   return (

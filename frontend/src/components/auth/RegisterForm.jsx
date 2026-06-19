@@ -35,9 +35,9 @@ export function RegisterForm({onSubmit, onSwitchToLogin}) {
             return
             }
             const result = await authService.register(formData)
-            console.log('Resultado del registro:', result)
+            
             if(result.id && result.email && result.userName){
-                setFormData({userName:'',email:'', password: ''})
+                setFormData({userName:'', email:'', password: '', password2: ''})
                 setErrors({success: 'Account created.'})
 
                 setTimeout(() => {
@@ -45,17 +45,9 @@ export function RegisterForm({onSubmit, onSwitchToLogin}) {
                     onSubmit(result)
                 }
                 },2500)
-
-            }else{
-                if(formData.password2 !== formData.password){
-                    setErrors({error: 'Passwords do not match'})
-                    setIsLoading(false)
-                    return
-                }
-                setErrors(result)
             }
         }catch(error){
-            setErrors(error)
+            setErrors({ error: error.message || 'Registration failed' })
         }finally{
             setIsLoading(false)
         }

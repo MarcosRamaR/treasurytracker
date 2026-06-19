@@ -1,10 +1,11 @@
 package com.mvm.transaction.service;
 
-import com.mvm.transaction.dto.IncomeDTO;
-import com.mvm.transaction.dto.IncomeResponseDTO;
-import com.mvm.transaction.mapper.IncomeMapper;
-import com.mvm.transaction.model.Income;
-import com.mvm.transaction.repository.IncomeRepository;
+import com.mvm.transaction.dto.TransactionRequestDTO;
+import com.mvm.transaction.dto.TransactionResponseDTO;
+import com.mvm.transaction.mapper.TransactionMapper;
+import com.mvm.transaction.model.Transaction;
+import com.mvm.transaction.model.TransactionType;
+import com.mvm.transaction.repository.TransactionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,157 +15,100 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class IncomeServiceTest {
-    @Mock
-    private IncomeRepository incomeRepository;
-    @Mock
-    private IncomeMapper incomeMapper;
-    @InjectMocks
-    private IncomeService incomeService;
+class IncomeServiceTest {
 
-    private Income testIncome;
-    private IncomeDTO testIncomeDTO;
-    private IncomeResponseDTO testIncomeResponseDTO;
+    @Mock
+    private TransactionRepository transactionRepository;
+    @Mock
+    private TransactionMapper transactionMapper;
+    @Mock
+    private BalanceService balanceService;
+    @InjectMocks
+    private TransactionService transactionService;
+
+    private Transaction testTransaction;
+    private TransactionRequestDTO testRequestDTO;
+    private TransactionResponseDTO testResponseDTO;
+    private final Long userId = 123L;
+    private final Long transactionId = 1L;
 
     @BeforeEach
     void setUp() {
-        testIncome = new Income();
-        testIncome.setId(1L);
-        testIncome.setAmount(new BigDecimal("2000.00"));
-        testIncome.setDescription("January salary");
-        testIncome.setCategory("Salary");
-        testIncome.setDate(LocalDate.now());
-        testIncome.setUserId(123L);
+        testTransaction = new Transaction(
+                new BigDecimal("500.00"), "Salary", "Salary",
+                LocalDate.now(), userId, TransactionType.INCOME
+        );
+        testTransaction.setId(transactionId);
+        testTransaction.setApplicated(true);
 
-        testIncomeDTO = new IncomeDTO();
-        testIncomeDTO.setAmount(new BigDecimal("2000.00"));
-        testIncomeDTO.setDescription("January salary");
-        testIncomeDTO.setCategory("Salary");
-        testIncomeDTO.setDate(LocalDate.now());
+        testRequestDTO = TransactionRequestDTO.builder()
+                .type(TransactionType.INCOME)
+                .amount(new BigDecimal("500.00"))
+                .description("Salary")
+                .category("Salary")
+                .date(LocalDate.now())
+                .build();
 
-        testIncomeResponseDTO = new IncomeResponseDTO();
-        testIncomeResponseDTO.setId(1L);
-        testIncomeResponseDTO.setAmount(new BigDecimal("2000.00"));
-        testIncomeResponseDTO.setDescription("January salary");
-        testIncomeResponseDTO.setCategory("Salary");
-        testIncomeResponseDTO.setDate(LocalDate.now());
-        testIncomeResponseDTO.setUserId(123L);
+        testResponseDTO = TransactionResponseDTO.builder()
+                .id(transactionId)
+                .type(TransactionType.INCOME)
+                .amount(new BigDecimal("500.00"))
+                .description("Salary")
+                .category("Salary")
+                .date(LocalDate.now())
+                .userId(userId)
+                .applicated(true)
+                .build();
     }
 
     @Test
-    void getAllIncomes_ShouldReturnListOfIncomes() {
-        //---Arrange---
-        Long userId = 123L;
-        List<Income> incomes = Arrays.asList(testIncome);
-        when(incomeRepository.findByUserId(userId)).thenReturn(incomes);
-        when(incomeMapper.toResponseDTO(testIncome)).thenReturn(testIncomeResponseDTO);
+    void getIncomeById_ShouldReturnTransaction_WhenExistsAndBelongsToUser() {
+        when(transactionRepository.findById(transactionId)).thenReturn(Optional.of(testTransaction));
+        when(transactionMapper.toResponseDTO(testTransaction)).thenReturn(testResponseDTO);
 
-        //---Act---
-        List<IncomeResponseDTO> result = incomeService.getAllIncomes(userId);
+        TransactionResponseDTO result = transactionService.getTransactionById(transactionId, userId);
 
-        //---Assert---
         assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals(testIncomeResponseDTO, result.get(0));
-        verify(incomeRepository).findByUserId(userId);
-        verify(incomeMapper).toResponseDTO(testIncome);
+        assertEquals(testResponseDTO, result);
+        verify(transactionRepository).findById(transactionId);
+        verify(transactionMapper).toResponseDTO(testTransaction);
     }
 
     @Test
-    void getIncomeById_ShouldReturnIncome_WhenExistsAndBelongsToUser() {
-        Long incomeId = 1L;
-        Long userId = 123L;
-        when(incomeRepository.findById(incomeId)).thenReturn(Optional.of(testIncome));
-        when(incomeMapper.toResponseDTO(testIncome)).thenReturn(testIncomeResponseDTO);
+    void getIncomeById_ShouldThrow_WhenNotExists() {
+        when(transactionRepository.findById(transactionId)).thenReturn(Optional.empty());
 
-        IncomeResponseDTO result = incomeService.getIncomeById(incomeId, userId);
-
-        assertNotNull(result);
-        assertEquals(testIncomeResponseDTO, result);
-        verify(incomeRepository).findById(incomeId);
-        verify(incomeMapper).toResponseDTO(testIncome);
-    }
-
-
-    @Test
-    void createIncome_ShouldCreateAndReturnIncome() {
-        Long userId = 123L;
-        Income savedIncome = new Income();
-        savedIncome.setId(1L);
-        savedIncome.setUserId(userId);
-        when(incomeMapper.toEntity(testIncomeDTO)).thenReturn(testIncome);
-        when(incomeRepository.save(testIncome)).thenReturn(savedIncome);
-        when(incomeMapper.toResponseDTO(savedIncome)).thenReturn(testIncomeResponseDTO);
-
-        IncomeResponseDTO result = incomeService.createIncome(testIncomeDTO, userId);
-
-        assertNotNull(result);
-        assertEquals(testIncomeResponseDTO, result);
-        assertEquals(userId, testIncome.getUserId());
-        verify(incomeMapper).toEntity(testIncomeDTO);
-        verify(incomeRepository).save(testIncome);
-        verify(incomeMapper).toResponseDTO(savedIncome);
+        assertThrows(com.mvm.transaction.exception.TransactionNotFoundException.class,
+                () -> transactionService.getTransactionById(transactionId, userId));
     }
 
     @Test
-    void updateIncome_ShouldUpdateAndReturnIncome_WhenAuthorized() {
-        Long incomeId = 1L;
-        Long userId = 123L;
-        when(incomeRepository.findById(incomeId)).thenReturn(Optional.of(testIncome));
-        when(incomeRepository.save(testIncome)).thenReturn(testIncome);
-        when(incomeMapper.toResponseDTO(testIncome)).thenReturn(testIncomeResponseDTO);
+    void createIncome_ShouldCreateAndReturnTransaction() {
+        when(transactionMapper.toEntity(testRequestDTO)).thenReturn(testTransaction);
+        when(transactionRepository.save(testTransaction)).thenReturn(testTransaction);
+        when(transactionMapper.toResponseDTO(testTransaction)).thenReturn(testResponseDTO);
 
-        IncomeResponseDTO result = incomeService.updateIncome(incomeId, testIncomeDTO, userId);
+        TransactionResponseDTO result = transactionService.createTransaction(testRequestDTO, userId);
 
         assertNotNull(result);
-        assertEquals(testIncomeResponseDTO, result);
-        verify(incomeRepository).findById(incomeId);
-        verify(incomeMapper).updateEntityFromDTO(testIncomeDTO, testIncome);
-        verify(incomeRepository).save(testIncome);
-        verify(incomeMapper).toResponseDTO(testIncome);
+        assertEquals(testResponseDTO, result);
+        verify(transactionMapper).toEntity(testRequestDTO);
+        verify(transactionRepository).save(testTransaction);
+        verify(transactionMapper).toResponseDTO(testTransaction);
     }
 
     @Test
     void deleteIncome_ShouldDelete_WhenAuthorized() {
-        Long incomeId = 1L;
-        Long userId = 123L;
-        when(incomeRepository.findById(incomeId)).thenReturn(Optional.of(testIncome));
+        when(transactionRepository.findById(transactionId)).thenReturn(Optional.of(testTransaction));
 
-        incomeService.deleteIncome(incomeId, userId);
+        transactionService.deleteTransaction(transactionId, userId);
 
-        verify(incomeRepository).findById(incomeId);
-        verify(incomeRepository).delete(testIncome);
-    }
-
-    @Test
-    void filterIncomes_ShouldReturnFilteredIncomes() {
-        Long userId = 123L;
-        String category = "Salary";
-        String description = "January salary";
-        LocalDate startDate = LocalDate.now().minusDays(30);
-        LocalDate endDate = LocalDate.now();
-        BigDecimal minAmount = new BigDecimal("1000");
-        BigDecimal maxAmount = new BigDecimal("5000");
-        List<Income> incomes = Arrays.asList(testIncome);
-        when(incomeRepository.findByFiltersAndUser(
-                userId,description, category, startDate, endDate, minAmount, maxAmount)).thenReturn(incomes);
-        when(incomeMapper.toResponseDTO(testIncome)).thenReturn(testIncomeResponseDTO);
-
-        List<IncomeResponseDTO> result = incomeService.filterIncomes(
-                userId,description, category, startDate, endDate, minAmount, maxAmount);
-
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals(testIncomeResponseDTO, result.get(0));
-        verify(incomeRepository).findByFiltersAndUser(userId,description, category, startDate, endDate, minAmount, maxAmount);
-        verify(incomeMapper).toResponseDTO(testIncome);
+        verify(transactionRepository).delete(testTransaction);
     }
 }

@@ -1,78 +1,84 @@
-import {apiService} from '../services/api.js'
-import { useState, useEffect } from 'react'
-import { authService } from '../services/authService.js'
+import { useState, useEffect, useCallback, useRef } from 'react'
+import { balanceApi } from '../services/transactionApi'
+import { authService } from '../services/authService'
 
 export const useBalance = () => {
     const [balance, setBalance] = useState(0)
     const [loading, setLoading] = useState(true)
-    const [error, setError] = useState('') 
+    const [error, setError] = useState('')
+    const mountedRef = useRef(true)
+
     useEffect(() => {
-        loadBalance()
+        mountedRef.current = true
+        return () => { mountedRef.current = false }
     }, [])
 
-    const loadBalance = async () => {
-        try{
+    const loadBalance = useCallback(async () => {
+        try {
             setLoading(true)
             if (!authService.isAuthenticated()) {
                 setError('User not authenticated. Please log in.')
                 setBalance(0)
                 return
             }
-            const data = await apiService.getBalance()
-            console.log('Balance data:', data)
-            setBalance(data.totalBalance)
-            setError('')
-        }catch(err){
-            setError('Error loading balance: ' + err.message)
-        }finally{
-            setLoading(false)
+            const data = await balanceApi.get()
+            if (mountedRef.current) {
+                setBalance(data.totalBalance || 0)
+                setError('')
+            }
+        } catch (err) {
+            if (mountedRef.current) setError('Error loading balance: ' + err.message)
+        } finally {
+            if (mountedRef.current) setLoading(false)
         }
-    }
+    }, [])
 
-    const updateManualBalance = async (newBalance) => {
-        console.log('Updating manual balance to/On updateManualBalance):', newBalance)
-                try{
-            setLoading(true)
-            if (!authService.isAuthenticated()) {
-                setError('User not authenticated. Please log in.')
-                setBalance(0)
-                return
-            }
-        const updatedBalance = await apiService.updateManualBalance(newBalance)
-        console.log('Updated balance data:', updatedBalance)
-        setBalance(updatedBalance.totalBalance)
-        console.log('Balance after update:', updatedBalance.totalBalance)
-        setError('')
-        }catch(err){
-            setError('Error loading balance: ' + err.message)
-        }finally{
-            setLoading(false)
-        }
-    }
+    useEffect(() => { loadBalance() }, [loadBalance])
 
-    const updateAutomaticBalance = async () => {
-                try{
+    const updateManualBalance = useCallback(async (newBalance) => {
+        try {
             setLoading(true)
             if (!authService.isAuthenticated()) {
                 setError('User not authenticated. Please log in.')
-                setBalance(0)
                 return
             }
-        const updatedBalance = await apiService.updateAutomaticBalance()
-        setBalance(updatedBalance)
-        setError('')
-        }catch(err){
-            setError('Error loading balance: ' + err.message)
-        }finally{
-            setLoading(false)
+            const data = await balanceApi.updateManual(newBalance)
+            if (mountedRef.current) {
+                setBalance(data.totalBalance)
+                setError('')
+            }
+        } catch (err) {
+            if (mountedRef.current) setError('Error updating balance: ' + err.message)
+        } finally {
+            if (mountedRef.current) setLoading(false)
         }
-    }
+    }, [])
+
+    const updateAutomaticBalance = useCallback(async () => {
+        try {
+            setLoading(true)
+            if (!authService.isAuthenticated()) {
+                setError('User not authenticated. Please log in.')
+                return
+            }
+            const data = await balanceApi.updateAuto()
+            if (mountedRef.current) {
+                setBalance(data.totalBalance || 0)
+                setError('')
+            }
+        } catch (err) {
+            if (mountedRef.current) setError('Error updating balance: ' + err.message)
+        } finally {
+            if (mountedRef.current) setLoading(false)
+        }
+    }, [])
 
     return {
-        balance, 
-        loading, 
-        error, 
-        loadBalance, 
-        updateManualBalance, 
-        updateAutomaticBalance}
+        balance,
+        loading,
+        error,
+        loadBalance,
+        updateManualBalance,
+        updateAutomaticBalance
+    }
 }

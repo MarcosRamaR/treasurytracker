@@ -14,7 +14,6 @@ export function HomePage()  {
     useEffect(() => {
       const authenticated = authService.isAuthenticated()
       setIsLogged(authenticated)
-      console.log('isAuthenticated:', authenticated)
   }, [])
   
   const handleLoginSuccess = () => {
